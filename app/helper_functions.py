@@ -28,9 +28,14 @@ def find_icon(
     img = cv2.imread(screenshot_path, cv2.IMREAD_COLOR)
     template = cv2.imread(template_path, cv2.IMREAD_COLOR)
 
-    if img is None or template is None:
-        print("Error: Could not load screenshot or template.")
+    if img is None:
+        print("Error: Could not load screenshot.")
         return None, None
+
+    if template is None:
+        print("Error: Could not load template.")
+        return None, None
+
 
     if approx_x is not None and approx_y is not None:
         H, W = img.shape[:2]
@@ -131,9 +136,9 @@ def connect_device():
 
 def capture_screenshot(device, filename):
     result = device.screencap()
-    with open(str(filename) + ".png", "wb") as fp:
+    with open('images/' + str(filename) + ".png", "wb") as fp:
         fp.write(result)
-    return str(filename) + ".png"
+    return 'images/' + str(filename) + ".png"
 
 
 def tap(device, x, y):

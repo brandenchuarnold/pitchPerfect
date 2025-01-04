@@ -1,4 +1,4 @@
-from helper_functions import (
+from app.helper_functions import (
     connect_device,
     get_screen_resolution,
     open_hinge,
@@ -47,11 +47,13 @@ def main():
     # swipe(device, x1_swipe, y1_swipe, x2_swipe, y2_swipe)
 
     # works for sending info in whatsapp
-    swipe(device, width * 0.90, y_send_button, width * 0.95, y_send_button)
+    # swipe(device, width * 0.60, height * 0.8, width * 0.65, height * 0.8)
+    # swipe(device, width * 0.90, height * 0.90, width * 0.95, height * 0.90)
+    swipe(device, width * 0.65, height * 0.82, width * 0.75, height * 0.82)
     # tap(device, x_send_button, y_send_button)
 
-    for x in range(10):
-        tap(device, int(height * 0.99), int(width * (0.9 + 0.01 * x)))
+    # for x in range(10):
+    # tap(device, int(height * 0.99), int(width * (0.9 + 0.01 * x)))
     # for x in range(100):
     # for y in range(100):
     # tap(device, 0.01 * i, 0.99)
