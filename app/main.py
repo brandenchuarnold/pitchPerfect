@@ -17,6 +17,7 @@ from config import OPENAI_API_KEY
 # Import your existing helper functions
 from helper_functions import (
     connect_device,
+    connect_device_remote,
     get_screen_resolution,
     open_hinge,
     swipe,
@@ -41,7 +42,8 @@ openai.api_key = OPENAI_API_KEY
 
 # async def main():
 def main():
-    device = connect_device()
+    # device = connect_device_remote(os.getenv("DEVICE_IP", "127.0.0.1"))
+    device = connect_device("127.0.0.1")
     if not device:
         return
 
@@ -49,7 +51,8 @@ def main():
 
     # Approximate coordinates based on experimentation
     x_select_like_button_approx = int(width * 0.90)
-    y_select_like_button_approx = int(height * 0.67 * 0.75)
+    # y_select_like_button_approx = int(height * 0.67 * 0.75)
+    y_select_like_button_approx = int(height * 0.67)
 
     x_select_comment_button_approx = 540
     y_select_comment_button_approx = 1755
@@ -116,7 +119,7 @@ def main():
 
         # Decision-making logic
         if (
-            match_like * 0.5 < match_dislike
+            match_like * 0 < match_dislike
             and x_select_like_button is not None
             and y_select_like_button is not None
         ):
@@ -144,7 +147,7 @@ def main():
             print("Like tapped at:", x_select_like_button, y_select_like_button)
 
             # Tap to open comment field
-            tap(device, x_select_comment_button_approx, y_select_comment_button_approx)
+            # tap(device, x_select_comment_button_approx, y_select_comment_button_approx)
 
             # Type the comment (working somewhat)
             # input_text(device, comment)
@@ -152,14 +155,14 @@ def main():
             # time.sleep(100)
             # swipe(device, width * 0.65, height * 0.82, width * 0.75, height * 0.82)
 
-            while input_text(device, comment):
-                capture_screenshot(device, "screen_after_message")
-                time.sleep(0.5)
-                tap(
-                    device,
-                    x_select_comment_button_approx,
-                    y_select_comment_button_approx,
-                )
+            # while input_text(device, comment):
+            #     capture_screenshot(device, "screen_after_message")
+            #     time.sleep(0.5)
+            #     tap(
+            #         device,
+            #         x_select_comment_button_approx,
+            #         y_select_comment_button_approx,
+            #     )
 
             # After some period, you could store feedback (maybe you get a callback or check the app)
             # For demonstration, let's just store "match" or "no match" randomly

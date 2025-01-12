@@ -36,7 +36,6 @@ def find_icon(
         print("Error: Could not load template.")
         return None, None
 
-
     if approx_x is not None and approx_y is not None:
         H, W = img.shape[:2]
         x_start = max(0, approx_x - margin_x)
@@ -123,9 +122,26 @@ def type_text_slow(device, text, per_char_delay=0.1):
         time.sleep(per_char_delay)
 
 
-def connect_device():
-    adb = AdbClient(host="127.0.0.1", port=5037)
+# Use to connect directly
+def connect_device(user_ip_address="127.0.0.1"):
+    adb = AdbClient(host=user_ip_address, port=5037)
     devices = adb.devices()
+
+    if len(devices) == 0:
+        print("No devices connected")
+        return None
+    device = devices[0]
+    print(f"Connected to {device.serial}")
+    return device
+
+
+# Use to connect remotely from docker container
+def connect_device_remote(user_ip_address="127.0.0.1"):
+    adb = AdbClient(host="host.docker.internal", port=5037)
+    connection_result = adb.remote_connect(user_ip_address, 5555)
+    print("Connection result:", connection_result)
+    devices = adb.devices()
+
     if len(devices) == 0:
         print("No devices connected")
         return None
@@ -136,9 +152,9 @@ def connect_device():
 
 def capture_screenshot(device, filename):
     result = device.screencap()
-    with open('images/' + str(filename) + ".png", "wb") as fp:
+    with open("images/" + str(filename) + ".png", "wb") as fp:
         fp.write(result)
-    return 'images/' + str(filename) + ".png"
+    return "images/" + str(filename) + ".png"
 
 
 def tap(device, x, y):
