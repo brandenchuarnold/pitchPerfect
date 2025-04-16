@@ -91,7 +91,8 @@ def find_icon(
         resized_template = cv2.resize(
             template_gray, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA
         )
-        res = cv2.matchTemplate(img_gray, resized_template, cv2.TM_CCOEFF_NORMED)
+        res = cv2.matchTemplate(
+            img_gray, resized_template, cv2.TM_CCOEFF_NORMED)
         loc = np.where(res >= threshold)
 
         if len(loc[0]) != 0:
@@ -158,7 +159,19 @@ def capture_screenshot(device, filename):
 
 
 def tap(device, x, y):
+    """
+    Enhanced tap function using multiple methods to ensure the tap registers.
+    """
+    print(f"Executing tap at coordinates: {x}, {y}")
+
+    # Standard tap
     device.shell(f"input tap {x} {y}")
+    time.sleep(0.3)
+
+    # Try a long press (100ms) - sometimes more reliable for buttons
+    device.shell(f"input swipe {x} {y} {x} {y} 100")
+
+    return True
 
 
 def input_text(device, text):
@@ -208,30 +221,69 @@ def do_comparision(profile_image, sample_images):
     return best_score if best_score != float("inf") else float("inf")
 
 
-def generate_comment(profile_text):
+def generate_comment_with_target(profile_text):
     prompt = f"""
-    Based on the following profile description, generate a 1-line friendly and personalized comment asking them to go out with you:
-
+    You will see text of sections of a woman's dataing app profile description, which is a single string of text generated in three steps:
+    1. Screenshots are taken by a script of all parts of a woman's profile on a dating app.
+    2. Optical Character Recognition (OCR) is used to extract text from each screenshot.
+    3. The text from each screenshot is seperated or delimited by newlines from texts from other screenshots. Then it is concatenated together to form a single string.
+    Use the following step-by-step process to generate a response to the woman's profile description:
+    1. Seperate the profile description into a set of unique sections by delimiting on the new lines within the string of text. Each section represents a personal statement the woman made about herself. Now you have a set of personal statement sections.
+    2. For each personal statement section, create three distinct assumptions about what this personal statement conveys about the woman's personality. The three assumptions are described below in 2a, 2b, and 2c.
+    2a. Create the first assumption based on how you believe the woman logistically spends her time based on the personal statment. Include things like where she goes and what things she needs and what skills she has based on the personal statement.
+    2b. Create the second assumption based on how you believe the woman's sense of humor is based on the personal statement. Include things like how she uses sarcasm and how she uses irony and what she finds funny based on the personal statement.
+    2c. Create the third assumption based on how you believe the woman's values are based on the personal statement. Include things like what she believes in and what she stands for and what she is passionate about based on the personal statement.
+    Now you have a set of three distinct assumptions based on each personal statement section.
+    3. Take every set of three distinct assumptions based on each personal statement section and list them idividually one at a time to form a list that contains all assumptions. Now you have a single list of assumptions which we will henceforth call the woman's characteristics. 
+    4. Return to looking at the personal statement sections. For each personal statment section, create a one-sentence joke addressed to the woman of around twelve words which describes the most unintentional or unexpected way in which that specific woman's personal statement section has described her dating preferences. Now you have a set of jokes.
+    5. Look at all of the jokes and pick the single joke that is the most funny. Also record the personal statement section that the joke is based on. Now you have a single funny joke and the personal statement section that the joke is based on.
+    6. Return the personal statement section prefixed by [Personal Statement] and then a new line and then the single funny response prefixed by [Funny Response]. Do not include any quotes around the personal statement section or the funny response.
     Profile Description:
     {profile_text}
-
-    Comment:
     """
     response = openai.ChatCompletion.create(
-        model="gpt-4",
+        model="gpt-4.5-preview",
         messages=[
             {
                 "role": "system",
-                "content": "You are a friendly and likable person who is witty and humorous",
+                "content": f"""
+                You are a highly capable, thoughtful, and precise writer.
+                You want to hold a conversation with a woman on an online dating app.
+                You know that if this woman finds you physically attractive, she will take the time to read your message.
+                You believe that you are a unique person that all women would like to understand more in order to determine if they would like to go on a date with you.
+                """
             },
             {"role": "user", "content": prompt},
         ],
-        max_tokens=1500,
-        temperature=0.7,
+        max_tokens=4096,
+        temperature=1.0,
     )
 
     comment = response.choices[0].message["content"].strip()
-    return comment
+    print("\ncomment: ", comment)
+
+    # Split based on the bracketed labels
+    if "[Personal Statement]" in comment and "[Funny Response]" in comment:
+        # Split on [Funny Response] to separate the two parts
+        parts = comment.split("[Funny Response]")
+        if len(parts) == 2:
+            # Extract the personal statement (remove the label)
+            target_prompt_text = parts[0].replace(
+                "[Personal Statement]", "").strip()
+            # The second part is the comment text
+            comment_text = parts[1].strip()
+        else:
+            print(
+                "Warning: Could not properly split using [Funny Response] label")
+            return "", ""
+    else:
+        print(
+            "Warning: Missing required labels [Personal Statement] or [Funny Response]")
+        return "", ""
+
+    print("\ntarget_prompt_text: ", target_prompt_text)
+    print("\ncomment_text: ", comment_text)
+    return comment_text, target_prompt_text
 
 
 def get_screen_resolution(device):
@@ -244,5 +296,6 @@ def get_screen_resolution(device):
 
 def open_hinge(device):
     package_name = "co.match.android.matchhinge"
-    device.shell(f"monkey -p {package_name} -c android.intent.category.LAUNCHER 1")
+    device.shell(
+        f"monkey -p {package_name} -c android.intent.category.LAUNCHER 1")
     time.sleep(5)
