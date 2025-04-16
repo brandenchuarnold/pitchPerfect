@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import os
 import cv2
 import numpy as np
+import json
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -221,26 +222,98 @@ def do_comparision(profile_image, sample_images):
     return best_score if best_score != float("inf") else float("inf")
 
 
-def generate_comment_with_target(profile_text):
-    prompt = f"""
-    You will see text of sections of a woman's dataing app profile description, which is a single string of text generated in three steps:
-    1. Screenshots are taken by a script of all parts of a woman's profile on a dating app.
-    2. Optical Character Recognition (OCR) is used to extract text from each screenshot.
-    3. The text from each screenshot is seperated or delimited by newlines from texts from other screenshots. Then it is concatenated together to form a single string.
-    Use the following step-by-step process to generate a response to the woman's profile description:
-    1. Seperate the profile description into a set of unique sections by delimiting on the new lines within the string of text. Each section represents a personal statement the woman made about herself. Now you have a set of personal statement sections.
-    2. For each personal statement section, create three distinct assumptions about what this personal statement conveys about the woman's personality. The three assumptions are described below in 2a, 2b, and 2c.
-    2a. Create the first assumption based on how you believe the woman logistically spends her time based on the personal statment. Include things like where she goes and what things she needs and what skills she has based on the personal statement.
-    2b. Create the second assumption based on how you believe the woman's sense of humor is based on the personal statement. Include things like how she uses sarcasm and how she uses irony and what she finds funny based on the personal statement.
-    2c. Create the third assumption based on how you believe the woman's values are based on the personal statement. Include things like what she believes in and what she stands for and what she is passionate about based on the personal statement.
-    Now you have a set of three distinct assumptions based on each personal statement section.
-    3. Take every set of three distinct assumptions based on each personal statement section and list them idividually one at a time to form a list that contains all assumptions. Now you have a single list of assumptions which we will henceforth call the woman's characteristics. 
-    4. Return to looking at the personal statement sections. For each personal statment section, create a one-sentence joke addressed to the woman of around twelve words which describes the most unintentional or unexpected way in which that specific woman's personal statement section has described her dating preferences. Now you have a set of jokes.
-    5. Look at all of the jokes and pick the single joke that is the most funny. Also record the personal statement section that the joke is based on. Now you have a single funny joke and the personal statement section that the joke is based on.
-    6. Return the personal statement section prefixed by [Personal Statement] and then a new line and then the single funny response prefixed by [Funny Response]. Do not include any quotes around the personal statement section or the funny response.
-    Profile Description:
-    {profile_text}
+def generate_joke_from_json(profile_json):
     """
+    Generate a joke based on structured JSON input containing prompts and responses.
+
+    Args:
+        profile_json: List of objects containing prompt-response pairs and standalone content
+
+    Returns:
+        Tuple of (target_message, joke) where:
+        - target_message is the full message (prompt-response pair or standalone response) to respond to
+        - joke is the generated joke (1-2 sentences max)
+    """
+    prompt = f"""
+    You will see a structured JSON representation of a woman's dating app profile. The JSON structure follows this format:
+    [
+        {{
+            "prompt": "What's your favorite travel memory?",
+            "response": "Backpacking through Thailand and getting lost in the jungle for 3 days"
+        }},
+        {{
+            "prompt": "Two truths and a lie",
+            "response": "I've been skydiving, I speak 5 languages, I've never been to Europe"
+        }},
+        {{
+            "prompt": null,
+            "response": "I once met a celebrity at a coffee shop and didn't realize it until they left"
+        }}
+    ]
+
+    Important Context:
+    - All prompts in the profile are pre-written questions that the woman has specifically chosen to answer
+    - The woman must select three prompts to participate in the app and provide three responses
+    - Due to OCR limitations, we may not always capture all three prompts and responses
+    - We might see more or fewer prompts/responses than expected
+    - Each prompt represents a topic the woman chose to talk about herself
+    - The responses are her personal answers to these chosen prompts
+
+    Message Types and Relationships:
+    - A "message" refers to any paragraph in the profile, which can be:
+      * A prompt (a pre-written question)
+      * A response (the woman's answer to a prompt)
+      * A prompt-response pair (both the question and answer together)
+    - When a prompt and response are paired in the JSON, we have determined with high confidence that this specific response belongs to that specific prompt
+    - For standalone prompts or responses, we cannot be certain of their original pairings
+    - You may make obvious connections between standalone prompts and responses when:
+      * The connection is clear and unambiguous
+      * The content strongly suggests a natural pairing
+      * The woman's intent is evident from the context
+    - However, avoid making speculative or overzealous connections
+    - Remember that the woman wrote these responses to be interpreted fairly and accurately
+    - When in doubt, treat prompts and responses as independent pieces of information
+
+    The JSON contains three types of messages:
+    1. Prompt-response pairs (both prompt and response have values)
+    2. Standalone prompts (only prompt has value, response is null)
+    3. Standalone responses (only response has value, prompt is null)
+    
+    The messages are ordered by vertical position on the screen, maintaining the natural flow of the profile.
+    
+    Use the following step-by-step process to generate a response:
+    1. Analyze ALL messages to understand the context
+    2. For EACH message, create three distinct observations:
+       2a. What does this say about what the woman is logistically doing or involved in, or how she's physically spending her time?
+           - Consider her activities, routines, and physical presence in the world
+           - Think about where she goes and what she does in her daily life
+       2b. What does this say about the woman's intellectual opinions, judgments, reasoning, and train of logic?
+           - Consider how she thinks about and analyzes situations
+           - Look at her decision-making process and cognitive approach
+       2c. What does this say about the woman's values, priorities, feelings, and what she enjoys about life?
+           - Consider her emotional responses and what matters to her
+           - Think about what brings her joy and fulfillment
+    3. Combine ALL observations from EVERY message to form a complete picture of her personality:
+       - Each message generates three observations
+       - Consider how these observations complement or contrast with each other
+       - Look for patterns and themes across all observations
+       - Use this comprehensive understanding to inform the joke generation
+    4. For EACH response (a paragraph specifically tagged as a response, whether from a pair or standalone), generate ONE joke based on:
+       - The complete picture of her personality formed from all observations
+       - The most interesting or unexpected aspects of that specific response
+       - How this response reflects the woman's dating preferences
+       - Do NOT generate jokes based on prompts alone
+    5. From all generated jokes, select the funniest one that:
+       - Is respectful and appropriate
+       - Shows you've paid attention to her profile
+       - Has an element of surprise or wit
+       - Is CONCISE (1-2 sentences maximum)
+    6. Return the full message (either the prompt-response pair or just the response) prefixed by [Personal Statement] and the joke prefixed by [Funny Response]
+    
+    Profile JSON:
+    {json.dumps(profile_json, indent=2)}
+    """
+
     response = openai.ChatCompletion.create(
         model="gpt-4.5-preview",
         messages=[
@@ -268,7 +341,7 @@ def generate_comment_with_target(profile_text):
         parts = comment.split("[Funny Response]")
         if len(parts) == 2:
             # Extract the personal statement (remove the label)
-            target_prompt_text = parts[0].replace(
+            target_message = parts[0].replace(
                 "[Personal Statement]", "").strip()
             # The second part is the comment text
             comment_text = parts[1].strip()
@@ -281,9 +354,9 @@ def generate_comment_with_target(profile_text):
             "Warning: Missing required labels [Personal Statement] or [Funny Response]")
         return "", ""
 
-    print("\ntarget_prompt_text: ", target_prompt_text)
+    print("\ntarget_message: ", target_message)
     print("\ncomment_text: ", comment_text)
-    return comment_text, target_prompt_text
+    return comment_text, target_message
 
 
 def get_screen_resolution(device):
@@ -299,3 +372,107 @@ def open_hinge(device):
     device.shell(
         f"monkey -p {package_name} -c android.intent.category.LAUNCHER 1")
     time.sleep(5)
+
+
+def create_visual_debug_overlay(image_path, boxes, lines, paragraphs, prompt_paragraphs=None, response_paragraphs=None, pairs=None):
+    """Create a visual debugging overlay for text organization.
+
+    Args:
+        image_path: Path to the original screenshot
+        boxes: List of text boxes with 'text' and 'box' fields
+        lines: List of lines, each containing boxes
+        paragraphs: List of paragraphs with 'boxes' and 'lines' fields
+        prompt_paragraphs: List of paragraph indices that are prompts
+        response_paragraphs: List of paragraph indices that are responses
+        pairs: List of (prompt_idx, response_idx) tuples for pairs
+
+    Returns:
+        Path to the saved visualization image
+    """
+    import cv2
+    import numpy as np
+
+    # Load the original image
+    img = cv2.imread(image_path)
+    if img is None:
+        print(f"Error: Could not load image {image_path}")
+        return None
+
+    # Create a copy for drawing
+    vis_img = img.copy()
+
+    # Draw text boxes (gray)
+    for box in boxes:
+        x, y, w, h = box['box']
+        cv2.rectangle(vis_img, (x, y), (x + w, y + h), (128, 128, 128), 2)
+        # Add text label
+        cv2.putText(vis_img, box['text'], (x, y - 5),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (128, 128, 128), 1)
+
+    # Draw lines (red)
+    for line in lines:
+        # Find bounding box of line
+        x_coords = [b['box'][0] for b in line]
+        y_coords = [b['box'][1] for b in line]
+        widths = [b['box'][2] for b in line]
+        heights = [b['box'][3] for b in line]
+
+        x_min = min(x_coords)
+        y_min = min(y_coords)
+        x_max = max(x + w for x, w in zip(x_coords, widths))
+        y_max = max(y + h for y, h in zip(y_coords, heights))
+
+        cv2.rectangle(vis_img, (x_min, y_min), (x_max, y_max), (0, 0, 255), 2)
+
+    # Draw paragraphs (green)
+    for i, para in enumerate(paragraphs):
+        # Find bounding box of paragraph
+        x_coords = [b['box'][0] for b in para['boxes']]
+        y_coords = [b['box'][1] for b in para['boxes']]
+        widths = [b['box'][2] for b in para['boxes']]
+        heights = [b['box'][3] for b in para['boxes']]
+
+        x_min = min(x_coords)
+        y_min = min(y_coords)
+        x_max = max(x + w for x, w in zip(x_coords, widths))
+        y_max = max(y + h for y, h in zip(y_coords, heights))
+
+        cv2.rectangle(vis_img, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
+
+        # Add paragraph type indicators
+        center_x = (x_min + x_max) // 2
+        center_y = (y_min + y_max) // 2
+
+        if prompt_paragraphs and i in prompt_paragraphs:
+            cv2.circle(vis_img, (center_x, center_y), 10, (255, 0, 0), -1)
+        elif response_paragraphs and i in response_paragraphs:
+            cv2.circle(vis_img, (center_x, center_y), 10, (0, 0, 255), -1)
+
+    # Draw pairs (purple)
+    if pairs:
+        for prompt_idx, response_idx in pairs:
+            prompt_para = paragraphs[prompt_idx]
+            response_para = paragraphs[response_idx]
+
+            # Get combined bounding box
+            prompt_boxes = prompt_para['boxes']
+            response_boxes = response_para['boxes']
+
+            all_boxes = prompt_boxes + response_boxes
+            x_coords = [b['box'][0] for b in all_boxes]
+            y_coords = [b['box'][1] for b in all_boxes]
+            widths = [b['box'][2] for b in all_boxes]
+            heights = [b['box'][3] for b in all_boxes]
+
+            x_min = min(x_coords) - 5
+            y_min = min(y_coords) - 5
+            x_max = max(x + w for x, w in zip(x_coords, widths)) + 5
+            y_max = max(y + h for y, h in zip(y_coords, heights)) + 5
+
+            cv2.rectangle(vis_img, (x_min, y_min),
+                          (x_max, y_max), (255, 0, 255), 2)
+
+    # Save the visualization
+    vis_path = image_path.replace('.png', '_visual.png')
+    cv2.imwrite(vis_path, vis_img)
+    return vis_path

@@ -12,6 +12,7 @@ from pytesseract import image_to_data
 import math
 import difflib
 from ppadb.client import Client as AdbClient
+import json
 
 # Import your config
 from config import OPENAI_API_KEY
@@ -22,8 +23,9 @@ from helper_functions import (
     get_screen_resolution,
     capture_screenshot,
     extract_text_from_image,
-    generate_comment_with_target,
+    generate_joke_from_json,
     tap,
+    create_visual_debug_overlay,
 )
 
 openai.api_key = OPENAI_API_KEY
@@ -223,74 +225,223 @@ def extract_text_from_image_with_boxes(image_path):
         return []
 
 
-def group_boxes_into_paragraphs(boxes, y_threshold=10, x_threshold=50):
-    """Group text boxes into lines and paragraphs based on their spatial relationships.
+def group_boxes_into_paragraphs(boxes, y_threshold=10, paragraph_spacing=30):
+    """Group text boxes into a hierarchical structure: words → lines → paragraphs → pairs.
 
     Args:
         boxes: List of text boxes with 'text' and 'box' fields
-        y_threshold: Maximum vertical distance (in pixels) for boxes to be considered on the same line
-        x_threshold: Maximum horizontal distance (in pixels) for boxes to be considered part of the same paragraph
+        y_threshold: Maximum vertical distance for boxes to be on same line
+        paragraph_spacing: Minimum vertical distance between paragraphs
 
     Returns:
         List of paragraphs, where each paragraph contains:
-        - text: Combined text of all boxes in the paragraph
+        - text: Combined text of all boxes
         - boxes: List of all boxes in the paragraph
-        - lines: List of lines in the paragraph, where each line contains boxes with similar y-coordinates
+        - lines: List of lines in the paragraph
+        - spatial_info: Metadata about the paragraph's position
     """
     if not boxes:
         return []
 
-    # Sort boxes by y-coordinate first, then by x-coordinate
+    # 1. Box Processing (Words)
+    # Sort boxes spatially: primary by vertical position, secondary by horizontal
     sorted_boxes = sorted(boxes, key=lambda b: (b['box'][1], b['box'][0]))
 
-    paragraphs = []
-    current_paragraph = []
+    # 2. Line Detection
+    lines = []
     current_line = []
     current_y = None
 
     for box in sorted_boxes:
-        box_y = box['box'][1]  # Get y-coordinate from box position
+        box_y = box['box'][1]
+
         if current_y is None:
-            # First box - start new line and paragraph
+            # Start first line
             current_y = box_y
             current_line = [box]
-            current_paragraph = [current_line]
         else:
-            # Check if box is on the same line (within y_threshold)
+            # Check if box belongs to current line
             if abs(box_y - current_y) <= y_threshold:
                 current_line.append(box)
             else:
-                # Box is on a new line
-                # Check if this new line should be part of the current paragraph
-                if current_paragraph:
-                    last_line = current_paragraph[-1]
-                    last_box = last_line[-1]
-                    last_box_y = last_box['box'][1]
-                    # If the new line is close enough to the last line, it's part of the same paragraph
-                    if abs(box_y - last_box_y) <= y_threshold * 2:
-                        current_line = [box]
-                        current_paragraph.append(current_line)
-                    else:
-                        # Start a new paragraph
-                        if current_paragraph:
-                            paragraphs.append({
-                                'text': ' '.join(' '.join(b['text'] for b in line) for line in current_paragraph),
-                                'boxes': [box for line in current_paragraph for box in line],
-                                'lines': current_paragraph
-                            })
-                        current_line = [box]
-                        current_paragraph = [current_line]
+                # Start new line
+                if current_line:
+                    lines.append(current_line)
+                current_line = [box]
                 current_y = box_y
 
-    # Add the last paragraph if it exists
+    # Add last line if exists
+    if current_line:
+        lines.append(current_line)
+
+    # 3. Paragraph Formation
+    paragraphs = []
+    current_paragraph = []
+    last_line_bottom = None
+
+    for line in lines:
+        # Get bottom y-coordinate of the line
+        line_bottom = max(box['box'][1] + box['box'][3] for box in line)
+
+        if last_line_bottom is None:
+            # Start first paragraph
+            last_line_bottom = line_bottom
+            current_paragraph = [line]
+        else:
+            # Check if line belongs to current paragraph based on vertical spacing
+            if line_bottom - last_line_bottom <= paragraph_spacing:
+                current_paragraph.append(line)
+                last_line_bottom = line_bottom
+            else:
+                # Start new paragraph
+                if current_paragraph:
+                    paragraphs.append(
+                        create_paragraph_structure(current_paragraph))
+                current_paragraph = [line]
+                last_line_bottom = line_bottom
+
+    # Add last paragraph if exists
     if current_paragraph:
-        paragraphs.append({
-            'text': ' '.join(' '.join(b['text'] for b in line) for line in current_paragraph),
-            'boxes': [box for line in current_paragraph for box in line],
-            'lines': current_paragraph
-        })
+        paragraphs.append(create_paragraph_structure(current_paragraph))
 
     return paragraphs
+
+
+def create_paragraph_structure(lines):
+    """Create a structured paragraph object from a list of lines.
+
+    Args:
+        lines: List of lines, where each line is a list of boxes
+
+    Returns:
+        Dictionary containing paragraph structure and metadata
+    """
+    # Flatten boxes from all lines
+    all_boxes = [box for line in lines for box in line]
+
+    # Calculate paragraph boundaries
+    min_x = min(box['box'][0] for box in all_boxes)
+    max_x = max(box['box'][0] + box['box'][2] for box in all_boxes)
+    min_y = min(box['box'][1] for box in all_boxes)
+    max_y = max(box['box'][1] + box['box'][3] for box in all_boxes)
+
+    # Combine text from all boxes
+    paragraph_text = ' '.join(
+        ' '.join(box['text'] for box in line) for line in lines)
+
+    return {
+        'text': paragraph_text,
+        'boxes': all_boxes,
+        'lines': lines,
+        'spatial_info': {
+            'bounds': (min_x, min_y, max_x - min_x, max_y - min_y),
+            'center': ((min_x + max_x) // 2, (min_y + max_y) // 2)
+        }
+    }
+
+
+def identify_prompt_response_pairs(paragraphs, prompt_paragraphs, response_paragraphs, max_distance=50):
+    """Identify pairs of prompts and responses based on spatial relationships.
+
+    Args:
+        paragraphs: List of paragraphs with spatial_info
+        prompt_paragraphs: List of paragraph indices that are prompts
+        response_paragraphs: List of paragraph indices that are responses
+        max_distance: Maximum vertical distance between prompt and response
+
+    Returns:
+        List of (prompt_idx, response_idx) tuples for valid pairs
+    """
+    pairs = []
+
+    # Sort prompts and responses by vertical position
+    sorted_prompts = sorted(prompt_paragraphs,
+                            key=lambda idx: paragraphs[idx]['spatial_info']['center'][1])
+    sorted_responses = sorted(response_paragraphs,
+                              key=lambda idx: paragraphs[idx]['spatial_info']['center'][1])
+
+    # Track used responses to prevent double-pairing
+    used_responses = set()
+
+    for prompt_idx in sorted_prompts:
+        prompt = paragraphs[prompt_idx]
+        prompt_bottom = prompt['spatial_info']['bounds'][1] + \
+            prompt['spatial_info']['bounds'][3]
+
+        # Find closest unused response below
+        closest_response = None
+        min_distance = float('inf')
+
+        for response_idx in sorted_responses:
+            if response_idx in used_responses:
+                continue
+
+            response = paragraphs[response_idx]
+            response_top = response['spatial_info']['bounds'][1]
+
+            # Calculate vertical distance
+            distance = response_top - prompt_bottom
+
+            # Check if response is below prompt and within max distance
+            if 0 <= distance <= max_distance and distance < min_distance:
+                # Additional spatial checks
+                prompt_center_x = prompt['spatial_info']['center'][0]
+                response_center_x = response['spatial_info']['center'][0]
+
+                # Check horizontal alignment (within 20% of screen width)
+                if abs(prompt_center_x - response_center_x) <= max_distance * 0.2:
+                    closest_response = response_idx
+                    min_distance = distance
+
+        if closest_response is not None:
+            pairs.append((prompt_idx, closest_response))
+            used_responses.add(closest_response)
+
+    return pairs
+
+
+def process_screenshot_with_vsualization(image_path):
+    """Process a screenshot aind create visualization.
+
+    Args:
+        image_path: Path to the screenshot image
+
+    Returns:
+        Tuple of (paragraphs, prompt_paragraphs, response_paragraphs, pairs, json_output)
+    """
+    # Extract text boxes
+    boxes = extract_text_from_image_with_boxes(image_path)
+
+    # Group into paragraphs
+    paragraphs = group_boxes_into_paragraphs(boxes)
+
+    # TODO: Implement prompt/response identification
+    # For now, use dummy data
+    prompt_paragraphs = []  # Will be filled with actual prompt indices
+    response_paragraphs = []  # Will be filled with actual response indices
+
+    # Identify pairs
+    pairs = identify_prompt_response_pairs(
+        paragraphs, prompt_paragraphs, response_paragraphs)
+
+    # Create JSON output
+    json_output = create_json_output(
+        paragraphs, prompt_paragraphs, response_paragraphs, pairs)
+
+    # Create visualization
+    vis_path = create_visual_debug_overlay(
+        image_path,
+        boxes,
+        [line for para in paragraphs for line in para['lines']],
+        paragraphs,
+        prompt_paragraphs,
+        response_paragraphs,
+        pairs
+    )
+
+    print(f"Created visualization: {vis_path}")
+
+    return paragraphs, prompt_paragraphs, response_paragraphs, pairs, json_output
 
 
 def scroll_to_target_precise(device, width, height, target_abs_y, target_height):
@@ -369,7 +520,7 @@ def run_bumble_automation(device, width, height):
 
         # Generate and send comment
         if all_profile_text:
-            comment = generate_comment(all_profile_text)
+            comment = generate_joke_from_json(all_profile_text)
             if comment and comment.strip():
                 # Scroll back to top before clicking heart
                 print("Scrolling back to top...")
@@ -659,12 +810,17 @@ def process_profile_hinge(device, width, height, profile_count):
         print(f"  {paragraph['text']}")
     print("--- End Grouped Paragraphs ---\n")
 
-    # Combine paragraphs into text for AI
-    ai_input_text = "\n\n".join(p['text'] for p in paragraphs)
+    # Process paragraphs into JSON structure
+    prompt_paragraphs = []  # TODO: Implement prompt identification
+    response_paragraphs = []  # TODO: Implement response identification
+    pairs = identify_prompt_response_pairs(
+        paragraphs, prompt_paragraphs, response_paragraphs)
+    json_output = create_json_output(
+        paragraphs, prompt_paragraphs, response_paragraphs, pairs)
 
-    print("\n--- Text Sent to AI ---")
-    print(ai_input_text)
-    print("--- End Text Sent to AI ---\n")
+    print("\n--- JSON Structure ---")
+    print(json.dumps(json_output, indent=2))
+    print("--- End JSON Structure ---\n")
 
     if not paragraphs:
         print("ERROR: No paragraphs found on profile after all scrolls. Sending dislike.")
@@ -672,7 +828,7 @@ def process_profile_hinge(device, width, height, profile_count):
         return True
 
     # --- Get Comment & Target Prompt from AI ---
-    comment, target_prompt_text = generate_comment_with_target(ai_input_text)
+    target_prompt_text, comment = generate_joke_from_json(json_output)
 
     if not comment or not target_prompt_text:
         print("ERROR: AI did not generate a comment or identify a target prompt. Sending dislike.")
@@ -719,43 +875,7 @@ def process_profile_hinge(device, width, height, profile_count):
               f"anywhere on the profile after scanning (threshold: {MATCH_THRESHOLD}). "
               f"Cannot proceed with comment interaction. Falling back to center tap like.")
         send_like_center_tap(device, width, height)
-
-        # Continue with comment workflow
-        print("Continuing with comment workflow...")
-        # Tap the "Add a comment" box
-        x_comment_box = int(width * 0.5)
-        y_comment_box = int(height * 0.78)
-        print(f"Tapping comment box at: ({x_comment_box}, {y_comment_box})")
-        tap(device, x_comment_box, y_comment_box)
-        time.sleep(2.5)  # Wait for keyboard to appear
-
-        # Clear any existing text
-        device.shell("input keyevent KEYCODE_CTRL_A")
-        time.sleep(0.8)  # Wait for selection
-        device.shell("input keyevent KEYCODE_DEL")
-        time.sleep(0.8)  # Wait for deletion
-
-        print("Typing comment character by character...")
-        # Type the comment character by character
-        for char in comment:
-            # Use input text for each character
-            device.shell(f"input text '{char}'")
-            time.sleep(0.1)  # Small delay between characters
-
-        time.sleep(1.5)  # Wait for text to be fully entered
-
-        # Close the keyboard
-        device.shell("input keyevent 4")  # KEYCODE_BACK
-        time.sleep(1.5)  # Wait for keyboard to close
-
-        # Tap the "Send Like" button
-        send_button_x = int(width * 0.5)
-        send_button_y = int(height * 0.85)
-        print(f"Tapping Send button at: ({send_button_x}, {send_button_y})")
-        tap(device, send_button_x, send_button_y)
-        time.sleep(5)  # Wait for the like to be sent
-
-        return True  # Move to next profile
+        return True
 
     # --- Find and Click Target Prompt ---
     print(
@@ -763,43 +883,7 @@ def process_profile_hinge(device, width, height, profile_count):
     if not find_and_click_prompt(device, target_prompt_text, paragraphs, width, height):
         print("Failed to find and click prompt, falling back to center tap like")
         send_like_center_tap(device, width, height)
-
-        # Continue with comment workflow
-        print("Continuing with comment workflow...")
-        # Tap the "Add a comment" box
-        x_comment_box = int(width * 0.5)
-        y_comment_box = int(height * 0.78)
-        print(f"Tapping comment box at: ({x_comment_box}, {y_comment_box})")
-        tap(device, x_comment_box, y_comment_box)
-        time.sleep(2.5)  # Wait for keyboard to appear
-
-        # Clear any existing text
-        device.shell("input keyevent KEYCODE_CTRL_A")
-        time.sleep(0.8)  # Wait for selection
-        device.shell("input keyevent KEYCODE_DEL")
-        time.sleep(0.8)  # Wait for deletion
-
-        print("Typing comment character by character...")
-        # Type the comment character by character
-        for char in comment:
-            # Use input text for each character
-            device.shell(f"input text '{char}'")
-            time.sleep(0.1)  # Small delay between characters
-
-        time.sleep(1.5)  # Wait for text to be fully entered
-
-        # Close the keyboard
-        device.shell("input keyevent 4")  # KEYCODE_BACK
-        time.sleep(1.5)  # Wait for keyboard to close
-
-        # Tap the "Send Like" button
-        send_button_x = int(width * 0.5)
-        send_button_y = int(height * 0.85)
-        print(f"Tapping Send button at: ({send_button_x}, {send_button_y})")
-        tap(device, send_button_x, send_button_y)
-        time.sleep(5)  # Wait for the like to be sent
-
-        return True  # Move to next profile
+        return True
 
     time.sleep(1.5)  # Wait for prompt interaction
 
@@ -839,6 +923,66 @@ def process_profile_hinge(device, width, height, profile_count):
 
     print(f"Profile #{profile_count} processed successfully!")
     return True
+
+
+def create_json_output(paragraphs, prompt_paragraphs, response_paragraphs, pairs):
+    """Create JSON output structure for prompts and responses.
+
+    Args:
+        paragraphs: List of paragraphs with text and spatial_info
+        prompt_paragraphs: List of paragraph indices that are prompts
+        response_paragraphs: List of paragraph indices that are responses
+        pairs: List of (prompt_idx, response_idx) tuples for valid pairs
+
+    Returns:
+        List of objects with prompt and response keys, where:
+        - Both keys have values for pairs
+        - Only prompt has value for standalone prompts
+        - Only response has value for standalone responses
+    """
+    # Track used paragraphs to prevent double-counting
+    used_paragraphs = set()
+    json_output = []
+
+    # First, add all pairs
+    for prompt_idx, response_idx in pairs:
+        prompt_text = paragraphs[prompt_idx]['text']
+        response_text = paragraphs[response_idx]['text']
+        json_output.append({
+            "prompt": prompt_text,
+            "response": response_text
+        })
+        used_paragraphs.add(prompt_idx)
+        used_paragraphs.add(response_idx)
+
+    # Then add standalone prompts
+    for prompt_idx in prompt_paragraphs:
+        if prompt_idx not in used_paragraphs:
+            prompt_text = paragraphs[prompt_idx]['text']
+            json_output.append({
+                "prompt": prompt_text,
+                "response": None
+            })
+            used_paragraphs.add(prompt_idx)
+
+    # Finally add standalone responses
+    for response_idx in response_paragraphs:
+        if response_idx not in used_paragraphs:
+            response_text = paragraphs[response_idx]['text']
+            json_output.append({
+                "prompt": None,
+                "response": response_text
+            })
+            used_paragraphs.add(response_idx)
+
+    # Sort by vertical position
+    json_output.sort(key=lambda x:
+                     paragraphs[prompt_paragraphs[0]]['spatial_info']['center'][1] if x['prompt'] else
+                     paragraphs[response_paragraphs[0]
+                                ]['spatial_info']['center'][1] if x['response'] else 0
+                     )
+
+    return json_output
 
 
 def main():

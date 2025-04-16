@@ -1,0 +1,469 @@
+Hinge Dating App Automation Bot - Development Outline
+
+This document outlines the development of a Hinge dating app automation bot. Each section is divided into three parts:
+1. Goals - High-level feature requirements, focusing on WHAT needs to be done
+2. Currently Implemented - Specific implementation details in logical order, focusing on HOW it's done
+3. Left to Do - Missing implementation details and improvements needed
+
+1. Profile Text Collection:
+   Goals:
+   - Capture all text content from a profile
+   - Ensure no content is missed during capture
+   - Maintain proper sequence of content
+
+   Currently Implemented:
+   1. Initial Setup:
+      * Connect to device via ADB
+      * Get screen resolution:
+        - Command: device.shell("wm size")
+        - Parse output for width and height
+      * Calculate scroll parameters:
+        - Scroll distance: 70% of screen height (int(height * 0.7))
+        - Scroll start point: 70% from top (int(height * 0.7))
+        - Scroll end point: 10% from top (int(height * 0.1))
+        - Scroll duration: 800ms
+   
+   2. Screenshot Capture:
+      * Initial screenshot:
+        - Command: adb shell screencap -p /sdcard/screenshot.png
+        - Pull command: adb pull /sdcard/screenshot.png
+        - Save as: profile_{count}_part1.png
+      * OCR processing:
+        - Using pytesseract with config '--psm 6'
+        - Confidence threshold: 40
+        - Extract text with bounding boxes
+   
+   3. Scrolling Process:
+      * Perform up to 7 scrolls:
+        1. Scroll command:
+           - device.shell(f"input swipe {x_scroll} {y_scroll_start} {x_scroll} {y_scroll_end} 1500")
+           - x_scroll: int(width * 0.5)
+           - y_scroll_start: int(height * 0.75)
+           - y_scroll_end: int(height * 0.08)
+        2. Wait 800ms for scroll completion
+        3. Take screenshot:
+           - Save as profile_{count}_part{i+2}.png
+           - Follow same OCR process
+        4. Wait 0.8s before next scroll
+   
+   4. Text Extraction:
+      * For each screenshot:
+        - Process with pytesseract
+        - Extract text with bounding boxes:
+          * Format: {'text': str, 'box': (x, y, w, h), 'conf': int}
+        - Filter by confidence threshold (40)
+        - Track text sequence
+        - Maintain spatial relationships
+
+   Left to Do:
+   - Implement adaptive timing based on device performance
+   - Add screenshot quality verification
+   - Create OCR retry mechanism with different PSM modes
+   - Implement parallel processing for OCR tasks
+
+2. Text Organization:
+   Goals:
+   - Group related text elements together
+   - Maintain logical flow of content
+   - Preserve relationship between prompts and responses
+   - Distinguish between Hinge prompts and user responses
+   - Identify prompt-response pairs for better AI understanding
+   - Tag paragraphs as either prompt or response
+   - Create pair structure for prompt-response relationships
+   - Generate structured JSON output for AI processing
+
+   Currently Implemented:
+   1. Box Processing:
+      * Sort boxes spatially:
+        - Primary sort by vertical position
+        - Secondary sort by horizontal position
+      * Filter based on confidence
+      * Maintain box metadata for spatial relationships
+   
+   2. Line Detection:
+      * Group boxes into lines using vertical proximity
+      * Calculate line baselines for consistent ordering
+      * Sort lines vertically to maintain reading order
+   
+   3. Paragraph Formation:
+      * Group lines into paragraphs using horizontal alignment
+      * Combine text while preserving spatial relationships
+      * Track paragraph boundaries for content separation
+   
+   4. Structure Creation:
+      * Create hierarchical structure:
+        - Boxes → Lines → Paragraphs
+      * Maintain spatial relationships throughout hierarchy
+      * Preserve original content ordering
+
+   5. Prompt Database Integration:
+      * Load known prompts from prompts.txt
+      * Create efficient lookup structure
+      * Implement fuzzy matching for prompt recognition
+
+   Left to Do:
+   - Implement JSON output structure:
+     * Unified format for all content:
+       - List of objects, each with two keys:
+         * "prompt": string or null
+         * "response": string or null
+     * Content types:
+       - Pairs: Both "prompt" and "response" have values
+       - Standalone prompts: Only "prompt" has value, "response" is null
+       - Standalone responses: Only "response" has value, "prompt" is null
+     * Ordering:
+       - Maintain vertical position order
+       - Preserve original sequence for same-height content
+     * Example structure:
+       [
+         {"prompt": "What's your favorite travel memory?", "response": "Backpacking through Thailand..."},
+         {"prompt": "Two truths and a lie", "response": null},
+         {"prompt": null, "response": "I once met a celebrity..."}
+       ]
+
+   - Implement prompt identification system:
+     * Load and parse prompts.txt:
+       - Read file line by line
+       - Skip header line
+       - Extract prompt text from numbered lines
+       - Store in list for quick access
+     * Create efficient prompt matching:
+       - Pre-process prompts (lowercase, remove numbers, strip whitespace)
+       - Create lookup structure for quick comparison
+       - Implement fuzzy matching with difflib.SequenceMatcher
+       - Set similarity threshold (e.g., 0.8) for prompt matching
+     * Tag paragraphs:
+       - For each paragraph:
+         * Compare text with known prompts
+         * If match found above threshold:
+           - Tag as prompt
+           - Store prompt index
+           - Replace OCR-captured text with exact prompt text from database for AI processing
+         * If no match found:
+           - Tag as response
+       - Maintain lists of prompt and response indices
+     * Handle edge cases:
+       - Partial prompt matches
+       - Multi-line prompts
+       - Prompts with special characters
+       - Empty or invalid paragraphs
+
+   - Implement prompt-response pairing:
+     * Sort paragraphs by vertical position:
+       - Use spatial_info center y-coordinate
+       - Maintain original order for paragraphs at same height
+     * Create pairs:
+       - For each prompt:
+         * Find closest response below it
+         * Check vertical distance (max 50 pixels)
+         * Prevent double-pairing of responses
+     * Validate pairs:
+       - Ensure response is below prompt
+       - Verify reasonable spacing
+       - Check for overlapping pairs
+     * Handle edge cases:
+       - Multiple responses to same prompt
+       - Prompts without responses
+       - Responses without prompts
+
+   - Implement visualization system:
+     * Create visual debugging overlay:
+       - For each text box:
+         * Draw gray rectangle around box boundaries
+         * Include text content inside box
+       - For each line (group of boxes):
+         * Draw red rectangle around entire line
+         * Ensure line box encompasses all text boxes in line
+       - For each paragraph:
+         * Draw green rectangle around entire paragraph
+         * Ensure paragraph box encompasses all lines in paragraph
+       - For prompt paragraphs:
+         * Draw blue circle at paragraph center
+         * Circle radius: 10 pixels
+       - For response paragraphs:
+         * Draw red circle at paragraph center
+         * Circle radius: 10 pixels
+       - For prompt-response pairs:
+         * Draw purple rectangle around both paragraphs
+         * Include 5 pixel padding around both paragraphs
+     * Save visualization:
+       - Create new image for each screenshot
+       - Draw all visual elements on top of original screenshot
+       - Save as: profile_{count}_visual_{part}.png
+       - Save in same directory as original screenshots
+     * Visualization controls:
+       - Toggle individual layers (boxes, lines, paragraphs, etc.)
+       - Adjust opacity of overlay elements
+       - Save visualization at any processing stage
+   - Add real-time visualization for debugging:
+     * Show box grouping process
+     * Display confidence scores
+     * Highlight problematic detections
+
+3. AI Interaction:
+   Goals:
+   - Generate engaging responses to profile content
+   - Select appropriate prompts to respond to
+   - Maintain conversation context
+   - Process structured JSON input
+
+   Currently Implemented:
+   1. Text Preparation:
+      * Combine paragraphs:
+        - Join with "\n\n" separator
+        - Preserve original order
+      * Format for AI:
+        - Add context markers
+        - Include system message
+      * System message:
+        - "You are a highly capable, thoughtful, and precise writer."
+        - "You want to hold a conversation with a woman on an online dating app."
+   
+   2. AI Request:
+      * OpenAI configuration:
+        - Model: gpt-4.5-preview
+        - Temperature: 1.0
+        - Max tokens: 4096
+      * Prompt structure:
+        - System role message
+        - User role message with profile text
+        - Step-by-step instructions for response
+   
+   3. Response Processing:
+      * Split response:
+        - Look for "[Personal Statement]" marker
+        - Look for "[Funny Response]" marker
+      * Extract components:
+        - Target prompt text
+        - Comment text
+      * Validation:
+        - Check for empty responses
+        - Verify format
+        - Ensure both components present
+
+   Left to Do:
+   - Update AI input processing:
+     * Modify system message to handle JSON input
+     * Add instructions for processing tagged content
+     * Maintain simple two-part output format:
+       - [Personal Statement] for prompt to find
+       - [Funny Response] for message to type
+
+4. Prompt Finding and Interaction:
+   Goals:
+   - Locate and interact with specific prompts
+   - Complete the interaction
+
+   Currently Implemented:
+   1. Initial Search:
+      * Check existing paragraphs:
+        - Use difflib.SequenceMatcher
+        - Similarity threshold: 0.4
+        - Case-insensitive comparison
+      * Match validation:
+        - Only proceed if ratio >= 0.4
+        - Store best matching paragraph
+   
+   2. Scroll Preparation:
+      * Scroll to top:
+        - 5 rapid scrolls
+        - Duration: 300ms per scroll
+        - Center x-coordinate: width * 0.5
+        - Start y: height * 0.2
+        - End y: height * 0.8
+      * Wait time: 1s after reaching top
+   
+   3. Search Process:
+      * Take screenshots while scrolling:
+        1. Scroll parameters:
+           - Distance: 70% of screen height
+           - Duration: 800ms
+           - Start: height * 0.7
+           - End: height * 0.1
+        2. Wait 800ms
+        3. Take screenshot
+        4. Wait 0.8s
+      * Process each screenshot:
+        1. Extract text boxes
+        2. Group into lines/paragraphs
+        3. Check similarity:
+           - Use same 0.4 threshold
+           - Compare with target prompt
+   
+   4. Prompt Interaction:
+      * When match found:
+        1. Get first box:
+           - Coordinates: (box[0], box[1] + box[3])
+           - Bottom-left corner
+        2. Double-tap:
+           - 50ms between taps
+           - device.shell(f"input tap {x} {y}")
+        3. Wait 1s for prompt to open
+      * Send interaction:
+        1. Tap send button:
+           - x: width * 0.5
+           - y: height * 0.85
+        2. Wait 5s for completion
+
+   Left to Do:
+   - Add UI element position verification:
+     * Verify prompt position before interaction
+     * Check for UI changes that might affect tap accuracy
+   - Add interaction success verification:
+     * Verify prompt opens after tap
+     * Check for successful text input
+     * Confirm send button appears
+
+5. Joke Input:
+   Goals:
+   - Input the generated joke exactly as intended
+   - Ensure reliable text entry
+   - Handle special characters correctly
+
+   Currently Implemented:
+   1. Text Preparation:
+      * Character escaping:
+        - Space: "%s"
+        - Quotes: "\""
+        - Parentheses: "\(", "\)"
+        - Dashes: "\-", "\—", "\–", "\−", "\‐", "\‑", "\‒", "\―", "\﹘"
+        - Semicolons: "\;", "\；", "\﹔"
+      * Command preparation:
+        - Wrap in single quotes
+        - Handle special shell characters
+   
+   2. Input Process:
+      * For each character:
+        1. Send via ADB:
+           - device.shell(f"input text '{char}'")
+        2. Wait 100ms
+        3. Handle special cases:
+           - Space: "%s"
+           - Quotes: escape
+        4. Verify input
+   
+   3. Error Handling:
+      * Detection:
+        - Failed input attempts
+        - Invalid characters
+      * Recovery:
+        - Retry mechanism
+        - Fallback to alternative methods
+      * Timing:
+        - Adjust delays based on success
+        - Implement progressive backoff
+
+   Left to Do:
+   - Add input verification:
+     * Check if text was actually entered
+     * Verify against expected input
+     * Retry if verification fails
+
+6. Error Handling:
+   Goals:
+   - Recover from failed operations
+   - Maintain bot operation
+   - Track and report issues
+
+   Currently Implemented:
+   1. Detection:
+      * OCR checks:
+        - Confidence < 40
+        - Empty text detection
+      * AI validation:
+        - Empty responses
+        - Invalid format
+      * Profile end:
+        - Text match: "You've seen everyone for now"
+        - Counter >= 40
+   
+   2. Recovery:
+      * Center-tap fallback:
+        - x: width * 0.5
+        - y: height * 0.5
+        - Wait 1s after fallback
+      * Profile skip:
+        - Increment counter
+        - Log failure
+      * Retry logic:
+        - Maximum 3 attempts
+        - Progressive delays
+   
+   3. State Management:
+      * Track state:
+        - Current profile number
+        - Like/dislike counts
+        - Comment success/failure
+      * Validation:
+        - Check operation success
+        - Verify state consistency
+        - Maintain counters
+
+   Left to Do:
+   - Implement comprehensive logging system:
+     * Log all major operations
+     * Track success/failure rates
+     * Record timing information
+   - Add error recovery strategies:
+     * Handle common failure modes
+     * Implement automatic retry logic
+     * Skip problematic profiles
+
+7. Profile Processing:
+   Goals:
+   - Process multiple profiles efficiently
+   - Maintain engagement patterns
+   - Track progress
+
+   Currently Implemented:
+   1. Initialization:
+      * Set counters:
+        - Profile counter: 0
+        - Like count: 0
+        - Dislike count: 0
+        - Comment count: 0
+      * Set limits:
+        - Maximum profiles: 40
+        - First two profiles: comment required
+   
+   2. Profile Loop:
+      * First two profiles:
+        1. Process with comments
+        2. Track success
+        3. Increment counters
+      * Remaining profiles:
+        1. Like/dislike pattern:
+           - 4-8 likes
+           - Then 1 dislike
+           - Random selection within range
+        2. Track counts:
+           - Update like/dislike totals
+           - Monitor success rate
+   
+   3. Completion Check:
+      * Profile limit:
+        - Check counter >= 40
+      * End detection:
+        - Text match: "You've seen everyone for now"
+      * Validation:
+        - Verify operation success
+        - Check counter consistency
+        - Validate final state
+
+   Left to Do:
+   - Implement state persistence:
+     * Save progress between runs
+     * Track processed profiles
+     * Maintain engagement patterns
+   - Add pause/resume functionality:
+     * Allow graceful interruption
+     * Save current state
+     * Resume from last position
+
+Technical Requirements:
+- Use Python
+- Use ADB for device interaction
+- Use OCR for text extraction
+- Implement text similarity matching
+- Handle UI interactions with proper timing
+- Include comprehensive error handling
