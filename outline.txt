@@ -1,21 +1,13 @@
 Hinge Dating App Automation Bot - Development Outline
 
 Current Focus:
-- Context File Integration:
-  * Three primary context files:
-    - format.txt: Explains screenshot structure and element positioning
-    - captions.txt: Database of possible image captions
-    - prompts.txt: Database of all possible Hinge prompts
-  * Visual debugging of text capture and grouping:
-    - Text box boundaries and content
-    - Line groupings
-    - Paragraph formations
-    - Prompt and response identification
-    - Prompt-response pair relationships
-  * Save visualizations to desktop for easy review
-  * Use color coding to distinguish different elements
-  * Include confidence scores and grouping decisions
-  * Make visualizations available for each processing stage
+- Testing and Validation:
+  * Run the program and collect screenshots
+  * Validate joke generation quality and relevance
+  * Verify prompt/response extraction from screenshots
+  * Test OCR accuracy for prompt/response detection
+  * Monitor fuzzy matching success rate
+  * Document any issues or improvements needed
 
 1. Profile Loading and Initial Screenshot Capture:
    Goals:
@@ -34,6 +26,8 @@ Current Focus:
       * 8 scrolls with screenshots
       * Save as profile_{count}_part{i}.png
       * OCR processing with pytesseract
+      * Visual debugging overlays for each screenshot
+      * Color-coded visualization of text elements
 
    Left to Do:
    - Implement adaptive timing based on device performance
@@ -48,99 +42,112 @@ Current Focus:
 
    Currently Implemented:
    1. Context Files:
-      * format.txt:
-        - Detailed explanation of screenshot structure
-        - Element positioning and relationships
-        - Visual hierarchy of profile components
-      * captions.txt:
-        - Database of possible image captions
-        - Common photo descriptions
-        - Caption patterns and variations
-      * prompts.txt:
-        - Complete list of Hinge prompts
-        - Prompt categories and types
-        - Standard prompt formats
+      * format.txt: Profile structure guide
+      * prompts.txt: Available prompts database
+      * captions.txt: Photo captions database
    
-   2. Text Processing:
-      * Extract text from screenshots
-      * Combine into full profile text
-      * Match against known prompts and captions
-      * Format for AI processing
-   
-   3. AI Integration:
-      * Anthropic Cloud configuration
-      * Context provision:
-        - Pass all three context files
-        - Include processed screenshots
-        - Provide engineer's custom prompt
-      * Generate:
-        - Contextually relevant joke
-        - Appropriate target prompt
-        - Response format matching Hinge style
+   2. AI Integration:
+      * System prompt with structural information
+      * User prompt for specific analysis
+      * Returns JSON with prompt, response, and joke
+      * Confidence scoring for matches
 
-   Left to Do:
-   - Finalize engineer's custom prompt for joke generation
-   - Implement context file validation
-   - Add error handling for API rate limits
-   - Create response quality verification
+   Expected Output Structure:
+   {
+     "prompt": "The exact prompt text to match",
+     "response": "The user's response to the prompt",
+     "joke": "The generated joke"
+   }
 
 3. Prompt Location and Response:
    Goals:
    - Find target prompt on screen
    - Input generated response
    - Send response
+   - Create clear visual debugging for text detection
+   - Show hierarchical text organization
+   - Make OCR results easily reviewable
 
    Currently Implemented:
-   1. Text Organization:
-      * Extract text with bounding boxes
-      * Group into lines and paragraphs
-      * Identify prompts and responses
-   
-   2. Prompt Finding:
-      * Scroll to top
-      * Take new screenshots
-      * Process with OCR
-      * Match target prompt
-   
-   3. Response Input:
-      * Prepare text for input
-      * Handle special characters
+   1. Fuzzy Prompt Matching:
+      * Input: Target prompt and response text from joke generator
+      * Process:
+        - Extract all text from current screen using OCR
+        - For each potential match:
+          a) Try substring match (needle in haystack)
+          b) Try reverse substring match (haystack in needle)
+          c) Use ratio-based fuzzy matching with difflib
+        - Select best match above threshold (0.8)
+      * Output:
+        - Coordinates of matched element (prompt or response)
+        - Confidence score
+        - Matched text for verification
+
+   2. Response Input:
+      * Verify prompt/response match before proceeding
+      * Double-click matched element location
+      * Type joke character by character with 100ms delay
       * Send response
+      * Fallback to center image tap if no match found
+
+   3. OCR Visualization:
+      * Text Box Visualization:
+        - Draw gray rectangles around each detected text box
+        - Include the actual text content inside each box
+        - Box coordinates from pytesseract OCR output
+        - Text color matches box outline for clarity
+      
+      * Line Grouping Visualization:
+        - Group text boxes into lines based on vertical alignment
+        - Draw red rectangles around each line
+        - Line boundaries calculated from contained boxes
+        - Ensures all text boxes in a line are fully enclosed
+      
+      * Paragraph Visualization:
+        - Group lines into paragraphs based on spacing
+        - Draw green rectangles around each paragraph
+        - Paragraph boundaries calculated from contained lines
+        - Includes all text boxes and lines in the group
+      
+      * Visual Debugging Features:
+        - Save visualizations for each processing stage:
+          * Original screenshot with overlays
+          * Separate visualization for each scroll
+          * Naming convention: profile_{count}_visual_{part}.png
+        - Color coding:
+          * Gray: Individual text boxes
+          * Red: Line groupings
+          * Green: Paragraph boundaries
+        - Overlay transparency for readability
+        - Text labels for content verification
+      
+      * Implementation Details:
+        - Using PIL (Python Imaging Library) for drawing
+        - ImageDraw module for shapes and text
+        - Original screenshot as base layer
+        - Overlay elements drawn in sequence:
+          1. Text boxes (gray)
+          2. Line groupings (red)
+          3. Paragraph boundaries (green)
+        - Text content drawn last for visibility
+        - Automatic path generation for saving
 
    Left to Do:
-   - Implement visualization system:
-     * Create visual debugging overlay:
-       - For each text box:
-         * Draw gray rectangle around box boundaries
-         * Include text content inside box
-       - For each line (group of boxes):
-         * Draw red rectangle around entire line
-         * Ensure line box encompasses all text boxes in line
-       - For each paragraph:
-         * Draw green rectangle around entire paragraph
-         * Ensure paragraph box encompasses all lines in paragraph
-       - For prompt paragraphs:
-         * Draw blue circle at paragraph center
-         * Circle radius: 10 pixels
-       - For response paragraphs:
-         * Draw red circle at paragraph center
-         * Circle radius: 10 pixels
-       - For prompt-response pairs:
-         * Draw purple rectangle around both paragraphs
-         * Include 5 pixel padding around both paragraphs
-     * Save visualization:
-       - Create new image for each screenshot
-       - Draw all visual elements on top of original screenshot
-       - Save as: profile_{count}_visual_{part}.png
-       - Save in same directory as original screenshots
-     * Visualization controls:
-       - Toggle individual layers (boxes, lines, paragraphs, etc.)
-       - Adjust opacity of overlay elements
-       - Save visualization at any processing stage
    - Add real-time visualization for debugging:
      * Show box grouping process
      * Display confidence scores
      * Highlight problematic detections
+   - Implement comprehensive error handling:
+     * Handle multiple potential matches
+     * Handle low confidence matches
+     * Retry with different scroll positions
+     * Fall back to exact matching if needed
+   - Enhance OCR Visualization:
+     * Add confidence score visualization
+     * Implement layer toggling
+     * Add zoom functionality for detailed inspection
+     * Create comparison view between original and processed
+     * Add metrics overlay (OCR confidence, match scores)
 
 4. Error Handling:
    Goals:
@@ -153,17 +160,15 @@ Current Focus:
       * OCR failure detection
       * API error handling
       * Input verification
+      * Fallback mechanisms for no matches
    
    2. Recovery:
-      * Retry mechanisms
-      * Profile skipping
-      * State management
+      * Retry mechanisms for text input
+      * Profile skipping on critical failures
+      * State management for profile processing
 
    Left to Do:
-   - Implement comprehensive logging system:
-     * Log all major operations
-     * Track success/failure rates
-   - Add error recovery strategies:
-     * Handle common failure modes
-     * Implement automatic retry logic
-     * Skip problematic profiles
+   - Implement comprehensive logging system
+   - Add detailed error recovery strategies
+   - Handle prompt matching failures with more granularity
+   - Add performance metrics tracking

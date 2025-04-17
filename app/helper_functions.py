@@ -1,12 +1,13 @@
 from ppadb.client import Client as AdbClient
 import time
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 import pytesseract
 import anthropic
 from dotenv import load_dotenv
 import os
 import json
 from config import ANTHROPIC_API_KEY
+import difflib
 
 load_dotenv()
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
@@ -106,7 +107,12 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
         captions_txt_path: Path to captions.txt containing possible captions
 
     Returns:
-        dict: Contains selected prompt and generated joke response
+        dict: Contains the prompt-response pair and generated joke:
+        {
+            "prompt": str,      # The prompt text being responded to
+            "response": str,    # The user's response to the prompt
+            "joke": str        # The generated joke
+        }
     """
     # Read the content of our context files
     try:
@@ -141,8 +147,12 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
             return None
 
     # System prompt containing all the structural information
-    system_prompt = f"""You are a witty and observant dating app assistant. You analyze Hinge dating profiles and generate clever, respectful jokes in response to profile prompts.
+    system_prompt = f"""You are a witty and observant dating app assistant. Your task is to analyze Hinge dating profiles and generate clever jokes that continue the conversation based on the woman's existing response. Each joke should balance three key elements equally:
+1. Flattery - making the woman feel appreciated and seen
+2. Humor - creating something genuinely funny and engaging
+3. Flirtation - adding a playful, romantic element
 
+You have access to the following information:
 PROFILE STRUCTURE INFORMATION:
 {format_content}
 
@@ -152,51 +162,77 @@ AVAILABLE PROMPTS:
 AVAILABLE PHOTO CAPTIONS:
 {captions_content}
 
-Your role is to:
-1. Understand profile content using the provided format structure in PROFILE STRUCTURE INFORMATION
-2. Recognize prompts and captions from the provided lists in AVAILABLE PROMPTS and AVAILABLE PHOTO CAPTIONS
-3. Generate appropriate jokes that are:
-   - Contextually relevant
-   - Respectful and appropriate
-   - Clever and original
-   - Concise (1-2 sentences)
+Your process has two distinct steps:
 
-Always return your response in JSON format:
-{{
-    "selected_prompt": "The exact prompt you're responding to",
-    "joke_response": "Your generated joke response"
-}}"""
-
-    # User message focusing only on the analysis and joke generation steps
-    user_message = """Analyze these profile screenshots and generate an appropriate joke response by:
-
-1. Extract profile information:
-   - Name, photos, prompts, responses, and profile details
-   - Remember to check for content split across screenshots
-
-2. Analyze personality through three lenses:
-   a) Activities and Time Investment
-      - What activities does she engage in?
+STEP A: UNDERSTAND THE PROFILE
+1. Analyze the profile structure using the provided format information in PROFILE STRUCTURE INFORMATION
+2. Identify all profile elements:
+   - Photos and their captions (see AVAILABLE PHOTO CAPTIONS)
+   - Prompts and responses (see AVAILABLE PROMPTS)
+   - Profile Information (see PROFILE STRUCTURE INFORMATION)
+3. Build a comprehensive understanding of the woman's personality through:
+   a) Activities and Interests
+      - What does she enjoy doing?
       - How does she spend her time?
+      - What are her hobbies?
    
    b) Intellectual Framework
-      - What are her thought patterns?
-      - How does she make decisions?
+      - How does she think?
       - What opinions does she express?
+      - What values does she show?
    
-   c) Values and Priorities
-      - What matters to her?
-      - What brings her joy?
-      - What is she seeking?
+   c) Communication Style
+      - How does she express herself?
+      - What tone does she use?
+      - What kind of humor does she show?
 
-3. Generate and evaluate jokes for each prompt, considering:
-   - Personality match
-   - Prompt relevance
-   - Humor quality
-   - Originality
-   - Appropriateness
+STEP B: GENERATE THE JOKE
+1. Identify all prompt-response pairs in the profile
+   - Use the format structure in PROFILE STRUCTURE INFORMATION to recognize prompts
+   - Match prompts with their corresponding responses
+   - Verify against the available prompts list which is the authoritative source for prompts
 
-4. Select and return the best joke."""
+2. For each prompt-response pair:
+   a) Analyze the context:
+      - What is she trying to convey with this prompt/response?
+      - What personality traits does it reveal?
+      - What values or interests does it highlight?
+   
+   b) Generate potential jokes that balance:
+      * Flattery: Show we've paid attention and highlight positive traits
+      * Humor: Create something genuinely funny and unexpected
+      * Flirtation: Add a playful, romantic element
+      * Keep jokes concise (1-2 sentences)
+   
+   c) Evaluate each joke by considering:
+      - How well it balances all three elements
+      - How natural and authentic it feels
+      - How it might make her feel
+      - How it could lead to further conversation
+
+3. For each joke, simulate the conversation:
+   - How would she feel receiving this joke?
+   - What elements (flattery, humor, flirtation) would stand out to her?
+   - How could this lead to an engaging back-and-forth?
+   - What might she say in response?
+
+4. Select the joke that:
+   - Feels most natural and authentic
+   - Would make her want to continue the conversation
+   - Has the most promising simulated conversation flow
+
+Your response must be in this JSON format:
+{{
+    "prompt": "The exact prompt text you're responding to",
+    "response": "The user's response to this prompt",
+    "joke": "Your generated joke to continue the conversation"
+}}"""
+
+    # User message - just the specific task
+    user_message = """Please analyze these profile screenshots and generate a joke that continues the conversation based on the woman's existing response. Remember to:
+1. First build your understanding of the woman's personality
+2. Then identify prompt-response pairs and generate jokes that balance flattery, humor, and flirtation
+3. Select the best joke based on simulated conversation flow"""
 
     # Create the message for Claude
     messages = [
@@ -228,14 +264,316 @@ Always return your response in JSON format:
             import json
             result = json.loads(response.content[0].text)
             return {
-                "selected_prompt": result.get("selected_prompt"),
-                "joke_response": result.get("joke_response")
+                "prompt": result.get("prompt", ""),
+                "response": result.get("response", ""),
+                "joke": result.get("joke", "")
             }
         except json.JSONDecodeError:
             print("Error: Response was not in expected JSON format")
             print("Raw response:", response.content[0].text)
             return None
+        except (ValueError, TypeError) as e:
+            print(f"Error parsing response values: {e}")
+            return None
 
     except Exception as e:
         print(f"Error calling Claude API: {e}")
         return None
+
+
+def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, output_path=None):
+    """Create a visual debugging overlay showing text boxes, lines, and paragraphs.
+
+    Args:
+        image_path: Path to the original screenshot
+        boxes: List of text boxes with 'text' and 'box' fields
+        lines: Optional list of line groupings
+        paragraphs: Optional list of paragraph groupings
+        output_path: Optional path to save the visualization
+
+    Returns:
+        PIL Image object with the visualization overlay
+    """
+    # Load the original image
+    img = Image.open(image_path)
+    draw = ImageDraw.Draw(img)
+
+    # Create output path if not provided
+    if output_path is None:
+        base, ext = os.path.splitext(image_path)
+        output_path = f"{base}_visual{ext}"
+
+    # Draw text boxes (gray)
+    for box in boxes:
+        x, y, w, h = box['box']
+        # Draw box
+        draw.rectangle([x, y, x + w, y + h], outline='gray', width=2)
+        # Add text label
+        try:
+            font = ImageFont.truetype("Arial.ttf", 12)
+        except:
+            font = ImageFont.load_default()
+        draw.text((x, y - 15), box['text'], fill='gray', font=font)
+
+    # Draw lines (red)
+    if lines:
+        for line in lines:
+            # Find bounding box of line
+            min_x = min(box['box'][0] for box in line)
+            min_y = min(box['box'][1] for box in line)
+            max_x = max(box['box'][0] + box['box'][2] for box in line)
+            max_y = max(box['box'][1] + box['box'][3] for box in line)
+            draw.rectangle([min_x, min_y, max_x, max_y],
+                           outline='red', width=2)
+
+    # Draw paragraphs (green)
+    if paragraphs:
+        for para in paragraphs:
+            # Find bounding box of paragraph
+            min_x = min(box['box'][0] for box in para['boxes'])
+            min_y = min(box['box'][1] for box in para['boxes'])
+            max_x = max(box['box'][0] + box['box'][2] for box in para['boxes'])
+            max_y = max(box['box'][1] + box['box'][3] for box in para['boxes'])
+            draw.rectangle([min_x, min_y, max_x, max_y],
+                           outline='green', width=2)
+
+            # Add center point for prompts (blue) and responses (red)
+            center_x = (min_x + max_x) // 2
+            center_y = (min_y + max_y) // 2
+            if para.get('is_prompt', False):
+                draw.ellipse([center_x-10, center_y-10, center_x +
+                             10, center_y+10], outline='blue', width=2)
+            elif para.get('is_response', False):
+                draw.ellipse([center_x-10, center_y-10, center_x +
+                             10, center_y+10], outline='red', width=2)
+
+    # Save the visualization
+    img.save(output_path)
+    return img
+
+
+def group_boxes_into_lines(boxes, y_threshold=10):
+    """Group text boxes into lines based on vertical alignment.
+
+    Args:
+        boxes: List of text boxes with 'text' and 'box' fields
+        y_threshold: Maximum vertical distance for boxes to be on same line
+
+    Returns:
+        List of lines, where each line is a list of boxes
+    """
+    if not boxes:
+        return []
+
+    # Sort boxes by vertical position
+    sorted_boxes = sorted(boxes, key=lambda b: b['box'][1])
+
+    lines = []
+    current_line = []
+    current_y = None
+
+    for box in sorted_boxes:
+        box_y = box['box'][1]
+
+        if current_y is None:
+            current_y = box_y
+            current_line.append(box)
+        elif abs(box_y - current_y) <= y_threshold:
+            current_line.append(box)
+        else:
+            # Sort boxes in line by horizontal position
+            current_line.sort(key=lambda b: b['box'][0])
+            lines.append(current_line)
+            current_line = [box]
+            current_y = box_y
+
+    # Add the last line
+    if current_line:
+        current_line.sort(key=lambda b: b['box'][0])
+        lines.append(current_line)
+
+    return lines
+
+
+def group_lines_into_paragraphs(lines, paragraph_spacing=30):
+    """Group lines into paragraphs based on vertical spacing.
+
+    Args:
+        lines: List of lines, where each line is a list of boxes
+        paragraph_spacing: Minimum vertical distance between paragraphs
+
+    Returns:
+        List of paragraphs, where each paragraph contains:
+        - text: Combined text of all boxes
+        - boxes: List of all boxes in the paragraph
+        - lines: List of lines in the paragraph
+        - spatial_info: Metadata about the paragraph's position
+    """
+    if not lines:
+        return []
+
+    paragraphs = []
+    current_para = {
+        'text': '',
+        'boxes': [],
+        'lines': [],
+        'spatial_info': None
+    }
+    last_line_bottom = None
+
+    for line in lines:
+        # Get the bottom of this line
+        line_bottom = max(box['box'][1] + box['box'][3] for box in line)
+
+        if last_line_bottom is None:
+            # First line
+            last_line_bottom = line_bottom
+            current_para['lines'].append(line)
+            current_para['boxes'].extend(line)
+        elif line_bottom - last_line_bottom <= paragraph_spacing:
+            # Continue current paragraph
+            last_line_bottom = line_bottom
+            current_para['lines'].append(line)
+            current_para['boxes'].extend(line)
+        else:
+            # Start new paragraph
+            # Finalize current paragraph
+            current_para['text'] = ' '.join(
+                box['text'] for box in current_para['boxes'])
+            paragraphs.append(current_para)
+
+            # Start new paragraph
+            current_para = {
+                'text': '',
+                'boxes': line.copy(),
+                'lines': [line],
+                'spatial_info': None
+            }
+            last_line_bottom = line_bottom
+
+    # Add the last paragraph
+    if current_para['boxes']:
+        current_para['text'] = ' '.join(box['text']
+                                        for box in current_para['boxes'])
+        paragraphs.append(current_para)
+
+    return paragraphs
+
+
+def fuzzy_match_text(target_text, text_to_match, threshold=0.8):
+    """Perform fuzzy matching between two text strings.
+
+    Args:
+        target_text: The text we're looking for
+        text_to_match: The text we're comparing against
+        threshold: Minimum similarity ratio to consider a match (0.0 to 1.0)
+
+    Returns:
+        tuple: (is_match, similarity_ratio, matched_text)
+    """
+    # Convert to lowercase for case-insensitive matching
+    target_lower = target_text.lower()
+    match_lower = text_to_match.lower()
+
+    # Try different matching strategies
+    strategies = [
+        # Direct substring match
+        lambda t, m: (m in t, 1.0, m),
+        # Reverse substring match
+        lambda t, m: (t in m, 1.0, t),
+        # Sequence matcher ratio
+        lambda t, m: (True, difflib.SequenceMatcher(None, t, m).ratio(), m)
+    ]
+
+    best_ratio = 0.0
+    best_match = None
+
+    for strategy in strategies:
+        is_match, ratio, matched = strategy(target_lower, match_lower)
+        if ratio > best_ratio:
+            best_ratio = ratio
+            best_match = matched
+
+    return best_ratio >= threshold, best_ratio, best_match
+
+
+def identify_prompt_response_pairs(paragraphs, prompts_txt_path):
+    """Identify prompt-response pairs in the paragraphs.
+
+    Args:
+        paragraphs: List of paragraphs with text and spatial info
+        prompts_txt_path: Path to the prompts.txt file
+
+    Returns:
+        List of dictionaries containing:
+        - prompt: The prompt paragraph
+        - response: The response paragraph
+        - confidence: Match confidence
+    """
+    # Load available prompts
+    try:
+        with open(prompts_txt_path, 'r') as f:
+            available_prompts = [line.strip() for line in f if line.strip()]
+    except Exception as e:
+        print(f"Error reading prompts file: {e}")
+        return []
+
+    pairs = []
+    used_paragraphs = set()
+
+    # First pass: Try to match exact prompts
+    for i, para in enumerate(paragraphs):
+        if i in used_paragraphs:
+            continue
+
+        para_text = para['text']
+        for prompt in available_prompts:
+            is_match, ratio, matched = fuzzy_match_text(prompt, para_text)
+            if is_match:
+                # Found a prompt, look for response
+                for j in range(i + 1, len(paragraphs)):
+                    if j in used_paragraphs:
+                        continue
+
+                    response_para = paragraphs[j]
+                    # Check if this could be a response
+                    if response_para['spatial_info']['center'][1] > para['spatial_info']['center'][1]:
+                        pairs.append({
+                            'prompt': para,
+                            'response': response_para,
+                            'confidence': ratio
+                        })
+                        used_paragraphs.add(i)
+                        used_paragraphs.add(j)
+                        break
+                break
+
+    # Second pass: Try to match partial prompts with higher threshold
+    for i, para in enumerate(paragraphs):
+        if i in used_paragraphs:
+            continue
+
+        para_text = para['text']
+        for prompt in available_prompts:
+            is_match, ratio, matched = fuzzy_match_text(
+                prompt, para_text, threshold=0.9)
+            if is_match:
+                # Found a prompt, look for response
+                for j in range(i + 1, len(paragraphs)):
+                    if j in used_paragraphs:
+                        continue
+
+                    response_para = paragraphs[j]
+                    # Check if this could be a response
+                    if response_para['spatial_info']['center'][1] > para['spatial_info']['center'][1]:
+                        pairs.append({
+                            'prompt': para,
+                            'response': response_para,
+                            'confidence': ratio
+                        })
+                        used_paragraphs.add(i)
+                        used_paragraphs.add(j)
+                        break
+                break
+
+    return pairs

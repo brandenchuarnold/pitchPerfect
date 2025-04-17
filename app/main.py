@@ -19,9 +19,13 @@ from helper_functions import (
     get_screen_resolution,
     capture_screenshot,
     extract_text_from_image,
-    generate_joke_from_json,
+    extract_text_from_image_with_boxes,
+    generate_joke_from_screenshots,
     tap,
     create_visual_debug_overlay,
+    group_boxes_into_lines,
+    group_lines_into_paragraphs,
+    type_text_slow,
 )
 
 
@@ -29,10 +33,28 @@ def take_screenshot_and_extract_text(device, filename, profile_count, section_na
     """Take a screenshot and extract text from it"""
     screenshot_path = capture_screenshot(
         device, f"profile_{profile_count}_{filename}")
-    text = extract_text_from_image(screenshot_path).strip()
+
+    # Extract text and boxes
+    boxes = extract_text_from_image_with_boxes(screenshot_path)
+
+    # Group boxes into lines and paragraphs
+    lines = group_boxes_into_lines(boxes)
+    paragraphs = group_lines_into_paragraphs(lines)
+
+    # Create visualization
+    create_visual_debug_overlay(
+        screenshot_path,
+        boxes=boxes,
+        lines=lines,
+        paragraphs=paragraphs,
+        output_path=f"images/profile_{profile_count}_{filename}_visual.png"
+    )
+
+    # Extract plain text for processing
+    text = " ".join(box['text'] for box in boxes).strip()
     if text:
         print(f"Extracted text from {section_name} ({len(text)} chars)")
-    return text
+    return text, boxes, lines, paragraphs
 
 
 def scroll_profile_and_capture(device, width, height, profile_num, capture_screenshots=False):
@@ -191,32 +213,6 @@ def prepare_comment_for_input(comment):
 
     # Finally, wrap in single quotes to handle any remaining special characters
     return f"'{escaped}'"
-
-
-def extract_text_from_image_with_boxes(image_path):
-    """Extract text and bounding boxes from an image using OCR."""
-    try:
-        data = image_to_data(image_path, output_type='dict',
-                             config='--psm 6')  # Assume paragraphs/blocks
-        boxes = []
-        n_boxes = len(data['level'])
-        for i in range(n_boxes):
-            # level 5 is word, maybe filter by confidence or block level (level 2/3)?
-            # Let's aggregate words into lines or blocks if needed, or just use detected boxes.
-            # For now, let's take boxes with reasonable confidence and non-empty text.
-            conf = int(data['conf'][i])
-            text = data['text'][i].strip()
-            if conf > 40 and text:  # Confidence threshold (adjust as needed)
-                (x, y, w, h) = (data['left'][i], data['top']
-                                [i], data['width'][i], data['height'][i])
-                if w > 0 and h > 0:  # Ensure valid dimensions
-                    boxes.append(
-                        {'text': text, 'box': (x, y, w, h), 'conf': conf})
-        # TODO: Consider merging adjacent boxes for better prompt matching?
-        return boxes
-    except Exception as e:
-        print(f"Error during OCR: {e}")
-        return []
 
 
 def group_boxes_into_paragraphs(boxes, y_threshold=10, paragraph_spacing=30):
@@ -822,7 +818,16 @@ def process_profile_hinge(device, width, height, profile_count):
         return True
 
     # --- Get Comment & Target Prompt from AI ---
-    target_prompt_text, comment = generate_joke_from_json(json_output)
+    result = generate_joke_from_json(json_output)
+
+    if not result or not isinstance(result, dict):
+        print("ERROR: AI did not generate a valid response. Sending dislike.")
+        send_dislike_hinge(device, width, height)
+        return True
+
+    target_prompt = result.get('target_prompt', {})
+    target_prompt_text = target_prompt.get('text', '')
+    comment = result.get('joke_response', '')
 
     if not comment or not target_prompt_text:
         print("ERROR: AI did not generate a comment or identify a target prompt. Sending dislike.")
@@ -977,6 +982,237 @@ def create_json_output(paragraphs, prompt_paragraphs, response_paragraphs, pairs
                      )
 
     return json_output
+
+
+def generate_joke_from_json(json_output):
+    """
+    Generate a joke from the JSON output of a profile.
+
+    Args:
+        json_output (dict): The JSON output containing profile information
+
+    Returns:
+        dict: A dictionary containing:
+            - target_prompt (dict): The matched prompt with text and type
+            - joke_response (str): The generated joke/comment
+            - confidence (float): Confidence score for prompt matching
+    """
+    try:
+        screenshots = []
+        for paragraph in json_output.get('paragraphs', []):
+            screenshots.append({
+                'text': paragraph.get('text', ''),
+                'type': paragraph.get('type', '')
+            })
+
+        if not screenshots:
+            print("No screenshots found in JSON output")
+            return None
+
+        result = generate_joke_from_screenshots(
+            screenshots=screenshots,
+            format_txt_path='app/data/format.txt',
+            prompts_txt_path='app/data/prompts.txt',
+            captions_txt_path='app/data/captions.txt'
+        )
+
+        return result
+
+    except Exception as e:
+        print(f"Error generating joke from JSON: {str(e)}")
+        return None
+
+
+def scroll_and_search_prompt(device, width, height, target_prompt, target_response, prompts_txt_path, max_scrolls=8):
+    """Scroll through profile and search for target prompt or response.
+
+    Args:
+        device: ADB device
+        width: Screen width
+        height: Screen height
+        target_prompt: The prompt text to search for
+        target_response: The response text to search for
+        prompts_txt_path: Path to prompts.txt
+        max_scrolls: Maximum number of scrolls before fallback
+
+    Returns:
+        tuple: (found, matched_element, screenshot_path)
+            where matched_element is either the prompt or response that was found
+    """
+    # Initialize variables
+    scroll_count = 0
+    x_scroll = int(width * 0.5)  # Center of screen
+    y_scroll_start = int(height * 0.75)
+    y_scroll_end = int(height * 0.08)
+
+    while scroll_count < max_scrolls:
+        # Take screenshot and extract text
+        screenshot_path = capture_screenshot(
+            device, f"search_scroll_{scroll_count}")
+        boxes = extract_text_from_image_with_boxes(screenshot_path)
+
+        if not boxes:
+            print(f"No text found in scroll {scroll_count}")
+            scroll_count += 1
+            continue
+
+        # Group boxes into lines and paragraphs
+        lines = group_boxes_into_lines(boxes)
+        paragraphs = group_lines_into_paragraphs(lines)
+
+        # Create visualization for debugging
+        vis_path = create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=f"images/search_scroll_{scroll_count}_visual.png"
+        )
+
+        # Check each paragraph for matches with either prompt or response
+        for para in paragraphs:
+            para_text = para['text']
+
+            # Try matching with prompt
+            is_match, ratio, matched = fuzzy_match_text(
+                target_prompt, para_text)
+            if is_match:
+                print(f"Found prompt match with confidence {ratio:.2f}")
+                return True, para, screenshot_path
+
+            # Try matching with response
+            is_match, ratio, matched = fuzzy_match_text(
+                target_response, para_text)
+            if is_match:
+                print(f"Found response match with confidence {ratio:.2f}")
+                return True, para, screenshot_path
+
+        # Scroll down for next attempt
+        device.shell(
+            f"input swipe {x_scroll} {y_scroll_start} {x_scroll} {y_scroll_end} 1500")
+        time.sleep(0.5)
+        scroll_count += 1
+
+    # If we get here, we didn't find either the prompt or response
+    print("Reached maximum scrolls without finding prompt or response")
+    return False, None, None
+
+
+def process_profile_with_prompt_search(device, width, height, profile_count, prompts_txt_path):
+    """Process a profile with prompt search and response.
+
+    Args:
+        device: ADB device
+        width: Screen width
+        height: Screen height
+        profile_count: Current profile number
+        prompts_txt_path: Path to prompts.txt
+    """
+    print(f"\nProcessing profile {profile_count}")
+
+    # Take initial screenshot
+    screenshot_path = capture_screenshot(
+        device, f"profile_{profile_count}_initial")
+    boxes = extract_text_from_image_with_boxes(screenshot_path)
+
+    if not boxes:
+        print("No text found in initial screenshot")
+        return
+
+    # Group boxes into lines and paragraphs
+    lines = group_boxes_into_lines(boxes)
+    paragraphs = group_lines_into_paragraphs(lines)
+
+    # Create visualization
+    vis_path = create_visual_debug_overlay(
+        screenshot_path,
+        boxes=boxes,
+        lines=lines,
+        paragraphs=paragraphs,
+        output_path=f"images/profile_{profile_count}_initial_visual.png"
+    )
+
+    # Generate joke and get target prompt/response
+    joke_result = generate_joke_from_screenshots(
+        [screenshot_path],
+        "app/data/format.txt",
+        prompts_txt_path,
+        "app/data/captions.txt"
+    )
+
+    if not joke_result:
+        print("Could not generate joke")
+        return
+
+    target_prompt = joke_result.get('prompt', '')
+    target_response = joke_result.get('response', '')
+
+    if not target_prompt and not target_response:
+        print("No target prompt or response found")
+        return
+
+    # Search for either prompt or response
+    found, matched_element, search_screenshot = scroll_and_search_prompt(
+        device, width, height, target_prompt, target_response, prompts_txt_path
+    )
+
+    if found:
+        # Get the center coordinates of the matched element's box
+        box = matched_element['boxes'][0]  # Get first box of the paragraph
+        x = box['box'][0] + (box['box'][2] // 2)  # Center of box
+        y = box['box'][1] + (box['box'][3] // 2)
+
+        print(f"Found match at coordinates ({x}, {y})")
+
+        # Double-tap the center of the matched element
+        tap(device, x, y)
+        time.sleep(0.1)
+        tap(device, x, y)
+        time.sleep(1)
+
+        # Input generated joke as photo comment
+        joke = joke_result.get('joke', '')
+        if joke:
+            print("Typing joke character by character...")
+            type_text_slow(device, joke, per_char_delay=0.1)
+            time.sleep(1)
+
+            # Tap send button (adjust coordinates as needed)
+            send_x = int(width * 0.9)
+            send_y = int(height * 0.9)
+            tap(device, send_x, send_y)
+            time.sleep(2)
+
+            print(f"Successfully processed profile {profile_count}")
+            return
+    else:
+        print("No match found, falling back to center image tap")
+        # Double-tap center of screen (last photo)
+        center_x = width // 2
+        center_y = height // 2
+        tap(device, center_x, center_y)
+        time.sleep(0.1)
+        tap(device, center_x, center_y)
+        time.sleep(1)
+
+        # Input generated joke as photo comment
+        joke = joke_result.get('joke', '')
+        if joke:
+            print("Typing joke character by character...")
+            type_text_slow(device, joke, per_char_delay=0.1)
+            time.sleep(1)
+
+            # Tap send button (adjust coordinates as needed)
+            send_x = int(width * 0.9)
+            send_y = int(height * 0.9)
+            tap(device, send_x, send_y)
+            time.sleep(2)
+
+            print(
+                f"Successfully processed profile {profile_count} with fallback")
+            return
+
+    print(f"Could not process profile {profile_count}")
 
 
 def main():
