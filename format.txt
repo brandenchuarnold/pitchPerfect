@@ -12,26 +12,33 @@ SCREENSHOT 1 (First Screenshot):
 3. Initial Content
    - Always contains at least one photo
    - May contain one prompt with response
+   - May contain partial content that continues in Screenshot 2
 
 SCREENSHOT 2 (Second Screenshot):
 1. Profile Information Section
-   Displayed with icons:
-   - Age (🧁 Cupcake with candle icon)
-   - Gender (👤 Person icon)
-   - Sexual Orientation (🧲 Magnet icon)
-   - Education (🎓 Graduation cap icon)
-   - Religion (📖 Book icon)
-   - Location (🏠 House icon)
-   - Looking For (🔍 Search icon)
-   - Relationship Type (👥 Two people icon)
+   Contains a subset of the following elements (all optional except Age):
+   - Age (🧁 Cupcake with candle icon) - Always present
+   - Gender (👤 Person icon) - Optional
+   - Sexual Orientation (🧲 Magnet icon) - Optional
+   - Education (🎓 Graduation cap icon) - Optional
+   - Religion (📖 Book icon) - Optional
+   - Location (🏠 House icon) - Optional
+   - Looking For (🔍 Search icon) - Optional
+   - Relationship Type (👥 Two people icon) - Optional
+   
+   Note: Elements appear in order listed when present
+   Each element includes both icon and text value
 
 2. Additional Content
    - May contain one photo
    - May contain one prompt with response
+   - May contain completion of partial content from Screenshot 1
+   - May contain partial content that continues in Screenshot 3
 
 SCREENSHOTS 3+ (Subsequent Screenshots):
 - Contain only photos and prompts with responses
-- No other profile sections appear
+- May contain completion of partial content from previous screenshot
+- May contain partial content that continues in next screenshot
 
 CONTENT ELEMENTS:
 
@@ -45,6 +52,9 @@ CONTENT ELEMENTS:
      * No margin between caption box and photo
      * See captions.txt for complete list of possible captions
    - Heart button in white circle (Not relevant for joke generation)
+   - May be cut off at screenshot boundary:
+     * Bottom portion continues at top of next screenshot
+     * Top portion completes bottom of previous screenshot
 
 2. PROMPTS
    Profile Requirements:
@@ -57,7 +67,16 @@ CONTENT ELEMENTS:
    - Prompt appears above response
    - Prompt text is smaller than response text
    - Heart button in white circle (Not relevant for joke generation)
+   - May be cut off at screenshot boundary:
+     * Partial prompts/responses continue in adjacent screenshot
+     * Must reconstruct complete text from both screenshots
 
 NAVIGATION ELEMENTS (Not relevant for joke generation):
 - X button on bottom left for rejecting profile
 - Heart button on each photo/prompt for specific responses
+
+CONTENT CONTINUITY:
+- Any content (photo, prompt, or response) may be split across screenshots
+- Always check adjacent screenshots to reconstruct complete content
+- OCR processing should attempt to merge partial text across screenshots
+- Photo analysis should account for vertically split images
