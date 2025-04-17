@@ -3,7 +3,6 @@
 import time
 import os
 import sys
-import openai
 import random
 from dotenv import load_dotenv
 import re
@@ -13,9 +12,6 @@ import math
 import difflib
 from ppadb.client import Client as AdbClient
 import json
-
-# Import your config
-from config import OPENAI_API_KEY
 
 # Import your existing helper functions
 from helper_functions import (
@@ -27,8 +23,6 @@ from helper_functions import (
     tap,
     create_visual_debug_overlay,
 )
-
-openai.api_key = OPENAI_API_KEY
 
 
 def take_screenshot_and_extract_text(device, filename, profile_count, section_name):

@@ -1,10 +1,10 @@
 # app/prompt_engine.py
 
-import openai
 import random
-from config import OPENAI_API_KEY
+import anthropic
+from config import ANTHROPIC_API_KEY
 
-openai.api_key = OPENAI_API_KEY
+client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
 COMEDIC_KEY = "comedic"
 FLIRTY_KEY = "flirty"
@@ -24,7 +24,8 @@ STRAIGHTFORWARD_TEMPLATE = (
 )
 
 # Global weights for each style
-TEMPLATE_WEIGHTS = {COMEDIC_KEY: 1.0, FLIRTY_KEY: 1.0, STRAIGHTFORWARD_KEY: 1.0}
+TEMPLATE_WEIGHTS = {COMEDIC_KEY: 1.0,
+                    FLIRTY_KEY: 1.0, STRAIGHTFORWARD_KEY: 1.0}
 
 
 def update_template_weights(success_rates: dict):
@@ -78,7 +79,8 @@ def choose_template(sentiment: str, keywords: list) -> str:
 
 
 def generate_prompt(style_template: str, keywords: list, sentiment: str) -> str:
-    chosen_keyword = random.choice(keywords) if keywords else "something interesting"
+    chosen_keyword = random.choice(
+        keywords) if keywords else "something interesting"
     base_text = style_template.format(keyword=chosen_keyword)
     system_prompt = f"""
     You are a friendly and likable person who is witty and humorous.
@@ -88,24 +90,24 @@ def generate_prompt(style_template: str, keywords: list, sentiment: str) -> str:
     return system_prompt
 
 
-def call_gpt4(prompt: str, temperature: float = 0.7, max_tokens: int = 150) -> str:
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": prompt},
-        ],
+def call_claude(prompt: str, temperature: float = 0.7, max_tokens: int = 150) -> str:
+    response = client.messages.create(
+        model="claude-3-sonnet-20240229",
         max_tokens=max_tokens,
         temperature=temperature,
+        system="You are a helpful assistant.",
+        messages=[
+            {"role": "user", "content": prompt}
+        ]
     )
-    return response.choices[0].message["content"].strip()
+    return response.content[0].text.strip()
 
 
 def generate_comment(profile_text: str) -> str:
     """
     1. Clean & analyze text
     2. Choose a template
-    3. Call GPT-4
+    3. Call Claude
     Return the final comment string.
     """
     from text_analyzer import clean_text, extract_keywords, analyze_sentiment
@@ -116,5 +118,5 @@ def generate_comment(profile_text: str) -> str:
 
     style_template = choose_template(sentiment, keywords)
     final_prompt = generate_prompt(style_template, keywords, sentiment)
-    generated_text = call_gpt4(final_prompt)
+    generated_text = call_claude(final_prompt)
     return generated_text

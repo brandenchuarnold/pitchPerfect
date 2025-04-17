@@ -1,0 +1,63 @@
+HINGE PROFILE SCREENSHOT FORMAT
+
+SCREENSHOT 1 (First Screenshot):
+1. Header Section (Not relevant for joke generation)
+   - Filter buttons at top (Gender, Age, Height, Dating Intentions, etc.)
+
+2. Profile Identification
+   - Name (Left-aligned) - Used for joke generation
+   - Optional pronouns below name (Not used for joke generation)
+   - Navigation buttons on right (Not relevant for joke generation)
+
+3. Initial Content
+   - Always contains at least one photo
+   - May contain one prompt with response
+
+SCREENSHOT 2 (Second Screenshot):
+1. Profile Information Section
+   Displayed with icons:
+   - Age (🧁 Cupcake with candle icon)
+   - Gender (👤 Person icon)
+   - Sexual Orientation (🧲 Magnet icon)
+   - Education (🎓 Graduation cap icon)
+   - Religion (📖 Book icon)
+   - Location (🏠 House icon)
+   - Looking For (🔍 Search icon)
+   - Relationship Type (👥 Two people icon)
+
+2. Additional Content
+   - May contain one photo
+   - May contain one prompt with response
+
+SCREENSHOTS 3+ (Subsequent Screenshots):
+- Contain only photos and prompts with responses
+- No other profile sections appear
+
+CONTENT ELEMENTS:
+
+1. PHOTOS
+   - Square format
+   - Takes approximately half the screen
+   - Optional caption:
+     * Black text on white background
+     * Contained in box directly above photo
+     * Left-aligned with photo edge
+     * No margin between caption box and photo
+     * See captions.txt for complete list of possible captions
+   - Heart button in white circle (Not relevant for joke generation)
+
+2. PROMPTS
+   Profile Requirements:
+   - Each profile must have exactly 3 unique prompts
+   - Each prompt must have a response
+   - See prompts.txt for complete list of available prompts
+
+   Visual Format:
+   - White background box contains both prompt and response
+   - Prompt appears above response
+   - Prompt text is smaller than response text
+   - Heart button in white circle (Not relevant for joke generation)
+
+NAVIGATION ELEMENTS (Not relevant for joke generation):
+- X button on bottom left for rejecting profile
+- Heart button on each photo/prompt for specific responses

@@ -4,15 +4,16 @@ from PIL import Image
 import numpy as np
 import cv2
 import pytesseract
-import openai
+import anthropic
 from dotenv import load_dotenv
 import os
 import cv2
 import numpy as np
 import json
+from config import ANTHROPIC_API_KEY
 
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
 
 def find_icon(
@@ -222,9 +223,23 @@ def do_comparision(profile_image, sample_images):
     return best_score if best_score != float("inf") else float("inf")
 
 
+def load_database_file(filename):
+    """Load a database file and return its contents as a list."""
+    try:
+        with open(filename, 'r') as f:
+            # Skip header lines (those starting with #)
+            lines = [line.strip() for line in f if line.strip()
+                     and not line.startswith('#')]
+        return lines
+    except Exception as e:
+        print(f"Error loading database file {filename}: {e}")
+        return []
+
+
 def generate_joke_from_json(profile_json):
     """
     Generate a joke based on structured JSON input containing prompts and responses.
+    Includes context from database files and screenshot format description.
 
     Args:
         profile_json: List of objects containing prompt-response pairs and standalone content
@@ -234,7 +249,12 @@ def generate_joke_from_json(profile_json):
         - target_message is the full message (prompt-response pair or standalone response) to respond to
         - joke is the generated joke (1-2 sentences max)
     """
-    prompt = f"""
+    # Load database files
+    prompts = load_database_file('prompts.txt')
+    captions = load_database_file('captions.txt')
+
+    # Create context description
+    context = f"""
     You will see a structured JSON representation of a woman's dating app profile. The JSON structure follows this format:
     [
         {{
@@ -243,13 +263,20 @@ def generate_joke_from_json(profile_json):
         }},
         {{
             "prompt": "Two truths and a lie",
-            "response": "I've been skydiving, I speak 5 languages, I've never been to Europe"
+            "response": null
         }},
         {{
             "prompt": null,
-            "response": "I once met a celebrity at a coffee shop and didn't realize it until they left"
+            "response": "I once met a celebrity..."
         }}
     ]
+
+    The data comes from 8 full-screen screenshots of the profile, processed with OCR to extract text and spatial information.
+    In the visual representation:
+    - Prompts are shown in blue boxes
+    - Responses are shown in red boxes
+    - Prompt-response pairs are shown in purple boxes
+    - Text is grouped into lines and paragraphs based on spatial relationships
 
     Important Context:
     - All prompts in the profile are pre-written questions that the woman has specifically chosen to answer
@@ -314,25 +341,28 @@ def generate_joke_from_json(profile_json):
     {json.dumps(profile_json, indent=2)}
     """
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4.5-preview",
+    message = client.messages.create(
+        model="claude-3-7-sonnet-20250219",
+        max_tokens=1000,
+        temperature=1,
+        system="""You are a highly capable, thoughtful, and precise writer.
+        You want to hold a conversation with a woman on an online dating app.
+        You know that if this woman finds you physically attractive, she will take the time to read your message.
+        You believe that you are a unique person that all women would like to understand more in order to determine if they would like to go on a date with you.""",
         messages=[
             {
-                "role": "system",
-                "content": f"""
-                You are a highly capable, thoughtful, and precise writer.
-                You want to hold a conversation with a woman on an online dating app.
-                You know that if this woman finds you physically attractive, she will take the time to read your message.
-                You believe that you are a unique person that all women would like to understand more in order to determine if they would like to go on a date with you.
-                """
-            },
-            {"role": "user", "content": prompt},
-        ],
-        max_tokens=4096,
-        temperature=1.0,
+                "role": "user",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": context
+                    }
+                ]
+            }
+        ]
     )
 
-    comment = response.choices[0].message["content"].strip()
+    comment = message.content[0].text.strip()
     print("\ncomment: ", comment)
 
     # Split based on the bracketed labels
