@@ -74,9 +74,28 @@ def type_text_slow(device, text, per_char_delay=0.1):
         time.sleep(per_char_delay)
 
 
-def swipe(device, x1, y1, x2, y2, duration=500):
-    """Execute a swipe gesture"""
-    device.shell(f"input swipe {x1} {y1} {x2} {y2} {duration}")
+def swipe(device, x1, y1, x2, y2, duration=500, last_scroll_position=None):
+    """Execute a swipe gesture.
+
+    Args:
+        device: The ADB device
+        x1, y1: Starting coordinates
+        x2, y2: Ending coordinates
+        duration: Duration of swipe in milliseconds
+        last_scroll_position: Previous scroll position (unused)
+
+    Returns:
+        tuple: (True, 0) for compatibility with existing code
+    """
+    try:
+        # Execute the swipe
+        device.shell(f"input swipe {x1} {y1} {x2} {y2} {duration}")
+        time.sleep(0.5)  # Wait for scroll to complete
+        return True, 0
+
+    except Exception as e:
+        print(f"Error during swipe: {e}")
+        return False, 0
 
 
 def get_screen_resolution(device):
@@ -96,29 +115,79 @@ def open_hinge(device):
     time.sleep(5)
 
 
-def isAtBottom(device):
-    """Check if we've reached the bottom of a scrollable view using UiScrollable.
+def isAtBottom(device, last_scroll_position=None):
+    """Check if we've reached the bottom of a scrollable view using multiple methods.
+
+    Args:
+        device: The ADB device
+        last_scroll_position: The Y position from the last scroll operation
 
     Returns:
-        bool: True if at bottom, False otherwise
+        tuple: (bool, int) - (is_at_bottom, current_scroll_position)
     """
     try:
-        # Get the UiScrollable object for the current view
-        scrollable = device.uiAutomator.getUiScrollable()
+        # Method 1: Check scroll position
+        window_info = device.shell("dumpsys window")
+        current_position = 0
+        for line in window_info.split('\n'):
+            if 'mScrollY=' in line:
+                current_position = int(line.split('=')[1].strip())
+                break
 
-        # Get max and current scroll steps
-        max_steps = scrollable.getMaxScrollSteps()
-        current_steps = scrollable.getCurrentScrollSteps()
+        # If we have a last position to compare with
+        if last_scroll_position is not None:
+            # If we haven't moved since last scroll, we might be at the bottom
+            if current_position == last_scroll_position:
+                # Method 2: Check if we can scroll further using UiScrollable
+                scrollable_check = device.shell("uiautomator dump /dev/tty")
+                if "scrollable=\"true\"" in scrollable_check:
+                    return False, current_position
+                else:
+                    return True, current_position
 
-        # If we can't get steps, try alternative method
-        if max_steps is None or current_steps is None:
-            return not scrollable.canScrollVertically()
+        return False, current_position
 
-        # Add small threshold to account for floating point differences
-        return abs(max_steps - current_steps) < 0.1
     except Exception as e:
         print(f"Error checking scroll position: {e}")
-        return False
+        return False, 0
+
+
+def scroll_down(device, last_scroll_position=None):
+    """Scroll down the screen and return the new scroll position.
+
+    Args:
+        device: The ADB device
+        last_scroll_position: The Y position from the last scroll operation
+
+    Returns:
+        tuple: (bool, int) - (success, new_scroll_position)
+    """
+    try:
+        width, height = get_screen_resolution(device)
+        x_center = width // 2
+        y_start = height * 0.8
+        y_end = height * 0.2  # Scroll a larger distance to ensure movement
+
+        # Execute the scroll
+        device.shell(
+            f"input swipe {x_center} {y_start} {x_center} {y_end} 500")
+        time.sleep(0.5)  # Wait for scroll to complete
+
+        # Get new scroll position and check if we're at the bottom
+        is_bottom, new_position = isAtBottom(device, last_scroll_position)
+
+        # If we're at the bottom, try one more time with a smaller scroll
+        if is_bottom:
+            device.shell(
+                f"input swipe {x_center} {height*0.6} {x_center} {height*0.4} 300")
+            time.sleep(0.5)
+            is_bottom, new_position = isAtBottom(device, new_position)
+
+        return not is_bottom, new_position
+
+    except Exception as e:
+        print(f"Error during scroll: {e}")
+        return False, last_scroll_position
 
 
 def extract_text_from_image_with_boxes(image_path):
@@ -147,7 +216,7 @@ def extract_text_from_image_with_boxes(image_path):
         return None
 
 
-def group_boxes_into_lines(boxes, y_threshold=10):
+def group_boxes_into_lines(boxes, y_threshold=5):
     """Group text boxes into lines based on vertical alignment.
 
     Args:
@@ -171,14 +240,18 @@ def group_boxes_into_lines(boxes, y_threshold=10):
         box_y = box['box'][1]
 
         if current_y is None:
+            # First box
             current_y = box_y
             current_line.append(box)
         elif abs(box_y - current_y) <= y_threshold:
+            # Box is aligned with current line
             current_line.append(box)
         else:
-            # Sort boxes in line by horizontal position
-            current_line.sort(key=lambda b: b['box'][0])
-            lines.append(current_line)
+            # Box starts a new line
+            if current_line:
+                # Sort boxes in line by x position
+                current_line.sort(key=lambda b: b['box'][0])
+                lines.append(current_line)
             current_line = [box]
             current_y = box_y
 
@@ -190,7 +263,7 @@ def group_boxes_into_lines(boxes, y_threshold=10):
     return lines
 
 
-def group_lines_into_paragraphs(lines, paragraph_spacing=30):
+def group_lines_into_paragraphs(lines, paragraph_spacing=20):
     """Group lines into paragraphs based on vertical spacing.
 
     Args:
@@ -202,7 +275,6 @@ def group_lines_into_paragraphs(lines, paragraph_spacing=30):
         - text: Combined text of all boxes
         - boxes: List of all boxes in the paragraph
         - lines: List of lines in the paragraph
-        - spatial_info: Metadata about the paragraph's position
     """
     if not lines:
         return []
@@ -211,40 +283,36 @@ def group_lines_into_paragraphs(lines, paragraph_spacing=30):
     current_para = {
         'text': '',
         'boxes': [],
-        'lines': [],
-        'spatial_info': None
+        'lines': []
     }
     last_line_bottom = None
 
     for line in lines:
-        # Get the bottom of this line
+        # Get vertical bounds of this line
+        line_top = min(box['box'][1] for box in line)
         line_bottom = max(box['box'][1] + box['box'][3] for box in line)
 
         if last_line_bottom is None:
             # First line
-            last_line_bottom = line_bottom
             current_para['lines'].append(line)
             current_para['boxes'].extend(line)
-        elif line_bottom - last_line_bottom <= paragraph_spacing:
-            # Continue current paragraph
-            last_line_bottom = line_bottom
+        elif line_top - last_line_bottom <= paragraph_spacing:
+            # Line is close enough to previous line - same paragraph
             current_para['lines'].append(line)
             current_para['boxes'].extend(line)
         else:
-            # Start new paragraph
-            # Finalize current paragraph
-            current_para['text'] = ' '.join(
-                box['text'] for box in current_para['boxes'])
-            paragraphs.append(current_para)
+            # Line is far from previous line - start new paragraph
+            if current_para['boxes']:
+                current_para['text'] = ' '.join(
+                    box['text'] for box in current_para['boxes'])
+                paragraphs.append(current_para)
+                current_para = {
+                    'text': '',
+                    'boxes': line.copy(),
+                    'lines': [line]
+                }
 
-            # Start new paragraph
-            current_para = {
-                'text': '',
-                'boxes': line.copy(),
-                'lines': [line],
-                'spatial_info': None
-            }
-            last_line_bottom = line_bottom
+        last_line_bottom = line_bottom
 
     # Add the last paragraph
     if current_para['boxes']:
@@ -292,7 +360,7 @@ def fuzzy_match_text(target_text, text_to_match, threshold=0.8):
     return best_ratio >= threshold, best_ratio, best_match
 
 
-def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, output_path=None):
+def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, output_path=None, tap_target=None):
     """Create a visual debugging overlay showing text boxes, lines, and paragraphs.
 
     Args:
@@ -301,6 +369,7 @@ def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, 
         lines: Optional list of line groupings
         paragraphs: Optional list of paragraph groupings
         output_path: Optional path to save the visualization
+        tap_target: Optional (x, y) coordinates for tap target
 
     Returns:
         PIL Image object with the visualization overlay
@@ -319,12 +388,17 @@ def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, 
         x, y, w, h = box['box']
         # Draw box
         draw.rectangle([x, y, x + w, y + h], outline='gray', width=2)
-        # Add text label
+        # Add text label - handle Unicode text
         try:
             font = ImageFont.truetype("Arial.ttf", 12)
         except:
             font = ImageFont.load_default()
-        draw.text((x, y - 15), box['text'], fill='gray', font=font)
+        try:
+            # Try to draw the text, replacing any problematic characters
+            safe_text = box['text'].encode('ascii', 'replace').decode('ascii')
+            draw.text((x, y - 15), safe_text, fill='gray', font=font)
+        except Exception as e:
+            print(f"Warning: Could not draw text '{box['text']}': {e}")
 
     # Draw lines (red)
     if lines:
@@ -348,15 +422,13 @@ def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, 
             draw.rectangle([min_x, min_y, max_x, max_y],
                            outline='green', width=2)
 
-            # Add center point for prompts (blue) and responses (red)
-            center_x = (min_x + max_x) // 2
-            center_y = (min_y + max_y) // 2
-            if para.get('is_prompt', False):
-                draw.ellipse([center_x-10, center_y-10, center_x +
-                             10, center_y+10], outline='blue', width=2)
-            elif para.get('is_response', False):
-                draw.ellipse([center_x-10, center_y-10, center_x +
-                             10, center_y+10], outline='red', width=2)
+    # Draw tap target circle if provided
+    if tap_target:
+        tap_x, tap_y = tap_target
+        radius = 30
+        draw.ellipse([tap_x - radius, tap_y - radius,
+                     tap_x + radius, tap_y + radius],
+                     outline='red', width=3)
 
     # Save the visualization
     img.save(output_path)
@@ -417,10 +489,13 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
             return None
 
     # System prompt containing all the structural information
-    system_prompt = f"""You are a witty and observant dating app assistant. Your task is to analyze Hinge dating profiles and generate clever jokes that continue the conversation based on the woman's existing response. Each joke should balance three key elements equally:
-1. Flattery - making the woman feel appreciated and seen
-2. Humor - creating something genuinely funny and engaging
-3. Flirtation - adding a playful, romantic element
+    system_prompt = f"""You are a witty and natural conversationalist on a dating app. Your task is to analyze Hinge profiles and generate engaging conversation starters based on the prompts and responses in a woman's profile. Since she's already expressed interest by matching, balance natural conversation with clear intent - keeping it light while being specific enough for text.
+
+Key Principles:
+1. Keep it Light and Direct - Dating should be fun, but text needs clarity
+2. Stay Natural but Specific - Be yourself while referencing concrete details
+3. Show Interest without Trying Too Hard - She's already interested, no need to prove yourself
+4. Be Confident yet Authentic - She's matched with you, so just be genuine
 
 You have access to the following information:
 PROFILE STRUCTURE INFORMATION:
@@ -435,70 +510,60 @@ AVAILABLE PHOTO CAPTIONS:
 AVAILABLE POLLS:
 {polls_content}
 
-Your process has two distinct steps:
+Your process:
 
-STEP A: UNDERSTAND THE PROFILE
-1. Analyze the profile structure using the provided format information in PROFILE STRUCTURE INFORMATION
-2. Identify all profile elements:
-   - Photos and their captions (see AVAILABLE PHOTO CAPTIONS)
-   - Prompts and responses (see AVAILABLE PROMPTS)
-   - Profile Information (see PROFILE STRUCTURE INFORMATION)
-3. Build a comprehensive understanding of the woman's personality through:
-   a) Activities and Interests
-      - What does she enjoy doing?
-      - How does she spend her time?
-      - What are her hobbies?
-   
-   b) Intellectual Framework
-      - How does she think?
-      - What opinions does she express?
-      - What values does she show?
-   
-   c) Communication Style
-      - How does she express herself?
-      - What tone does she use?
-      - What kind of humor does she show?
+STEP A: UNDERSTAND THE CONTEXT
+1. Review her profile holistically:
+   - What's her general vibe and personality?
+   - Which specific details stand out naturally?
+   - What topics would create genuine conversation?
 
-STEP B: GENERATE THE JOKE
-1. Identify all prompt-response pairs in the profile
-   - Use the format structure in PROFILE STRUCTURE INFORMATION to recognize prompts
-   - Match prompts with their corresponding responses
-   - Verify against the available prompts list which is the authoritative source for prompts
+2. Look for authentic connection points:
+   - What catches your eye without forcing it?
+   - Which details could lead to natural questions?
+   - What would be fun to discuss over text?
 
-2. For each prompt-response pair:
-   a) Analyze the context:
-      - What is she trying to convey with this prompt/response?
-      - What personality traits does it reveal?
-      - What values or interests does it highlight?
-   
-   b) Generate potential jokes that balance:
-      * Flattery: Show we've paid attention and highlight positive traits
-      * Humor: Create something genuinely funny and unexpected
-      * Flirtation: Add a playful, romantic element
-      * Keep jokes concise (1-2 sentences)
-   
-   c) Evaluate each joke by considering:
-      - How well it balances all three elements
-      - How natural and authentic it feels
-      - How it might make her feel
-      - How it could lead to further conversation
+STEP B: CREATE ONE STARTER PER PAIR
+1. For each prompt-response pair provided in the profile (there are three pairs):
+   - Identify the prompt given by Hinge
+   - Note the woman's response to that prompt
+   - Create exactly ONE conversation starter that is:
+     * Light and playful, but clear in meaning
+     * Natural, while referencing specific details
+     * Easy to respond to over text
+     * Around 10-15 words
 
-3. For each joke, simulate the conversation:
-   - How would she feel receiving this joke?
-   - What elements (flattery, humor, flirtation) would stand out to her?
-   - How could this lead to an engaging back-and-forth?
-   - What might she say in response?
+2. For each starter you create, verify it:
+   - Does it feel natural while being clear enough for text?
+   - Does it reference something specific without trying too hard?
+   - Would it be easy and fun to respond to?
+   - Does it maintain both authenticity and interest?
 
-4. Select the joke that:
-   - Feels most natural and authentic
-   - Would make her want to continue the conversation
-   - Has the most promising simulated conversation flow
+STEP C: PICK THE WINNING PAIR
+1. Compare all three prompt-response pairs and their starters:
+   - Which combination feels most natural and clear?
+   - Which specific reference feels least forced?
+   - Which would be most fun to respond to?
+   - Which best maintains the matching momentum?
 
-Your response must be in this JSON format:
+2. Final check on your chosen pair and its starter:
+   - Is it true to your personality?
+   - Is it clear enough for text?
+   - Does it invite an easy response?
+   - Would it be fun to continue the conversation?
+
+Remember:
+- Don't try to be a perfect match
+- Keep it light while being specific
+- Show interest without overdoing it
+- Make it easy to respond over text
+- Pick the strongest overall prompt-response-starter combination
+
+Return the chosen prompt, its response, and your conversation starter in this JSON format exactly:
 {{
     "prompt": "The exact prompt text you're responding to",
-    "response": "The user's response to this prompt",
-    "joke": "Your generated joke to continue the conversation"
+    "response": "The woman's response to this prompt",
+    "joke": "Your natural conversation starter"
 }}"""
 
     # User message - just the specific task

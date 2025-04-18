@@ -20,41 +20,41 @@ from helper_functions import (
     type_text_slow,
     isAtBottom,
     fuzzy_match_text,
+    swipe,
 )
 
 
 def scroll_profile_and_capture(device, width, height, profile_num):
-    """Scroll through profile and capture screenshots until bottom is reached."""
+    """Scroll through profile and capture screenshots."""
     screenshots = []
-    x_scroll = int(width * 0.5)  # Center of screen
-    y_scroll_start = int(height * 0.75)
-    y_scroll_end = int(height * 0.08)
 
-    # Initial screenshot
+    # Take initial screenshot
     screenshot_path = capture_screenshot(
         device, f"profile_{profile_num}_part1")
     screenshots.append(screenshot_path)
 
-    # Scroll until bottom is reached
-    i = 0
-    while True:
-        print(f"Scroll #{i+1}")
-        device.shell(
-            f"input swipe {x_scroll} {y_scroll_start} {x_scroll} {y_scroll_end} 1500")
-        time.sleep(0.5)
+    # Scroll and capture fixed number of screenshots
+    x_scroll = int(width * 0.5)  # Center of screen
+    y_scroll_start = int(height * 0.84)  # Start at 84% of screen height
+    # End at 16% of screen height (68% scroll distance)
+    y_scroll_end = int(height * 0.16)
 
-        if isAtBottom(device):
-            print("Reached bottom of profile")
-            break
+    # Take 5 more screenshots (6 total)
+    for i in range(1, 6):
+        print(f"Scroll down #{i}")
+        # Scroll down
+        swipe(device, x_scroll, y_scroll_start, x_scroll, y_scroll_end, 1500)
 
+        # Take screenshot after scroll
         screenshot_path = capture_screenshot(
-            device, f"profile_{profile_num}_part{i+2}")
+            device, f"profile_{profile_num}_part{i+1}")
         screenshots.append(screenshot_path)
 
-        i += 1
-        if i >= 8:  # Safety limit
-            print("Reached maximum scroll limit")
-            break
+    # Scroll back up the same number of times (no screenshots needed)
+    for i in range(1, 6):
+        print(f"Scroll up #{i}")
+        # Scroll up (reversed coordinates)
+        swipe(device, x_scroll, y_scroll_end, x_scroll, y_scroll_start, 1500)
 
     return screenshots
 
@@ -81,107 +81,158 @@ def take_screenshot_and_extract_text(device, filename):
     return boxes, lines, paragraphs, screenshot_path
 
 
-def process_screenshot_with_vsualization(image_path):
-    """Process a screenshot and create visualization."""
+def process_screenshot_with_visualization(image_path, profile_num, screenshot_num):
+    """Process a screenshot and create visualization overlay.
+
+    Args:
+        image_path: Path to the screenshot to process
+        profile_num: Current profile number
+        screenshot_num: Current screenshot number
+
+    Returns:
+        tuple: (paragraphs, visualization_path)
+    """
+    # Extract text boxes
     boxes = extract_text_from_image_with_boxes(image_path)
     if not boxes:
+        print("No text boxes found in screenshot")
         return None, None
 
+    # Group boxes into lines and paragraphs
     lines = group_boxes_into_lines(boxes)
     paragraphs = group_lines_into_paragraphs(lines)
 
-    # Create visualization
+    # Create visualization overlay
+    base_name = os.path.splitext(image_path)[0]
     vis_path = create_visual_debug_overlay(
         image_path,
         boxes=boxes,
         lines=lines,
         paragraphs=paragraphs,
-        output_path=f"{image_path}_visual.png"
+        output_path=f"images/profile_{profile_num}_screenshot_{screenshot_num}_visual.png"
     )
+    print(f"Created visualization: {vis_path}")
 
     return paragraphs, vis_path
 
 
-def find_and_click_prompt(device, width, height, target_text):
-    """Find and click on matching text using sophisticated fuzzy matching.
+def capture_profile_screenshots(device, count):
+    """Capture screenshots while scrolling through the profile."""
+    screenshots = []
+    last_position = None
 
-    Process:
-    1. Compare target text against paragraphs using multiple matching strategies
-    2. For each paragraph:
-       a) Try substring match (needle in haystack)
-       b) Try reverse substring match (haystack in needle)
-       c) Use ratio-based fuzzy matching with difflib
-    3. Select best match above threshold (0.8)
-    4. Handle multi-line matches within paragraphs
-    5. Double-click the matched element if found
-    """
-    x_scroll = int(width * 0.5)
-    y_scroll_start = int(height * 0.75)
-    y_scroll_end = int(height * 0.08)
+    # Take initial screenshot
+    screenshot_path = capture_screenshot(device, f"profile_{count}_part0")
+    screenshots.append(screenshot_path)
 
-    # Initialize best match tracking
-    best_match = None
-    best_ratio = 0.8  # Threshold for fuzzy matching
-    best_paragraph = None
+    # Scroll and capture until bottom
+    width, height = get_screen_resolution(device)
+    x_center = width // 2
+    y_start = height * 0.8
+    y_end = height * 0.7
 
-    for _ in range(8):  # Max 8 scrolls
-        # Take screenshot and extract text
-        boxes, lines, paragraphs, _ = take_screenshot_and_extract_text(
-            device, "search")
-        if not paragraphs:
+    i = 1
+    while True:
+        # Scroll down and check if we can continue
+        can_scroll, last_position = swipe(
+            device, x_center, y_start, x_center, y_end, 100, last_position)
+        if not can_scroll:
+            break
+
+        # Take screenshot after scroll
+        screenshot_path = capture_screenshot(
+            device, f"profile_{count}_part{i}")
+        screenshots.append(screenshot_path)
+        i += 1
+
+    return screenshots
+
+
+def find_and_click_prompt_response(device, target_prompt, target_response, joke, profile_num):
+    """Find and click on the best matching prompt or response, then input the joke."""
+    # Scroll to top first
+    width, height = get_screen_resolution(device)
+    swipe(device, width//2, height*0.2, width//2, height*0.8, 100)
+    time.sleep(1)
+
+    # Search for prompt while scrolling
+    last_position = None
+    search_count = 0
+    while True:
+        # Extract text from current screen
+        screenshot_path = capture_screenshot(
+            device, f"temp_prompt_search_{profile_num}_{search_count}")
+        boxes = extract_text_from_image_with_boxes(screenshot_path)
+        if not boxes:
+            print("No text boxes found in screenshot")
             continue
 
-        # Check each paragraph for matches using multiple strategies
+        # Group boxes into lines and paragraphs
+        lines = group_boxes_into_lines(boxes)
+        paragraphs = group_lines_into_paragraphs(lines)
+
+        # Find best match for either prompt or response
+        best_match = None
+        best_confidence = 0.8  # Minimum confidence threshold
+        best_text = ""
+        tap_x = 0
+        tap_y = 0
+
         for para in paragraphs:
-            para_text = para['text'].lower()
-            target_lower = target_text.lower()
+            # Check prompt match
+            prompt_match, prompt_confidence, matched_prompt = fuzzy_match_text(
+                target_prompt, para['text'])
+            if prompt_match and prompt_confidence > best_confidence:
+                best_match = para
+                best_confidence = prompt_confidence
+                best_text = "prompt"
+                tap_x = (para['boxes'][0]['box'][0] +
+                         para['boxes'][-1]['box'][2]) // 2
+                tap_y = (para['boxes'][0]['box'][1] +
+                         para['boxes'][-1]['box'][3]) // 2
 
-            # Use the helper function's fuzzy matching
-            is_match, ratio, matched = fuzzy_match_text(
-                target_lower, para_text)
+            # Check response match
+            response_match, response_confidence, matched_response = fuzzy_match_text(
+                target_response, para['text'])
+            if response_match and response_confidence > best_confidence:
+                best_match = para
+                best_confidence = response_confidence
+                best_text = "response"
+                tap_x = (para['boxes'][0]['box'][0] +
+                         para['boxes'][-1]['box'][2]) // 2
+                tap_y = (para['boxes'][0]['box'][1] +
+                         para['boxes'][-1]['box'][3]) // 2
 
-            if is_match and ratio > best_ratio:
-                best_ratio = ratio
-                best_paragraph = para
-                print(f"Found match with ratio {ratio:.2f}")
-                break
+        # Create visualization overlay for debugging prompt search
+        vis_path = create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=f"images/prompt_search_visual_{profile_num}_{search_count}.png",
+            tap_target=(tap_x, tap_y) if best_match else None
+        )
+        print(f"Created visualization for prompt search: {vis_path}")
 
-            # Try matching individual lines within the paragraph
-            for line in para['lines']:
-                line_text = ' '.join(box['text'] for box in line).lower()
-                is_match, line_ratio, matched = fuzzy_match_text(
-                    target_lower, line_text)
-                if is_match and line_ratio > best_ratio:
-                    best_ratio = line_ratio
-                    best_paragraph = para
-                    print(
-                        f"Found line-level match with ratio {line_ratio:.2f}")
-                    break
+        if best_match:
+            # Found a good match, click it
+            tap(device, tap_x, tap_y)
+            time.sleep(1)
 
-        # If we found a good match, click it
-        if best_paragraph and best_ratio >= 0.8:
-            # Get the first box in the paragraph
-            box = best_paragraph['boxes'][0]['box']
-
-            # Calculate click position: center of the first box
-            x = box[0] + (box[2] // 2)
-            y = box[1] + (box[3] // 2)
-
+            # Type joke
+            type_text_slow(device, joke)
             print(
-                f"Found match with confidence {best_ratio:.2f} at coordinates ({x}, {y})")
-
-            # Double-click the match
-            tap(device, x, y)
-            time.sleep(0.1)
-            tap(device, x, y)
+                f"Found matching {best_text} with confidence {best_confidence:.2f}")
             return True
 
-        # Scroll down for next attempt
-        device.shell(
-            f"input swipe {x_scroll} {y_scroll_start} {x_scroll} {y_scroll_end} 1500")
-        time.sleep(0.5)
+        # Scroll down and check if we can continue
+        can_scroll, last_position = swipe(
+            device, width//2, height*0.8, width//2, height*0.7, 100, last_position)
+        if not can_scroll:
+            break
 
-    print(f"No match found above threshold {best_ratio:.2f}")
+        search_count += 1
+
     return False
 
 
@@ -208,64 +259,49 @@ def main():
         screenshots = scroll_profile_and_capture(
             device, width, height, profile_num)
         print(f"Captured {len(screenshots)} screenshots")
-        for i, screenshot in enumerate(screenshots):
-            print(f"  Screenshot {i+1}: {screenshot}")
 
         # Step 2: Generate joke
         print("\nStep 2: Generating joke...")
         result = generate_joke_from_screenshots(
             screenshots=screenshots,
-            format_txt_path='app/data/format.txt',
-            prompts_txt_path='app/data/prompts.txt',
-            captions_txt_path='app/data/captions.txt',
-            polls_txt_path='app/data/polls.txt'
+            format_txt_path=os.path.join(
+                os.path.dirname(__file__), 'format.txt'),
+            prompts_txt_path=os.path.join(
+                os.path.dirname(__file__), 'prompts.txt'),
+            captions_txt_path=os.path.join(
+                os.path.dirname(__file__), 'captions.txt'),
+            polls_txt_path=os.path.join(
+                os.path.dirname(__file__), 'polls.txt')
         )
 
         if not result:
             print("Failed to generate joke")
-            break
+            profile_num += 1
+            continue
 
-        target_text = result.get('prompt', '') or result.get('response', '')
-        joke = result.get('joke', '')
+        prompt = result.get("prompt", "")
+        response = result.get("response", "")
+        joke = result.get("joke", "")
 
-        if not target_text or not joke:
+        if not prompt or not joke:
             print("Invalid result from joke generator")
-            break
+            profile_num += 1
+            continue
 
-        print("\nGenerated content:")
-        print(f"Target text: {target_text}")
-        print(f"Joke: {joke}")
+        print(f"\nGenerated joke: {joke}")
+        print(f"Target prompt: {prompt}")
+        print(f"Target response: {response}")
 
-        # Step 3: Scroll to top and search for match
-        print("\nStep 3: Searching for match...")
-        # Scroll to top
-        for _ in range(3):
-            device.shell(
-                f"input swipe {width//2} {height//4} {width//2} {height*3//4} 1500")
-            time.sleep(0.5)
+        # Step 3: Find and click prompt-response pair with visualization
+        print("\nStep 3: Finding and clicking prompt-response pair...")
+        success = find_and_click_prompt_response(
+            device, prompt, response, joke, profile_num)
+        if not success:
+            print("Failed to find and click prompt-response pair")
+            profile_num += 1
+            continue
 
-        if not find_and_click_prompt(device, width, height, target_text):
-            print("Could not find match, falling back to center tap")
-            # Double-tap center of screen
-            tap(device, width//2, height//2)
-            time.sleep(0.1)
-            tap(device, width//2, height//2)
-
-        # Type joke but don't send
-        print("\nStep 4: Typing joke (not sending)...")
-        time.sleep(1)  # Wait for prompt to open
-        type_text_slow(device, joke, per_char_delay=0.1)
-        print("Joke typed successfully")
-        print("\nStopping here for testing. Press Ctrl+C to exit.")
-
-        # Wait for user to review
-        try:
-            while True:
-                time.sleep(1)
-        except KeyboardInterrupt:
-            print("\nExiting...")
-            break
-
+        print("\nSuccessfully processed profile!")
         profile_num += 1
 
 
