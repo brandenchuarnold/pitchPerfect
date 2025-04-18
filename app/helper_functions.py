@@ -447,11 +447,16 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
         polls_txt_path: Path to polls.txt containing available polls
 
     Returns:
-        dict: Contains the prompt-response pair and generated joke:
+        dict: Contains the prompt-response pair, generated joke, and location info:
         {
             "prompt": str,      # The prompt text being responded to
             "response": str,    # The user's response to the prompt
-            "joke": str        # The generated joke
+            "joke": str,       # The generated joke
+            "screenshot_index": int,  # 0-based index of screenshot containing prompt/response
+            "coordinates": {    # Center coordinates of the text box
+                "x": int,      # X coordinate (0-1080)
+                "y": int       # Y coordinate (0-2400)
+            }
         }
     """
     # Read the content of our context files
@@ -497,6 +502,14 @@ Key Principles:
 3. Show Interest without Trying Too Hard - She's already interested, no need to prove yourself
 4. Be Confident yet Authentic - She's matched with you, so just be genuine
 
+DEVICE INFORMATION:
+- The screenshots are taken from a Google Pixel 6a
+- Screen resolution: 2400 (height) x 1080 (width) pixels
+- When providing coordinates:
+  * X values should be between 0 and 1080 (left to right)
+  * Y values should be between 0 and 2400 (top to bottom)
+  * These are real pixel coordinates on a physical phone screen
+
 You have access to the following information:
 PROFILE STRUCTURE INFORMATION:
 {format_content}
@@ -530,7 +543,7 @@ STEP B: CREATE ONE STARTER PER PAIR
    - Create exactly ONE conversation starter that is:
      * Light and playful, but clear in meaning
      * Natural, while referencing specific details
-     * Easy to respond to over text
+     * Easy to respond over text
      * Around 10-15 words
 
 2. For each starter you create, verify it:
@@ -538,6 +551,7 @@ STEP B: CREATE ONE STARTER PER PAIR
    - Does it reference something specific without trying too hard?
    - Would it be easy and fun to respond to?
    - Does it maintain both authenticity and interest?
+   - Does it avoid implying you share all their exact interests? (It's okay to show interest without claiming to share every hobby)
 
 STEP C: PICK THE WINNING PAIR
 1. Compare all three prompt-response pairs and their starters:
@@ -546,11 +560,16 @@ STEP C: PICK THE WINNING PAIR
    - Which would be most fun to respond to?
    - Which best maintains the matching momentum?
 
-2. Final check on your chosen pair and its starter:
-   - Is it true to your personality?
-   - Is it clear enough for text?
-   - Does it invite an easy response?
-   - Would it be fun to continue the conversation?
+2. Identify the location:
+   - Determine which screenshot (0-based index) contains the prompt/response
+   - If the text is split across screenshots, use the screenshot with most of the text
+   - Find the exact position of the text content in the screenshot:
+     * Look at where the prompt and response text appears on the screen
+     * Identify the area containing both the prompt and its response
+     * This area should be treated as a single tap target
+     * Calculate the center point of this text area
+     * The coordinates will be used to tap this exact spot on the real phone screen
+   - Ensure coordinates are within the Pixel 6a's screen bounds (1080x2400)
 
 Remember:
 - Don't try to be a perfect match
@@ -558,12 +577,21 @@ Remember:
 - Show interest without overdoing it
 - Make it easy to respond over text
 - Pick the strongest overall prompt-response-starter combination
+- It's okay to be curious about their interests without claiming to share them all
+- The coordinates must be the center of the actual text content area you're targeting
+- These are real pixel coordinates on a physical phone screen
+- Provide accurate coordinates within the Pixel 6a's screen bounds
 
-Return the chosen prompt, its response, and your conversation starter in this JSON format exactly:
+Return the chosen prompt, its response, your conversation starter, the screenshot index, and the coordinate info in this JSON format exactly. Do not return any other text or comments beyond the JSON.
 {{
     "prompt": "The exact prompt text you're responding to",
     "response": "The woman's response to this prompt",
-    "joke": "Your natural conversation starter"
+    "joke": "Your natural conversation starter",
+    "screenshot_index": index_of_screenshot_containing_prompt_response,  # 0-based index of screenshot containing prompt/response
+    "coordinates": {{
+        "x": x_coordinate,  # Center X coordinate of the text content area (0-1080)
+        "y": y_coordinate  # Center Y coordinate of the text content area (0-2400)
+    }}
 }}"""
 
     # User message - just the specific task
@@ -604,7 +632,9 @@ Return the chosen prompt, its response, and your conversation starter in this JS
             return {
                 "prompt": result.get("prompt", ""),
                 "response": result.get("response", ""),
-                "joke": result.get("joke", "")
+                "joke": result.get("joke", ""),
+                "screenshot_index": result.get("screenshot_index", 0),
+                "coordinates": result.get("coordinates", {"x": 0, "y": 0})
             }
         except json.JSONDecodeError:
             print("Error: Response was not in expected JSON format")

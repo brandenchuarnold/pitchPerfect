@@ -148,92 +148,36 @@ def capture_profile_screenshots(device, count):
     return screenshots
 
 
-def find_and_click_prompt_response(device, target_prompt, target_response, joke, profile_num):
-    """Find and click on the best matching prompt or response, then input the joke."""
-    # Scroll to top first
+def find_and_click_prompt_response(device, target_prompt, target_response, joke, screenshot_index, coordinates, profile_num):
+    """Find and click on the prompt/response location based on provided coordinates."""
     width, height = get_screen_resolution(device)
+
+    # First scroll to top
     swipe(device, width//2, height*0.2, width//2, height*0.8, 100)
     time.sleep(1)
 
-    # Search for prompt while scrolling
-    last_position = None
-    search_count = 0
-    while True:
-        # Extract text from current screen
-        screenshot_path = capture_screenshot(
-            device, f"temp_prompt_search_{profile_num}_{search_count}")
-        boxes = extract_text_from_image_with_boxes(screenshot_path)
-        if not boxes:
-            print("No text boxes found in screenshot")
-            continue
+    # Use the same scrolling logic as scroll_profile_and_capture
+    x_scroll = int(width * 0.5)  # Center of screen
+    y_scroll_start = int(height * 0.84)  # Start at 84% of screen height
+    y_scroll_end = int(height * 0.16)    # End at 16% of screen height
 
-        # Group boxes into lines and paragraphs
-        lines = group_boxes_into_lines(boxes)
-        paragraphs = group_lines_into_paragraphs(lines)
+    # Scroll down the exact number of times needed to reach the target screenshot
+    for i in range(screenshot_index):
+        print(f"Scrolling to position {i+1} of {screenshot_index}")
+        swipe(device, x_scroll, y_scroll_start, x_scroll, y_scroll_end, 1500)
+        time.sleep(1)  # Wait for scroll to complete
 
-        # Find best match for either prompt or response
-        best_match = None
-        best_confidence = 0.8  # Minimum confidence threshold
-        best_text = ""
-        tap_x = 0
-        tap_y = 0
+    # Double click at the provided coordinates
+    tap(device, coordinates["x"], coordinates["y"])
+    time.sleep(0.1)  # Small delay between clicks
+    tap(device, coordinates["x"], coordinates["y"])
+    time.sleep(1)
 
-        for para in paragraphs:
-            # Check prompt match
-            prompt_match, prompt_confidence, matched_prompt = fuzzy_match_text(
-                target_prompt, para['text'])
-            if prompt_match and prompt_confidence > best_confidence:
-                best_match = para
-                best_confidence = prompt_confidence
-                best_text = "prompt"
-                tap_x = (para['boxes'][0]['box'][0] +
-                         para['boxes'][-1]['box'][2]) // 2
-                tap_y = (para['boxes'][0]['box'][1] +
-                         para['boxes'][-1]['box'][3]) // 2
-
-            # Check response match
-            response_match, response_confidence, matched_response = fuzzy_match_text(
-                target_response, para['text'])
-            if response_match and response_confidence > best_confidence:
-                best_match = para
-                best_confidence = response_confidence
-                best_text = "response"
-                tap_x = (para['boxes'][0]['box'][0] +
-                         para['boxes'][-1]['box'][2]) // 2
-                tap_y = (para['boxes'][0]['box'][1] +
-                         para['boxes'][-1]['box'][3]) // 2
-
-        # Create visualization overlay for debugging prompt search
-        vis_path = create_visual_debug_overlay(
-            screenshot_path,
-            boxes=boxes,
-            lines=lines,
-            paragraphs=paragraphs,
-            output_path=f"images/prompt_search_visual_{profile_num}_{search_count}.png",
-            tap_target=(tap_x, tap_y) if best_match else None
-        )
-        print(f"Created visualization for prompt search: {vis_path}")
-
-        if best_match:
-            # Found a good match, click it
-            tap(device, tap_x, tap_y)
-            time.sleep(1)
-
-            # Type joke
-            type_text_slow(device, joke)
-            print(
-                f"Found matching {best_text} with confidence {best_confidence:.2f}")
-            return True
-
-        # Scroll down and check if we can continue
-        can_scroll, last_position = swipe(
-            device, width//2, height*0.8, width//2, height*0.7, 100, last_position)
-        if not can_scroll:
-            break
-
-        search_count += 1
-
-    return False
+    # Type joke
+    type_text_slow(device, joke)
+    print(
+        f"Double-clicked at coordinates ({coordinates['x']}, {coordinates['y']}) in screenshot {screenshot_index}")
+    return True
 
 
 def main():
@@ -282,6 +226,8 @@ def main():
         prompt = result.get("prompt", "")
         response = result.get("response", "")
         joke = result.get("joke", "")
+        screenshot_index = result.get("screenshot_index", 0)
+        coordinates = result.get("coordinates", {"x": 0, "y": 0})
 
         if not prompt or not joke:
             print("Invalid result from joke generator")
@@ -291,11 +237,13 @@ def main():
         print(f"\nGenerated joke: {joke}")
         print(f"Target prompt: {prompt}")
         print(f"Target response: {response}")
+        print(f"Screenshot index: {screenshot_index}")
+        print(f"Coordinates: {coordinates}")
 
-        # Step 3: Find and click prompt-response pair with visualization
+        # Step 3: Find and click prompt-response pair
         print("\nStep 3: Finding and clicking prompt-response pair...")
         success = find_and_click_prompt_response(
-            device, prompt, response, joke, profile_num)
+            device, prompt, response, joke, screenshot_index, coordinates, profile_num)
         if not success:
             print("Failed to find and click prompt-response pair")
             profile_num += 1
