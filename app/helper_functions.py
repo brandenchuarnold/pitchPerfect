@@ -567,9 +567,22 @@ STEP C: PICK THE WINNING PAIR
      * Look at where the prompt and response text appears on the screen
      * Identify the area containing both the prompt and its response
      * This area should be treated as a single tap target
-     * Calculate the center point of this text area
+     * Calculate the center point of this text area by:
+       - Finding the top and bottom of the combined text area
+       - Finding the left and right edges of the text
+       - Calculating the exact center point:
+         * X = (left_edge + right_edge) / 2
+         * Y = (top_edge + bottom_edge) / 2
      * The coordinates will be used to tap this exact spot on the real phone screen
    - Ensure coordinates are within the Pixel 6a's screen bounds (1080x2400)
+   - Example calculation:
+     * If text area spans from:
+       - Left: 200px to Right: 800px (width: 600px)
+       - Top: 1000px to Bottom: 1400px (height: 400px)
+     * Then center point would be:
+       - X = (200 + 800) / 2 = 500
+       - Y = (1000 + 1400) / 2 = 1200
+     * These coordinates (500, 1200) are within bounds and can be used directly
 
 Remember:
 - Don't try to be a perfect match

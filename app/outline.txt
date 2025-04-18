@@ -1,13 +1,11 @@
 Hinge Dating App Automation Bot - Development Outline
 
 Current Focus:
-- Testing and Validation:
-  * Run the program and collect screenshots
-  * Validate joke generation quality and relevance
-  * Verify prompt/response extraction from screenshots
-  * Test OCR accuracy for prompt/response detection
-  * Monitor fuzzy matching success rate
-  * Document any issues or improvements needed
+- Keyboard Interaction and Response Mechanics:
+  * Opening and closing the keyboard
+  * Typing responses with proper timing
+- Finding the prompt on screen
+  * revert to OCR locally?
 
 1. Profile Loading and Initial Screenshot Capture:
    Goals:
@@ -25,9 +23,6 @@ Current Focus:
       * Initial screenshot at top
       * 8 scrolls with screenshots
       * Save as profile_{count}_part{i}.png
-      * OCR processing with pytesseract
-      * Visual debugging overlays for each screenshot
-      * Color-coded visualization of text elements
       * Bottom detection using UiScrollable:
         - Check position after each screenshot
         - Stop capture when bottom reached
@@ -37,12 +32,13 @@ Current Focus:
    Left to Do:
    - Implement adaptive timing based on device performance
    - Add screenshot quality verification
-   - Create OCR retry mechanism with different PSM modes
+   - Optimize scroll parameters for different screen sizes
 
-2. Joke Generation:
+2. Joke Generation and Visual Analysis:
    Goals:
    - Process screenshots and context files for joke generation
-   - Generate appropriate joke and target prompt
+   - Analyze screenshots to locate prompt positions
+   - Calculate precise tap coordinates
    - Ensure contextual relevance using provided databases
 
    Currently Implemented:
@@ -54,136 +50,95 @@ Current Focus:
    2. AI Integration:
       * System prompt with structural information
       * User prompt for specific analysis
-      * Returns JSON with prompt, response, and joke
+      * Visual analysis of screenshots:
+        - Treat screenshots as phone screen view
+        - Measure text box positions relative to image height
+        - Calculate absolute coordinates based on device height (2400)
+        - Validate coordinate calculations
+      * Returns JSON with prompt, response, and coordinates
       * Confidence scoring for matches
       * Prompt database matching:
         - Load all prompts from prompts.txt
         - Use fuzzy matching to find best match for AI-generated prompt
         - Replace AI prompt with exact database match
-        - Use exact match for OCR search
 
    Expected Output Structure:
    {
      "prompt": "The exact prompt text to match",
      "response": "The user's response to the prompt",
-     "joke": "The generated joke"
+     "joke": "The generated joke",
+     "screenshot_index": "Index of the screenshot containing the prompt",
+     "coordinates": {
+       "x": "Absolute x coordinate based on device width",
+       "y": "Absolute y coordinate based on device height (2400)",
+       "relative_position": "Percentage from top of image (0-100)",
+       "confidence": "Confidence score of coordinate calculation"
+     }
    }
 
 3. Prompt Location and Response:
    Goals:
-   - Find target prompt on screen
-   - Input generated response
-   - Send response
-   - Create clear visual debugging for text detection
-   - Show hierarchical text organization
-   - Make OCR results easily reviewable
+   - Navigate to the correct screenshot
+   - Click on the prompt location using calculated coordinates
+   - Prepare for response input
 
    Currently Implemented:
-   1. OCR Processing and Paragraph Detection:
-      * Extract all text from current screen using OCR
-      * Group text boxes into lines based on vertical alignment
-      * Group lines into paragraphs based on spacing
-      * Create hierarchical structure:
-        - Individual text boxes (words/phrases)
-        - Lines (horizontally aligned text)
-        - Paragraphs (vertically grouped lines)
-      * Visual debugging overlays for each level
-      * Save processed results for analysis
-
-   2. Fuzzy Prompt Matching:
-      * Input: 
-        - Target prompt from prompts.txt database
-        - Response text from Joke Generator
-      * Process:
-        - Compare both target prompt and response text against paragraphs from OCR
-        - For each paragraph:
-          a) Try substring match (needle in haystack)
-          b) Try reverse substring match (haystack in needle)
-          c) Use ratio-based fuzzy matching with difflib
-        - Select best match above threshold (0.8)
-        - Handle multi-line matches within paragraphs
-        - Double-click the matched element if either prompt or response is found
-      * Output:
-        - Coordinates of matched paragraph
-        - Confidence score
-        - Matched text for verification
-        - Visual highlighting of matched paragraph
-        - Indication of whether match was prompt or response
-
-   3. Response Input:
-      * Verify prompt/response match before proceeding
-      * Double-click matched element location
-      * Type joke character by character with 100ms delay
-      * Send response
-      * Fallback to center image tap if no match found and at bottom of screen
-      * Use bottom detection to trigger fallback behavior
-
-   4. OCR Visualization:
-      * Text Box Visualization:
-        - Draw gray rectangles around each detected text box
-        - Include the actual text content inside each box
-        - Box coordinates from pytesseract OCR output
-        - Text color matches box outline for clarity
-      
-      * Line Grouping Visualization:
-        - Group text boxes into lines based on vertical alignment
-        - Draw red rectangles around each line
-        - Line boundaries calculated from contained boxes
-        - Ensures all text boxes in a line are fully enclosed
-      
-      * Paragraph Visualization:
-        - Group lines into paragraphs based on spacing
-        - Draw green rectangles around each paragraph
-        - Paragraph boundaries calculated from contained lines
-        - Includes all text boxes and lines in the group
-      
-      * Visual Debugging Features:
-        - Save visualizations for each processing stage:
-          * Original screenshot with overlays
-          * Separate visualization for each scroll
-          * Naming convention: profile_{count}_visual_{part}.png
-        - Color coding:
-          * Gray: Individual text boxes
-          * Red: Line groupings
-          * Green: Paragraph boundaries
-        - Overlay transparency for readability
-        - Text labels for content verification
-      
-      * Implementation Details:
-        - Using PIL (Python Imaging Library) for drawing
-        - ImageDraw module for shapes and text
-        - Original screenshot as base layer
-        - Overlay elements drawn in sequence:
-          1. Text boxes (gray)
-          2. Line groupings (red)
-          3. Paragraph boundaries (green)
-        - Text content drawn last for visibility
-        - Automatic path generation for saving
+   1. Screenshot Navigation:
+      * Scroll to top of profile
+      * Scroll down to target screenshot index
+      * Use consistent scroll parameters
+      * Wait for scroll completion
+   
+   2. Prompt Interaction:
+      * Double-click at calculated coordinates
+      * Wait for prompt to open
+      * Verify prompt is ready for input
 
    Left to Do:
-   - Add real-time visualization for debugging:
-     * Show box grouping process
-     * Display confidence scores
-     * Highlight problematic detections
-   - Implement scroll adjustment for click safety:
-     * Calculate vertical position of matched grouping
-     * If grouping is in top half of screen, scroll down 10% of screen height
-     * If grouping is in bottom half of screen, scroll up 10% of screen height
-     * Ensure grouping is more centered before clicking
-     * Add safety checks to prevent scrolling beyond screen boundaries
-   - Implement comprehensive error handling:
-     * Handle multiple potential matches
-     * Handle low confidence matches
-     * Retry with different scroll positions
-     * Fall back to exact matching if needed
-   - Enhance OCR Visualization:
-     * Add confidence score visualization
-     * Implement layer toggling
-     * Add zoom functionality for detailed inspection
-     * Create comparison view between original and processed
-     * Add metrics overlay (OCR confidence, match scores)
+   - Add scroll position verification
+   - Implement scroll retry mechanism
+   - Add coordinate validation
+   - Handle edge cases for prompt location
+   - Implement coordinate adjustment for different screen resolutions
 
-4. Error Handling:
+4. Keyboard Interaction and Response:
+   Goals:
+   - Open keyboard for text input
+   - Type response with proper timing
+   - Close keyboard after input
+   - Find and click priority like button
+   - Handle different screen layouts
+
+   Currently Implemented:
+   1. Text Input:
+      * Character-by-character typing with delay
+      * Space character handling
+      * Basic keyboard interaction
+   
+   2. Response Location:
+      * Wait for keyboard to appear
+      * Type response with proper timing
+      * Handle keyboard layout changes
+
+   Left to Do:
+   - Implement keyboard detection:
+     * Check if keyboard is open
+     * Wait for keyboard to fully appear
+     * Handle different keyboard layouts
+   - Add keyboard closing mechanism:
+     * Detect when response is complete
+     * Close keyboard programmatically
+     * Verify keyboard is closed
+   - Priority Like Button:
+     * Find button location based on prompt length
+     * Handle different screen positions
+     * Click with proper timing
+   - Screen Space Management:
+     * Calculate safe areas with keyboard open
+     * Adjust scroll positions accordingly
+     * Handle obscured UI elements
+
+5. Error Handling:
    Goals:
    - Recover from failed operations
    - Maintain bot operation
@@ -191,7 +146,6 @@ Current Focus:
 
    Currently Implemented:
    1. Basic Error Handling:
-      * OCR failure detection
       * API error handling
       * Input verification
       * Fallback mechanisms for no matches
@@ -204,5 +158,7 @@ Current Focus:
    Left to Do:
    - Implement comprehensive logging system
    - Add detailed error recovery strategies
-   - Handle prompt matching failures with more granularity
+   - Handle keyboard interaction failures
    - Add performance metrics tracking
+   - Add coordinate calculation validation
+   - Implement fallback for failed coordinate calculations
