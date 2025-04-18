@@ -1,41 +1,41 @@
 # docker/Dockerfile
 FROM python:3.9-slim
 
+# Set non-interactive frontend to prevent prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Install system dependencies for OCR, spaCy, etc.
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     gcc \
     libffi-dev \
     libssl-dev \
     wget \
     tesseract-ocr \
     libtesseract-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Add apt-get instructions to install libGL
-RUN apt-get update && \
-    apt-get install -y libgl1-mesa-glx && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install ADB into container
-RUN apt-get update && apt-get install -y \
+    libgl1-mesa-glx \
     adb \
-    # plus any other dependencies
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && echo "System dependencies installed"
 
-# Make work directoy
+# Make work directory
 WORKDIR /app
+
+# Copy requirements first to leverage Docker cache
 COPY app/requirements.txt requirements.txt
 
-COPY .env .env
-
-# Install compatible numpy and other dependencies from requirements.txt
-RUN pip install --no-cache-dir numpy==1.21.6
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY app/ /app/
+# Install Python dependencies
+RUN pip install --no-cache-dir --progress-bar on numpy==1.21.6 && \
+    pip install --no-cache-dir --progress-bar on -r requirements.txt && \
+    echo "Python dependencies installed"
 
 # Download spaCy English model
-RUN python -m spacy download en_core_web_sm
+RUN python -m spacy download en_core_web_sm && \
+    echo "spaCy model downloaded"
+
+# Copy application code
+COPY app/ /app/
+COPY .env .env
 
 EXPOSE 8000
 

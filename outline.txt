@@ -28,6 +28,11 @@ Current Focus:
       * OCR processing with pytesseract
       * Visual debugging overlays for each screenshot
       * Color-coded visualization of text elements
+      * Bottom detection using UiScrollable:
+        - Check position after each screenshot
+        - Stop capture when bottom reached
+        - Log bottom detection events
+        - Fallback to screenshot comparison if needed
 
    Left to Do:
    - Implement adaptive timing based on device performance
@@ -51,6 +56,11 @@ Current Focus:
       * User prompt for specific analysis
       * Returns JSON with prompt, response, and joke
       * Confidence scoring for matches
+      * Prompt database matching:
+        - Load all prompts from prompts.txt
+        - Use fuzzy matching to find best match for AI-generated prompt
+        - Replace AI prompt with exact database match
+        - Use exact match for OCR search
 
    Expected Output Structure:
    {
@@ -69,28 +79,46 @@ Current Focus:
    - Make OCR results easily reviewable
 
    Currently Implemented:
-   1. Fuzzy Prompt Matching:
-      * Input: Target prompt and response text from joke generator
+   1. OCR Processing and Paragraph Detection:
+      * Extract all text from current screen using OCR
+      * Group text boxes into lines based on vertical alignment
+      * Group lines into paragraphs based on spacing
+      * Create hierarchical structure:
+        - Individual text boxes (words/phrases)
+        - Lines (horizontally aligned text)
+        - Paragraphs (vertically grouped lines)
+      * Visual debugging overlays for each level
+      * Save processed results for analysis
+
+   2. Fuzzy Prompt Matching:
+      * Input: 
+        - Target prompt from prompts.txt database
+        - Response text from Joke Generator
       * Process:
-        - Extract all text from current screen using OCR
-        - For each potential match:
+        - Compare both target prompt and response text against paragraphs from OCR
+        - For each paragraph:
           a) Try substring match (needle in haystack)
           b) Try reverse substring match (haystack in needle)
           c) Use ratio-based fuzzy matching with difflib
         - Select best match above threshold (0.8)
+        - Handle multi-line matches within paragraphs
+        - Double-click the matched element if either prompt or response is found
       * Output:
-        - Coordinates of matched element (prompt or response)
+        - Coordinates of matched paragraph
         - Confidence score
         - Matched text for verification
+        - Visual highlighting of matched paragraph
+        - Indication of whether match was prompt or response
 
-   2. Response Input:
+   3. Response Input:
       * Verify prompt/response match before proceeding
       * Double-click matched element location
       * Type joke character by character with 100ms delay
       * Send response
-      * Fallback to center image tap if no match found
+      * Fallback to center image tap if no match found and at bottom of screen
+      * Use bottom detection to trigger fallback behavior
 
-   3. OCR Visualization:
+   4. OCR Visualization:
       * Text Box Visualization:
         - Draw gray rectangles around each detected text box
         - Include the actual text content inside each box
@@ -137,6 +165,12 @@ Current Focus:
      * Show box grouping process
      * Display confidence scores
      * Highlight problematic detections
+   - Implement scroll adjustment for click safety:
+     * Calculate vertical position of matched grouping
+     * If grouping is in top half of screen, scroll down 10% of screen height
+     * If grouping is in bottom half of screen, scroll up 10% of screen height
+     * Ensure grouping is more centered before clicking
+     * Add safety checks to prevent scrolling beyond screen boundaries
    - Implement comprehensive error handling:
      * Handle multiple potential matches
      * Handle low confidence matches

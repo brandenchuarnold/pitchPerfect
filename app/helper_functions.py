@@ -96,260 +96,55 @@ def open_hinge(device):
     time.sleep(5)
 
 
-def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_path, captions_txt_path):
-    """
-    Generate a contextually appropriate joke response for a Hinge profile based on screenshots.
-
-    Args:
-        screenshots: List of paths to screenshot images in order
-        format_txt_path: Path to format.txt describing profile structure
-        prompts_txt_path: Path to prompts.txt containing available prompts
-        captions_txt_path: Path to captions.txt containing possible captions
+def isAtBottom(device):
+    """Check if we've reached the bottom of a scrollable view using UiScrollable.
 
     Returns:
-        dict: Contains the prompt-response pair and generated joke:
-        {
-            "prompt": str,      # The prompt text being responded to
-            "response": str,    # The user's response to the prompt
-            "joke": str        # The generated joke
-        }
+        bool: True if at bottom, False otherwise
     """
-    # Read the content of our context files
     try:
-        with open(format_txt_path, 'r') as f:
-            format_content = f.read()
-        with open(prompts_txt_path, 'r') as f:
-            prompts_content = f.read()
-        with open(captions_txt_path, 'r') as f:
-            captions_content = f.read()
+        # Get the UiScrollable object for the current view
+        scrollable = device.uiAutomator.getUiScrollable()
+
+        # Get max and current scroll steps
+        max_steps = scrollable.getMaxScrollSteps()
+        current_steps = scrollable.getCurrentScrollSteps()
+
+        # If we can't get steps, try alternative method
+        if max_steps is None or current_steps is None:
+            return not scrollable.canScrollVertically()
+
+        # Add small threshold to account for floating point differences
+        return abs(max_steps - current_steps) < 0.1
     except Exception as e:
-        print(f"Error reading context files: {e}")
-        return None
+        print(f"Error checking scroll position: {e}")
+        return False
 
-    # Convert screenshots to base64 for API transmission
-    import base64
-    screenshot_data = []
-    for i, screenshot_path in enumerate(screenshots):
-        try:
-            with open(screenshot_path, 'rb') as image_file:
-                encoded_string = base64.b64encode(
-                    image_file.read()).decode('utf-8')
-                screenshot_data.append({
-                    "type": "image",
-                    "source": {
-                        "type": "base64",
-                        "media_type": "image/png",
-                        "data": encoded_string
-                    }
-                })
-        except Exception as e:
-            print(f"Error processing screenshot {i}: {e}")
-            return None
 
-    # System prompt containing all the structural information
-    system_prompt = f"""You are a witty and observant dating app assistant. Your task is to analyze Hinge dating profiles and generate clever jokes that continue the conversation based on the woman's existing response. Each joke should balance three key elements equally:
-1. Flattery - making the woman feel appreciated and seen
-2. Humor - creating something genuinely funny and engaging
-3. Flirtation - adding a playful, romantic element
-
-You have access to the following information:
-PROFILE STRUCTURE INFORMATION:
-{format_content}
-
-AVAILABLE PROMPTS:
-{prompts_content}
-
-AVAILABLE PHOTO CAPTIONS:
-{captions_content}
-
-Your process has two distinct steps:
-
-STEP A: UNDERSTAND THE PROFILE
-1. Analyze the profile structure using the provided format information in PROFILE STRUCTURE INFORMATION
-2. Identify all profile elements:
-   - Photos and their captions (see AVAILABLE PHOTO CAPTIONS)
-   - Prompts and responses (see AVAILABLE PROMPTS)
-   - Profile Information (see PROFILE STRUCTURE INFORMATION)
-3. Build a comprehensive understanding of the woman's personality through:
-   a) Activities and Interests
-      - What does she enjoy doing?
-      - How does she spend her time?
-      - What are her hobbies?
-   
-   b) Intellectual Framework
-      - How does she think?
-      - What opinions does she express?
-      - What values does she show?
-   
-   c) Communication Style
-      - How does she express herself?
-      - What tone does she use?
-      - What kind of humor does she show?
-
-STEP B: GENERATE THE JOKE
-1. Identify all prompt-response pairs in the profile
-   - Use the format structure in PROFILE STRUCTURE INFORMATION to recognize prompts
-   - Match prompts with their corresponding responses
-   - Verify against the available prompts list which is the authoritative source for prompts
-
-2. For each prompt-response pair:
-   a) Analyze the context:
-      - What is she trying to convey with this prompt/response?
-      - What personality traits does it reveal?
-      - What values or interests does it highlight?
-   
-   b) Generate potential jokes that balance:
-      * Flattery: Show we've paid attention and highlight positive traits
-      * Humor: Create something genuinely funny and unexpected
-      * Flirtation: Add a playful, romantic element
-      * Keep jokes concise (1-2 sentences)
-   
-   c) Evaluate each joke by considering:
-      - How well it balances all three elements
-      - How natural and authentic it feels
-      - How it might make her feel
-      - How it could lead to further conversation
-
-3. For each joke, simulate the conversation:
-   - How would she feel receiving this joke?
-   - What elements (flattery, humor, flirtation) would stand out to her?
-   - How could this lead to an engaging back-and-forth?
-   - What might she say in response?
-
-4. Select the joke that:
-   - Feels most natural and authentic
-   - Would make her want to continue the conversation
-   - Has the most promising simulated conversation flow
-
-Your response must be in this JSON format:
-{{
-    "prompt": "The exact prompt text you're responding to",
-    "response": "The user's response to this prompt",
-    "joke": "Your generated joke to continue the conversation"
-}}"""
-
-    # User message - just the specific task
-    user_message = """Please analyze these profile screenshots and generate a joke that continues the conversation based on the woman's existing response. Remember to:
-1. First build your understanding of the woman's personality
-2. Then identify prompt-response pairs and generate jokes that balance flattery, humor, and flirtation
-3. Select the best joke based on simulated conversation flow"""
-
-    # Create the message for Claude
-    messages = [
-        {
-            "role": "user",
-            "content": [
-                {
-                    "type": "text",
-                    "text": user_message
-                },
-                *screenshot_data  # Add all screenshots as subsequent content items
-            ]
-        }
-    ]
-
+def extract_text_from_image_with_boxes(image_path):
+    """Extract text and bounding boxes from an image using OCR"""
     try:
-        # Make the API call to Claude
-        response = client.messages.create(
-            model="claude-3-7-sonnet-20250219",
-            max_tokens=1000,
-            temperature=1,
-            system=system_prompt,
-            messages=messages
-        )
+        image = Image.open(image_path)
+        ocr_data = pytesseract.image_to_data(
+            image, output_type=pytesseract.Output.DICT)
 
-        # Parse the response
-        try:
-            # The response should be in JSON format as requested
-            import json
-            result = json.loads(response.content[0].text)
-            return {
-                "prompt": result.get("prompt", ""),
-                "response": result.get("response", ""),
-                "joke": result.get("joke", "")
-            }
-        except json.JSONDecodeError:
-            print("Error: Response was not in expected JSON format")
-            print("Raw response:", response.content[0].text)
-            return None
-        except (ValueError, TypeError) as e:
-            print(f"Error parsing response values: {e}")
-            return None
-
+        boxes = []
+        for i in range(len(ocr_data['text'])):
+            if ocr_data['text'][i].strip():
+                box = {
+                    'text': ocr_data['text'][i],
+                    'box': (
+                        ocr_data['left'][i],
+                        ocr_data['top'][i],
+                        ocr_data['width'][i],
+                        ocr_data['height'][i]
+                    )
+                }
+                boxes.append(box)
+        return boxes
     except Exception as e:
-        print(f"Error calling Claude API: {e}")
+        print(f"Error extracting text from image: {e}")
         return None
-
-
-def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, output_path=None):
-    """Create a visual debugging overlay showing text boxes, lines, and paragraphs.
-
-    Args:
-        image_path: Path to the original screenshot
-        boxes: List of text boxes with 'text' and 'box' fields
-        lines: Optional list of line groupings
-        paragraphs: Optional list of paragraph groupings
-        output_path: Optional path to save the visualization
-
-    Returns:
-        PIL Image object with the visualization overlay
-    """
-    # Load the original image
-    img = Image.open(image_path)
-    draw = ImageDraw.Draw(img)
-
-    # Create output path if not provided
-    if output_path is None:
-        base, ext = os.path.splitext(image_path)
-        output_path = f"{base}_visual{ext}"
-
-    # Draw text boxes (gray)
-    for box in boxes:
-        x, y, w, h = box['box']
-        # Draw box
-        draw.rectangle([x, y, x + w, y + h], outline='gray', width=2)
-        # Add text label
-        try:
-            font = ImageFont.truetype("Arial.ttf", 12)
-        except:
-            font = ImageFont.load_default()
-        draw.text((x, y - 15), box['text'], fill='gray', font=font)
-
-    # Draw lines (red)
-    if lines:
-        for line in lines:
-            # Find bounding box of line
-            min_x = min(box['box'][0] for box in line)
-            min_y = min(box['box'][1] for box in line)
-            max_x = max(box['box'][0] + box['box'][2] for box in line)
-            max_y = max(box['box'][1] + box['box'][3] for box in line)
-            draw.rectangle([min_x, min_y, max_x, max_y],
-                           outline='red', width=2)
-
-    # Draw paragraphs (green)
-    if paragraphs:
-        for para in paragraphs:
-            # Find bounding box of paragraph
-            min_x = min(box['box'][0] for box in para['boxes'])
-            min_y = min(box['box'][1] for box in para['boxes'])
-            max_x = max(box['box'][0] + box['box'][2] for box in para['boxes'])
-            max_y = max(box['box'][1] + box['box'][3] for box in para['boxes'])
-            draw.rectangle([min_x, min_y, max_x, max_y],
-                           outline='green', width=2)
-
-            # Add center point for prompts (blue) and responses (red)
-            center_x = (min_x + max_x) // 2
-            center_y = (min_y + max_y) // 2
-            if para.get('is_prompt', False):
-                draw.ellipse([center_x-10, center_y-10, center_x +
-                             10, center_y+10], outline='blue', width=2)
-            elif para.get('is_response', False):
-                draw.ellipse([center_x-10, center_y-10, center_x +
-                             10, center_y+10], outline='red', width=2)
-
-    # Save the visualization
-    img.save(output_path)
-    return img
 
 
 def group_boxes_into_lines(boxes, y_threshold=10):
@@ -497,83 +292,263 @@ def fuzzy_match_text(target_text, text_to_match, threshold=0.8):
     return best_ratio >= threshold, best_ratio, best_match
 
 
-def identify_prompt_response_pairs(paragraphs, prompts_txt_path):
-    """Identify prompt-response pairs in the paragraphs.
+def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, output_path=None):
+    """Create a visual debugging overlay showing text boxes, lines, and paragraphs.
 
     Args:
-        paragraphs: List of paragraphs with text and spatial info
-        prompts_txt_path: Path to the prompts.txt file
+        image_path: Path to the original screenshot
+        boxes: List of text boxes with 'text' and 'box' fields
+        lines: Optional list of line groupings
+        paragraphs: Optional list of paragraph groupings
+        output_path: Optional path to save the visualization
 
     Returns:
-        List of dictionaries containing:
-        - prompt: The prompt paragraph
-        - response: The response paragraph
-        - confidence: Match confidence
+        PIL Image object with the visualization overlay
     """
-    # Load available prompts
+    # Load the original image
+    img = Image.open(image_path)
+    draw = ImageDraw.Draw(img)
+
+    # Create output path if not provided
+    if output_path is None:
+        base, ext = os.path.splitext(image_path)
+        output_path = f"{base}_visual{ext}"
+
+    # Draw text boxes (gray)
+    for box in boxes:
+        x, y, w, h = box['box']
+        # Draw box
+        draw.rectangle([x, y, x + w, y + h], outline='gray', width=2)
+        # Add text label
+        try:
+            font = ImageFont.truetype("Arial.ttf", 12)
+        except:
+            font = ImageFont.load_default()
+        draw.text((x, y - 15), box['text'], fill='gray', font=font)
+
+    # Draw lines (red)
+    if lines:
+        for line in lines:
+            # Find bounding box of line
+            min_x = min(box['box'][0] for box in line)
+            min_y = min(box['box'][1] for box in line)
+            max_x = max(box['box'][0] + box['box'][2] for box in line)
+            max_y = max(box['box'][1] + box['box'][3] for box in line)
+            draw.rectangle([min_x, min_y, max_x, max_y],
+                           outline='red', width=2)
+
+    # Draw paragraphs (green)
+    if paragraphs:
+        for para in paragraphs:
+            # Find bounding box of paragraph
+            min_x = min(box['box'][0] for box in para['boxes'])
+            min_y = min(box['box'][1] for box in para['boxes'])
+            max_x = max(box['box'][0] + box['box'][2] for box in para['boxes'])
+            max_y = max(box['box'][1] + box['box'][3] for box in para['boxes'])
+            draw.rectangle([min_x, min_y, max_x, max_y],
+                           outline='green', width=2)
+
+            # Add center point for prompts (blue) and responses (red)
+            center_x = (min_x + max_x) // 2
+            center_y = (min_y + max_y) // 2
+            if para.get('is_prompt', False):
+                draw.ellipse([center_x-10, center_y-10, center_x +
+                             10, center_y+10], outline='blue', width=2)
+            elif para.get('is_response', False):
+                draw.ellipse([center_x-10, center_y-10, center_x +
+                             10, center_y+10], outline='red', width=2)
+
+    # Save the visualization
+    img.save(output_path)
+    return img
+
+
+def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_path, captions_txt_path, polls_txt_path):
+    """
+    Generate a contextually appropriate joke response for a Hinge profile based on screenshots.
+
+    Args:
+        screenshots: List of paths to screenshot images in order
+        format_txt_path: Path to format.txt describing profile structure
+        prompts_txt_path: Path to prompts.txt containing available prompts
+        captions_txt_path: Path to captions.txt containing possible captions
+        polls_txt_path: Path to polls.txt containing available polls
+
+    Returns:
+        dict: Contains the prompt-response pair and generated joke:
+        {
+            "prompt": str,      # The prompt text being responded to
+            "response": str,    # The user's response to the prompt
+            "joke": str        # The generated joke
+        }
+    """
+    # Read the content of our context files
     try:
+        with open(format_txt_path, 'r') as f:
+            format_content = f.read()
         with open(prompts_txt_path, 'r') as f:
-            available_prompts = [line.strip() for line in f if line.strip()]
+            prompts_content = f.read()
+        with open(captions_txt_path, 'r') as f:
+            captions_content = f.read()
+        with open(polls_txt_path, 'r') as f:
+            polls_content = f.read()
     except Exception as e:
-        print(f"Error reading prompts file: {e}")
-        return []
+        print(f"Error reading context files: {e}")
+        return None
 
-    pairs = []
-    used_paragraphs = set()
+    # Convert screenshots to base64 for API transmission
+    import base64
+    screenshot_data = []
+    for i, screenshot_path in enumerate(screenshots):
+        try:
+            with open(screenshot_path, 'rb') as image_file:
+                encoded_string = base64.b64encode(
+                    image_file.read()).decode('utf-8')
+                screenshot_data.append({
+                    "type": "image",
+                    "source": {
+                        "type": "base64",
+                        "media_type": "image/png",
+                        "data": encoded_string
+                    }
+                })
+        except Exception as e:
+            print(f"Error processing screenshot {i}: {e}")
+            return None
 
-    # First pass: Try to match exact prompts
-    for i, para in enumerate(paragraphs):
-        if i in used_paragraphs:
-            continue
+    # System prompt containing all the structural information
+    system_prompt = f"""You are a witty and observant dating app assistant. Your task is to analyze Hinge dating profiles and generate clever jokes that continue the conversation based on the woman's existing response. Each joke should balance three key elements equally:
+1. Flattery - making the woman feel appreciated and seen
+2. Humor - creating something genuinely funny and engaging
+3. Flirtation - adding a playful, romantic element
 
-        para_text = para['text']
-        for prompt in available_prompts:
-            is_match, ratio, matched = fuzzy_match_text(prompt, para_text)
-            if is_match:
-                # Found a prompt, look for response
-                for j in range(i + 1, len(paragraphs)):
-                    if j in used_paragraphs:
-                        continue
+You have access to the following information:
+PROFILE STRUCTURE INFORMATION:
+{format_content}
 
-                    response_para = paragraphs[j]
-                    # Check if this could be a response
-                    if response_para['spatial_info']['center'][1] > para['spatial_info']['center'][1]:
-                        pairs.append({
-                            'prompt': para,
-                            'response': response_para,
-                            'confidence': ratio
-                        })
-                        used_paragraphs.add(i)
-                        used_paragraphs.add(j)
-                        break
-                break
+AVAILABLE PROMPTS:
+{prompts_content}
 
-    # Second pass: Try to match partial prompts with higher threshold
-    for i, para in enumerate(paragraphs):
-        if i in used_paragraphs:
-            continue
+AVAILABLE PHOTO CAPTIONS:
+{captions_content}
 
-        para_text = para['text']
-        for prompt in available_prompts:
-            is_match, ratio, matched = fuzzy_match_text(
-                prompt, para_text, threshold=0.9)
-            if is_match:
-                # Found a prompt, look for response
-                for j in range(i + 1, len(paragraphs)):
-                    if j in used_paragraphs:
-                        continue
+AVAILABLE POLLS:
+{polls_content}
 
-                    response_para = paragraphs[j]
-                    # Check if this could be a response
-                    if response_para['spatial_info']['center'][1] > para['spatial_info']['center'][1]:
-                        pairs.append({
-                            'prompt': para,
-                            'response': response_para,
-                            'confidence': ratio
-                        })
-                        used_paragraphs.add(i)
-                        used_paragraphs.add(j)
-                        break
-                break
+Your process has two distinct steps:
 
-    return pairs
+STEP A: UNDERSTAND THE PROFILE
+1. Analyze the profile structure using the provided format information in PROFILE STRUCTURE INFORMATION
+2. Identify all profile elements:
+   - Photos and their captions (see AVAILABLE PHOTO CAPTIONS)
+   - Prompts and responses (see AVAILABLE PROMPTS)
+   - Profile Information (see PROFILE STRUCTURE INFORMATION)
+3. Build a comprehensive understanding of the woman's personality through:
+   a) Activities and Interests
+      - What does she enjoy doing?
+      - How does she spend her time?
+      - What are her hobbies?
+   
+   b) Intellectual Framework
+      - How does she think?
+      - What opinions does she express?
+      - What values does she show?
+   
+   c) Communication Style
+      - How does she express herself?
+      - What tone does she use?
+      - What kind of humor does she show?
+
+STEP B: GENERATE THE JOKE
+1. Identify all prompt-response pairs in the profile
+   - Use the format structure in PROFILE STRUCTURE INFORMATION to recognize prompts
+   - Match prompts with their corresponding responses
+   - Verify against the available prompts list which is the authoritative source for prompts
+
+2. For each prompt-response pair:
+   a) Analyze the context:
+      - What is she trying to convey with this prompt/response?
+      - What personality traits does it reveal?
+      - What values or interests does it highlight?
+   
+   b) Generate potential jokes that balance:
+      * Flattery: Show we've paid attention and highlight positive traits
+      * Humor: Create something genuinely funny and unexpected
+      * Flirtation: Add a playful, romantic element
+      * Keep jokes concise (1-2 sentences)
+   
+   c) Evaluate each joke by considering:
+      - How well it balances all three elements
+      - How natural and authentic it feels
+      - How it might make her feel
+      - How it could lead to further conversation
+
+3. For each joke, simulate the conversation:
+   - How would she feel receiving this joke?
+   - What elements (flattery, humor, flirtation) would stand out to her?
+   - How could this lead to an engaging back-and-forth?
+   - What might she say in response?
+
+4. Select the joke that:
+   - Feels most natural and authentic
+   - Would make her want to continue the conversation
+   - Has the most promising simulated conversation flow
+
+Your response must be in this JSON format:
+{{
+    "prompt": "The exact prompt text you're responding to",
+    "response": "The user's response to this prompt",
+    "joke": "Your generated joke to continue the conversation"
+}}"""
+
+    # User message - just the specific task
+    user_message = """Please analyze these profile screenshots and generate a joke that continues the conversation based on the woman's existing response. Remember to:
+1. First build your understanding of the woman's personality
+2. Then identify prompt-response pairs and generate jokes that balance flattery, humor, and flirtation
+3. Select the best joke based on simulated conversation flow"""
+
+    # Create the message for Claude
+    messages = [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": user_message
+                },
+                *screenshot_data  # Add all screenshots as subsequent content items
+            ]
+        }
+    ]
+
+    try:
+        # Make the API call to Claude
+        response = client.messages.create(
+            model="claude-3-7-sonnet-20250219",
+            max_tokens=1000,
+            temperature=1,
+            system=system_prompt,
+            messages=messages
+        )
+
+        # Parse the response
+        try:
+            # The response should be in JSON format as requested
+            import json
+            result = json.loads(response.content[0].text)
+            return {
+                "prompt": result.get("prompt", ""),
+                "response": result.get("response", ""),
+                "joke": result.get("joke", "")
+            }
+        except json.JSONDecodeError:
+            print("Error: Response was not in expected JSON format")
+            print("Raw response:", response.content[0].text)
+            return None
+        except (ValueError, TypeError) as e:
+            print(f"Error parsing response values: {e}")
+            return None
+
+    except Exception as e:
+        print(f"Error calling Claude API: {e}")
+        return None

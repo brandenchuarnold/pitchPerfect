@@ -1,37 +1,36 @@
 HINGE PROFILE SCREENSHOT FORMAT
 
 SCREENSHOT 1 (First Screenshot):
-1. Header Section (Not relevant for joke generation)
-   - Filter buttons at top (Gender, Age, Height, Dating Intentions, etc.)
+1. Header Section
+   - Standard UI element that appears identical on all profiles
+   - Contains app navigation and filter buttons
+   - Does not contain any profile-specific information
+   - Should be ignored for profile analysis and joke generation
 
 2. Profile Identification
    - Name (Left-aligned) - Used for joke generation
    - Optional pronouns below name (Not used for joke generation)
+    Can select multiple from:
+     * she/her/hers
+     * he/him/his
+     * they/them/theirs
    - Navigation buttons on right (Not relevant for joke generation)
 
 3. Initial Content
-   - Always contains at least one photo
-   - May contain one prompt with response
+   - Always contains at least one photo (described in CONTENT ELEMENTS)
+   - May contain one prompt with response (described in CONTENT ELEMENTS)
    - May contain partial content that continues in Screenshot 2
 
 SCREENSHOT 2 (Second Screenshot):
 1. Profile Information Section
-   Contains a subset of the following elements (all optional except Age):
-   - Age (🧁 Cupcake with candle icon) - Always present
-   - Gender (👤 Person icon) - Optional
-   - Sexual Orientation (🧲 Magnet icon) - Optional
-   - Education (🎓 Graduation cap icon) - Optional
-   - Religion (📖 Book icon) - Optional
-   - Location (🏠 House icon) - Optional
-   - Looking For (🔍 Search icon) - Optional
-   - Relationship Type (👥 Two people icon) - Optional
-   
-   Note: Elements appear in order listed when present
-   Each element includes both icon and text value
+   - Contains vital statistics and personal information
+   - Appears in specific layout (described in CONTENT ELEMENTS)
+   - May be partially visible requiring horizontal scroll
+   - Contains both required and optional elements
 
 2. Additional Content
-   - May contain one photo
-   - May contain one prompt with response
+   - May contain one photo (described in CONTENT ELEMENTS)
+   - May contain one prompt with response (described in CONTENT ELEMENTS)
    - May contain completion of partial content from Screenshot 1
    - May contain partial content that continues in Screenshot 3
 
@@ -58,9 +57,28 @@ CONTENT ELEMENTS:
 
 2. PROMPTS
    Profile Requirements:
-   - Each profile must have exactly 3 unique prompts
-   - Each prompt must have a response
+   - Each profile must have exactly 3 unique prompts which are chosen by the woman
+   - Each of these 3 prompts will have a written response below which is authored by the woman
+   - Optionally, a profile may have a 4th prompt with a voice note response
+   - If present, the voice note prompt will ALWAYS appear as the first prompt
    - See prompts.txt for complete list of available prompts
+
+   Response Types:
+   A. Written Response (Required for first 3 prompts)
+      - Free-form text written by the woman
+      - Appears directly below the prompt
+      - Used for both personality analysis and joke generation
+      - If no voice note exists, first prompt will be a written response
+
+   B. Voice Note Response (Optional, appears first if present)
+      Visual Format:
+      - Purple play button with white icon on left side
+      - Purple audio waveform visualization bars on right side
+      - Appears below the prompt text
+      - Always appears as the first prompt when present
+      - Content of voice note is NOT accessible and should NOT be used for analysis
+      - Prompt text itself can still be used for personality analysis
+      - Voice notes are NOT valid targets for joke responses
 
    Visual Format:
    - White background box contains both prompt and response
@@ -69,6 +87,189 @@ CONTENT ELEMENTS:
    - Heart button in white circle (Not relevant for joke generation)
    - May be cut off at screenshot boundary:
      * Partial prompts/responses continue in adjacent screenshot
+     * Must reconstruct complete text from both screenshots
+
+3. PROFILE INFORMATION
+   Layout Structure:
+   A. Horizontal Scroll Row (First row, most elements not visible without scrolling)
+      Contains a subset of the following elements (all optional except Age):
+      - Age (🧁 Cupcake with candle icon) - Always present
+        * Numeric value only
+
+      - Gender (👤 Person icon) - Optional
+        Possible values:
+        * Man
+        * Woman
+        * Nonbinary
+
+      - Ethnicity (🌎 Globe icon) - Optional
+        Can select multiple from:
+        * Black/African Descent
+        * East Asian
+        * Hispanic/Latino
+        * Middle Eastern
+        * Native American
+        * Pacific Islander
+        * South Asian
+        * Southeast Asian
+        * White/Caucasian
+        * Other
+        * Prefer not to say
+
+      - Children Status (👶 Stroller icon) - Optional
+        Possible values:
+        * Don't have children
+        * Have children
+        * Prefer not to say
+
+      - Family Plans (👶 Stroller icon) - Optional
+        Possible values:
+        * Don't want children
+        * Want children
+        * Open to children
+        * Not sure yet
+        * Prefer not to say
+
+      - Sexual Orientation (🧲 Magnet icon) - Optional
+        Possible values:
+        * Straight
+        * Gay
+        * Lesbian
+        * Bisexual
+        * Allosexual
+        * Androsexual
+        * Asexual
+        * Autosexual
+        * Bicurious
+        * Prefer not to say
+
+      - Religion (📖 Book icon) - Optional
+        Possible values:
+        * Agnostic
+        * Atheist
+        * Buddhist
+        * Catholic
+        * Christian
+        * Hindu
+        * Jewish
+        * Muslim
+        * Sikh
+        * Spiritual
+        * Other
+        * Prefer not to say
+
+      - Smoking (🚬 Cigarette icon) - Optional
+        Possible values:
+        * Yes
+        * Sometimes
+        * No
+        * Prefer not to say
+
+      - Drinking (🍷 Wine Glass icon) - Optional
+        Possible values:
+        * Yes
+        * Sometimes
+        * No
+        * Prefer not to say
+
+      - Marijuana (🌿 Leaf icon) - Optional
+        Possible values:
+        * Yes
+        * Sometimes
+        * No
+        * Prefer not to say
+
+      - Drugs (💊 Pill icon) - Optional
+        Possible values:
+        * Yes
+        * Sometimes
+        * No
+        * Prefer not to say
+
+      - Relationship Type - Optional
+        Possible values:
+        * Monogamy
+        * Non-monogamy
+        * Figuring out my relationship type
+
+      - Zodiac Sign (⭐ Star icon) - Optional
+        Possible values:
+        * Aries
+        * Taurus
+        * Gemini
+        * Cancer
+        * Leo
+        * Virgo
+        * Libra
+        * Scorpio
+        * Sagittarius
+        * Capricorn
+        * Aquarius
+        * Pisces
+
+      - Pets (🐾 Paw Print icon) - Optional
+        Can select multiple from:
+        * Dog
+        * Cat
+        * Bird
+        * Fish
+        * Reptile
+        * Prefer not to say
+
+   B. Vertical Information Rows (Always visible, appear in this order)
+      All elements are optional:
+      
+      1. Job Title (💼 Briefcase icon)
+         * Free text field
+
+      2. Workplace
+         * Free text field
+
+      3. Education (🎓 Graduation cap icon)
+         * Free text field showing university name
+
+      4. Languages (汉 Chinese character icon)
+         * Free text field
+
+      5. Looking For (🔍 Magnifying glass icon)
+         Possible values:
+         * Life partner
+         * Long-term relationship
+         * Long-term relationship, open to short
+         * Short-term relationship, open to long
+         * Short-term relationship
+         * Figuring out my dating goals
+         * Prefer not to say
+
+      6. Location (📍 Pin icon)
+         * Current city and state/country
+
+      7. Hometown (🏠 Home icon)
+         * City and state/country of origin
+
+   Visual Format:
+   - Each element includes both icon and text value where specified
+   - Horizontal row requires scrolling to see all elements
+   - Vertical rows are always fully visible
+   - All elements maintain consistent styling and spacing
+
+4. POLLS (Optional)
+   Profile Requirements:
+   - A profile may contain zero or one polls
+   - Each poll consists of:
+     * A question from polls.txt
+     * Exactly three options created by the woman
+   - The options are free-form responses reflecting her perspective
+   - Polls are NOT valid targets for joke responses
+   - Used only for personality analysis
+
+   Visual Format:
+   - White background box contains question and three options
+   - Prompt appears above the three options
+   - Options are presented as selectable choices
+   - Each option is a separate clickable element
+   - May be cut off at screenshot boundary:
+     * Partial polls continue in adjacent screenshot
      * Must reconstruct complete text from both screenshots
 
 NAVIGATION ELEMENTS (Not relevant for joke generation):
