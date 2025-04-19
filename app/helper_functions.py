@@ -587,6 +587,7 @@ For each prompt/response pair:
    * Asks direct questions without unnecessary qualifiers
    * Shows interest through specificity, not through enthusiasm
    * Aims for 10-15 words maximum
+   * You may reference what you know from her profile if it is specific and relevant to the conversation starter.
    * Easy to respond to over text
 
 CRITICAL: People don't narrate their lives with dramatic language - they just ask what they want to know.
