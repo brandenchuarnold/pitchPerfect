@@ -907,7 +907,7 @@ def send_response_to_story(device, conversation_starter, profile_num):
 
     # Close keyboard
     device.shell('input keyevent 4')  # KEYCODE_BACK
-    time.sleep(0.5)
+    time.sleep(1.0)  # Increased from 0.5 to 1.0 seconds
 
     # PHASE 2: Find and click Send Priority Like button in new layout
     print("\nPhase 2: Locating Send Priority Like button...")
@@ -928,7 +928,8 @@ def send_response_to_story(device, conversation_starter, profile_num):
     send_ratio = 0.0
     for para in paragraphs:
         is_match, ratio, _ = fuzzy_match_text(
-            "Send Priority Like", para['text'])
+            # Added 0.7 threshold
+            "Send Priority Like", para['text'], threshold=0.7)
         if is_match and ratio > send_ratio:
             send_button = para
             send_ratio = ratio

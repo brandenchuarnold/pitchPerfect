@@ -220,8 +220,11 @@ def main():
         width, height = get_screen_resolution(device)
         print(f"Screen resolution: {width}x{height}")
 
-        # Initialize profile counter
+        # Initialize profile counter, successful interaction counter, and target interactions
         profile_num = 1
+        successful_interactions = 0
+        target_interactions = random.randint(4, 6)
+        print(f"Initial target interactions: {target_interactions}")
 
         # Get absolute paths for resource files
         app_dir = os.path.dirname(__file__)
@@ -232,6 +235,18 @@ def main():
 
         while True:  # Main profile loop
             print(f"\nProcessing profile #{profile_num}")
+
+            # Check if we've reached our target interactions
+            if successful_interactions >= target_interactions:
+                print(
+                    f"Reached target of {target_interactions} successful interactions")
+                dislike_profile(device)
+                successful_interactions = 0  # Reset counter
+                target_interactions = random.randint(
+                    4, 6)  # Generate new target
+                print(f"New target interactions: {target_interactions}")
+                profile_num += 1
+                continue
 
             # Scroll through profile and capture screenshots
             screenshots = scroll_profile_and_capture(
@@ -290,6 +305,11 @@ def main():
             if not success:
                 print("Failed to send response")
                 dislike_profile(device)
+            else:
+                # Increment successful interactions counter
+                successful_interactions += 1
+                print(
+                    f"Successful interactions: {successful_interactions}/{target_interactions}")
 
             profile_num += 1
 
