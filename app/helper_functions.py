@@ -810,6 +810,21 @@ def detect_prompt_in_screenshot(device, target_prompt, screenshot_index, profile
         return True, (center_x, center_y)
 
 
+def dislike_profile(device):
+    """Execute a dislike action by tapping the X button.
+
+    Args:
+        device: The ADB device
+
+    Returns:
+        None
+    """
+    # Dislike button is always at x=125, y=2075
+    tap(device, 125, 2075)
+    # Wait 4 seconds for next profile to load
+    time.sleep(4)
+
+
 def send_response_to_story(device, conversation_starter, profile_num):
     """Handle the flow of responding to an opened story.
 
@@ -821,14 +836,15 @@ def send_response_to_story(device, conversation_starter, profile_num):
     Returns:
         bool: True if response was sent successfully, False otherwise
     """
-    # Take screenshot for OCR
+    # PHASE 1: Find and click comment box
+    print("\nPhase 1: Locating comment box...")
     screenshot_path = capture_screenshot(
-        device, f"profile_{profile_num}_response")
+        device, f"profile_{profile_num}_response_phase1")
 
     # Extract text and boxes
     boxes = extract_text_from_image_with_boxes(screenshot_path)
     if not boxes:
-        print("No text boxes found in response screenshot")
+        print("No text boxes found in initial screenshot")
         return False
 
     lines = group_boxes_into_lines(boxes)
@@ -843,25 +859,15 @@ def send_response_to_story(device, conversation_starter, profile_num):
             comment_box = para
             comment_ratio = ratio
 
-    # Find "Send Priority Like" button
-    send_button = None
-    send_ratio = 0.0
-    for para in paragraphs:
-        is_match, ratio, _ = fuzzy_match_text(
-            "Send Priority Like", para['text'])
-        if is_match and ratio > send_ratio:
-            send_button = para
-            send_ratio = ratio
-
-    if not comment_box or not send_button:
-        print("Could not find comment box or send button")
-        # Create visualization without tap targets
+    if not comment_box:
+        print("Could not find comment box")
+        # Create visualization without tap target
         create_visual_debug_overlay(
             screenshot_path,
             boxes=boxes,
             lines=lines,
             paragraphs=paragraphs,
-            output_path=f"images/profile_{profile_num}_response_visual.png"
+            output_path=f"images/profile_{profile_num}_response_phase1_visual.png"
         )
         return False
 
@@ -872,6 +878,62 @@ def send_response_to_story(device, conversation_starter, profile_num):
     comment_y = (min(box['box'][1] for box in comment_boxes) +
                  max(box['box'][1] + box['box'][3] for box in comment_boxes)) // 2
 
+    # Create visualization of phase 1
+    create_visual_debug_overlay(
+        screenshot_path,
+        boxes=boxes,
+        lines=lines,
+        paragraphs=paragraphs,
+        output_path=f"images/profile_{profile_num}_response_phase1_visual.png",
+        tap_target=(comment_x, comment_y)
+    )
+
+    # Click comment box and enter text
+    tap(device, comment_x, comment_y)
+    time.sleep(0.5)
+    input_text(device, conversation_starter)
+    time.sleep(0.5)
+
+    # Close keyboard
+    device.shell('input keyevent 4')  # KEYCODE_BACK
+    time.sleep(0.5)
+
+    # PHASE 2: Find and click Send Priority Like button in new layout
+    print("\nPhase 2: Locating Send Priority Like button...")
+    screenshot_path = capture_screenshot(
+        device, f"profile_{profile_num}_response_phase2")
+
+    # Extract text and boxes again for new layout
+    boxes = extract_text_from_image_with_boxes(screenshot_path)
+    if not boxes:
+        print("No text boxes found in post-input screenshot")
+        return False
+
+    lines = group_boxes_into_lines(boxes)
+    paragraphs = group_lines_into_paragraphs(lines)
+
+    # Find "Send Priority Like" button in new layout
+    send_button = None
+    send_ratio = 0.0
+    for para in paragraphs:
+        is_match, ratio, _ = fuzzy_match_text(
+            "Send Priority Like", para['text'])
+        if is_match and ratio > send_ratio:
+            send_button = para
+            send_ratio = ratio
+
+    if not send_button:
+        print("Could not find Send Priority Like button")
+        # Create visualization without tap target
+        create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=f"images/profile_{profile_num}_response_phase2_visual.png"
+        )
+        return False
+
     # Calculate tap coordinates for send button
     send_boxes = send_button['boxes']
     send_x = (min(box['box'][0] for box in send_boxes) +
@@ -879,31 +941,20 @@ def send_response_to_story(device, conversation_starter, profile_num):
     send_y = (min(box['box'][1] for box in send_boxes) +
               max(box['box'][1] + box['box'][3] for box in send_boxes)) // 2
 
-    # Create visualization with both tap targets
+    # Create visualization of phase 2
     create_visual_debug_overlay(
         screenshot_path,
         boxes=boxes,
         lines=lines,
         paragraphs=paragraphs,
-        output_path=f"images/profile_{profile_num}_response_visual.png",
-        # Show primary tap target (comment box)
-        tap_target=(comment_x, comment_y)
+        output_path=f"images/profile_{profile_num}_response_phase2_visual.png",
+        tap_target=(send_x, send_y)
     )
 
-    # Execute the response flow
-    # 1. Tap comment box
-    tap(device, comment_x, comment_y)
-    time.sleep(0.5)
-
-    # 2. Input conversation starter
-    input_text(device, conversation_starter)
-    time.sleep(0.5)
-
-    # 3. Close keyboard (tap back key)
-    device.shell('input keyevent 4')  # KEYCODE_BACK
-    time.sleep(0.5)
-
-    # 4. Tap Send Priority Like
+    # Click Send Priority Like button
     tap(device, send_x, send_y)
+
+    # Wait 4 seconds for next profile to load
+    time.sleep(4)
 
     return True

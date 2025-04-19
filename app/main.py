@@ -3,6 +3,7 @@
 import time
 import os
 import sys
+import random
 from dotenv import load_dotenv
 from ppadb.client import Client as AdbClient
 import difflib
@@ -23,6 +24,7 @@ from helper_functions import (
     swipe,
     detect_prompt_in_screenshot,
     send_response_to_story,
+    dislike_profile,
 )
 
 
@@ -215,9 +217,22 @@ def main():
 
     # Process profiles until stopped
     profile_num = 1
+    profiles_since_last_dislike = 0
+    next_dislike_after = random.randint(4, 8)  # Random number between 4 and 8
+
     while True:
         print(f"\nProcessing profile #{profile_num}")
         print("="*50)
+
+        # Check if we should dislike this profile
+        if profiles_since_last_dislike >= next_dislike_after:
+            print(
+                f"\nDisliking profile after {profiles_since_last_dislike} profiles")
+            dislike_profile(device)
+            profiles_since_last_dislike = 0
+            next_dislike_after = random.randint(4, 8)  # Reset counter
+            profile_num += 1
+            continue
 
         # Step 1: Scroll and capture screenshots
         print("\nStep 1: Capturing screenshots...")
@@ -241,6 +256,7 @@ def main():
 
         if not result:
             print("Failed to generate conversation starter")
+            profiles_since_last_dislike += 1
             profile_num += 1
             continue
 
@@ -250,6 +266,7 @@ def main():
 
         if not prompt or not conversation_starter:
             print("Invalid result from conversation starter generator")
+            profiles_since_last_dislike += 1
             profile_num += 1
             continue
 
@@ -267,6 +284,7 @@ def main():
         if not matched_prompt or confidence < 0.8:
             print(
                 f"Could not find a good match for prompt '{prompt}' in prompts.txt")
+            profiles_since_last_dislike += 1
             profile_num += 1
             continue
 
@@ -277,6 +295,7 @@ def main():
         success = scroll_to_screenshot(device, screenshot_index)
         if not success:
             print("Failed to scroll to target screenshot")
+            profiles_since_last_dislike += 1
             profile_num += 1
             continue
 
@@ -286,6 +305,7 @@ def main():
             device, matched_prompt, screenshot_index, profile_num)
         if not found:
             print("Failed to detect target prompt in screenshot")
+            profiles_since_last_dislike += 1
             profile_num += 1
             continue
 
@@ -295,9 +315,11 @@ def main():
             device, conversation_starter, profile_num)
         if not success:
             print("Failed to send response")
+            profiles_since_last_dislike += 1
             profile_num += 1
             continue
 
+        profiles_since_last_dislike += 1
         profile_num += 1
 
 
