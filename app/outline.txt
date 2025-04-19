@@ -1,160 +1,100 @@
 Hinge Dating App Automation Bot - Development Outline
 
-Current Focus:
-- Monetize
+Current Implementation:
 
-1. Profile Loading and Initial Screenshot Capture:
-   Goals:
-   - Load the profile
-   - Take full-screen screenshots while scrolling
-   - Ensure complete profile coverage
-
-   Currently Implemented:
-   1. Profile Loading:
-      * Connect to device via ADB
-      * Get screen resolution
-      * Calculate scroll parameters
+1. Profile Processing Flow:
+   - Target Interactions:
+     * Random target between 4-6 successful interactions
+     * Resets after reaching target
+     * Dislikes profile when target reached
    
-   2. Screenshot Capture:
-      * Initial screenshot at top
-      * 8 scrolls with screenshots
-      * Save as profile_{count}_part{i}.png
-      * Bottom detection using UiScrollable:
-        - Check position after each screenshot
-        - Stop capture when bottom reached
-        - Log bottom detection events
-        - Fallback to screenshot comparison if needed
-
-   Left to Do:
-   - Implement adaptive timing based on device performance
-   - Add screenshot quality verification
-   - Optimize scroll parameters for different screen sizes
-
-2. Joke Generation and Visual Analysis:
-   Goals:
-   - Process screenshots and context files for joke generation
-   - Analyze screenshots to locate prompt positions
-   - Calculate precise tap coordinates
-   - Ensure contextual relevance using provided databases
-
-   Currently Implemented:
-   1. Context Files:
-      * format.txt: Profile structure guide
-      * prompts.txt: Available prompts database
-      * captions.txt: Photo captions database
+   - Profile Analysis:
+     * Takes 6 screenshots while scrolling down
+     * Processes screenshots with AI in separate thread
+     * Scrolls back to top while AI processes
+     * Waits for AI response
    
-   2. AI Integration:
-      * System prompt with structural information
-      * User prompt for specific analysis
-      * Visual analysis of screenshots:
-        - Treat screenshots as phone screen view
-        - Measure text box positions relative to image height
-        - Calculate absolute coordinates based on device height (2400)
-        - Validate coordinate calculations
-      * Returns JSON with prompt, response, and coordinates
-      * Confidence scoring for matches
-      * Prompt database matching:
-        - Load all prompts from prompts.txt
-        - Use fuzzy matching to find best match for AI-generated prompt
-        - Replace AI prompt with exact database match
+   - Profile Filtering:
+     * Dislikes if AI returns empty response
+     * Dislikes if prompt match confidence < 0.8
+     * Dislikes if prompt not found after 3 attempts
 
-   Expected Output Structure:
-   {
-     "prompt": "The exact prompt text to match",
-     "response": "The user's response to the prompt",
-     "joke": "The generated joke",
-     "screenshot_index": "Index of the screenshot containing the prompt",
-     "coordinates": {
-       "x": "Absolute x coordinate based on device width",
-       "y": "Absolute y coordinate based on device height (2400)",
-       "relative_position": "Percentage from top of image (0-100)",
-       "confidence": "Confidence score of coordinate calculation"
-     }
-   }
+2. Screenshot Capture:
+   - Takes 6 screenshots total
+   - Uses consistent 68% scroll distance
+   - Captures full profile content
+   - Saves as profile_{count}_part{i}.png
+   - Includes visualization overlays for debugging
 
-3. Prompt Location and Response:
-   Goals:
-   - Navigate to the correct screenshot
-   - Click on the prompt location using calculated coordinates
-   - Prepare for response input
-
-   Currently Implemented:
-   1. Screenshot Navigation:
-      * Scroll to top of profile
-      * Scroll down to target screenshot index
-      * Use consistent scroll parameters
-      * Wait for scroll completion
+3. AI Integration:
+   - System Prompt:
+     * Profile structure guide
+     * Analysis requirements
+     * Response generation rules
    
-   2. Prompt Interaction:
-      * Double-click at calculated coordinates
-      * Wait for prompt to open
-      * Verify prompt is ready for input
-
-   Left to Do:
-   - Add scroll position verification
-   - Implement scroll retry mechanism
-   - Add coordinate validation
-   - Handle edge cases for prompt location
-   - Implement coordinate adjustment for different screen resolutions
-
-4. Keyboard Interaction and Response:
-   Goals:
-   - Open keyboard for text input
-   - Type response with proper timing
-   - Close keyboard after input
-   - Find and click priority like button
-   - Handle different screen layouts
-
-   Currently Implemented:
-   1. Text Input:
-      * Character-by-character typing with delay
-      * Space character handling
-      * Basic keyboard interaction
+   - Response Processing:
+     * Returns JSON with:
+       - prompt: Exact prompt text
+       - response: User's response
+       - conversation_starter: Generated response
+       - screenshot_index: Location of prompt
    
-   2. Response Location:
-      * Wait for keyboard to appear
-      * Type response with proper timing
-      * Handle keyboard layout changes
+   - Prompt Matching:
+     * Matches against authoritative prompts.txt
+     * Requires 0.8 confidence threshold
+     * Uses fuzzy matching for flexibility
 
-   Left to Do:
-   - Implement keyboard detection:
-     * Check if keyboard is open
-     * Wait for keyboard to fully appear
-     * Handle different keyboard layouts
-   - Add keyboard closing mechanism:
-     * Detect when response is complete
-     * Close keyboard programmatically
-     * Verify keyboard is closed
-   - Priority Like Button:
-     * Find button location based on prompt length
-     * Handle different screen positions
-     * Click with proper timing
-   - Screen Space Management:
-     * Calculate safe areas with keyboard open
-     * Adjust scroll positions accordingly
-     * Handle obscured UI elements
+4. Prompt Location and Response:
+   - Location Strategy:
+     * Scrolls to target screenshot
+     * Three attempts to find prompt:
+       1. On target screenshot
+       2. One screen up
+       3. Back on target screenshot
+     * Falls back to bottom if all attempts fail
+   
+   - Response Flow:
+     * Finds "Add a comment" box
+     * Types response with proper timing
+     * Closes keyboard
+     * Finds "Send Priority Like" button
+     * Clicks to send response
 
 5. Error Handling:
-   Goals:
-   - Recover from failed operations
-   - Maintain bot operation
-   - Track and report issues
-
-   Currently Implemented:
-   1. Basic Error Handling:
-      * API error handling
-      * Input verification
-      * Fallback mechanisms for no matches
+   - Profile Filtering:
+     * Empty AI responses
+     * Low confidence prompt matches
+     * Failed prompt location
+     * Failed response sending
    
-   2. Recovery:
-      * Retry mechanisms for text input
-      * Profile skipping on critical failures
-      * State management for profile processing
+   - Recovery Actions:
+     * Dislikes profile on failure
+     * Moves to next profile
+     * Maintains interaction counter
 
-   Left to Do:
-   - Implement comprehensive logging system
-   - Add detailed error recovery strategies
-   - Handle keyboard interaction failures
-   - Add performance metrics tracking
-   - Add coordinate calculation validation
-   - Implement fallback for failed coordinate calculations
+6. Debugging and Visualization:
+   - Screenshot Analysis:
+     * Text box detection
+     * Line and paragraph grouping
+     * Visual overlays for debugging
+   
+   - Logging:
+     * Scroll positions
+     * Match confidence scores
+     * Success/failure states
+     * Interaction counts
+
+Future Improvements:
+1. Adaptive Timing:
+   - Device performance based delays
+   - Dynamic scroll parameters
+   
+2. Enhanced Detection:
+   - Keyboard state detection
+   - Screen layout adaptation
+   - Edge case handling
+   
+3. Performance Optimization:
+   - Screenshot quality verification
+   - Scroll parameter optimization
+   - Resource management

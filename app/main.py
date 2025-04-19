@@ -324,10 +324,41 @@ def main():
             )
 
             if not found:
-                print("Failed to find prompt on screen")
-                dislike_profile(device)
-                profile_num += 1
-                continue
+                print(
+                    "Failed to find prompt on target screenshot - trying one screen up...")
+                # Scroll up one screen and try again
+                swipe(device, "up")
+                time.sleep(1)  # Wait for scroll to complete
+
+                found, tap_coords = detect_prompt_in_screenshot(
+                    device,
+                    matched_prompt,
+                    ai_response['response'],
+                    ai_response['screenshot_index'],
+                    profile_num
+                )
+
+                if not found:
+                    print(
+                        "Failed to find prompt on screen above - returning to target screenshot...")
+                    # Scroll back down to target screenshot
+                    swipe(device, "down")
+                    time.sleep(1)  # Wait for scroll to complete
+
+                    # Try one more time on target screenshot
+                    found, tap_coords = detect_prompt_in_screenshot(
+                        device,
+                        matched_prompt,
+                        ai_response['response'],
+                        ai_response['screenshot_index'],
+                        profile_num
+                    )
+
+                    if not found:
+                        print("Failed to find prompt after all attempts")
+                        dislike_profile(device)
+                        profile_num += 1
+                        continue
 
             # Send the response
             success = send_response_to_story(

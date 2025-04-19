@@ -617,6 +617,18 @@ For each story (element), determine what it reveals about the main person:
 3. Photos without people: Consider what this reveals about her interests
 4. Prompt/Response: Consider her history and preferences
    - Example: "Bar trivia and salty snacks" → enjoys trivia as hobby
+   - CRITICAL: Always analyze the implicit meaning behind responses:
+     * Responses often contain unstated but obvious information
+     * Never ask redundant questions about things they've already stated
+     * Look for the deeper context in their answers
+     * Example 1: "My simple pleasures - the spicy potato soft taco at taco bell"
+       - Implicit: They've tried it and enjoy it
+       - Don't ask: "Have you tried the spicy potato soft taco?"
+       - Instead ask: "What's your go-to order at Taco Bell?"
+     * Example 2: "I geek out on - astrophysics"
+       - Implicit: They have knowledge/interest in the topic
+       - Don't ask: "Do you know about astrophysics?"
+       - Instead ask: "What's the most fascinating thing you've learned about astrophysics?"
 5. Profile Basics: Take her descriptions at face value
 6. Voice Prompt: Unknown content, only prompt visible
 7. Poll Prompt: Shows topics she'd discuss
@@ -858,7 +870,8 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
 
         # Execute double tap at the calculated coordinates
         tap(device, tap_x, tap_y, double_tap=True)
-        time.sleep(1)  # Wait for response interface to open
+        # Increased from 1.0 to 2.0 seconds to wait for response interface to open
+        time.sleep(2.0)
 
         return True, (tap_x, tap_y)
     else:
@@ -978,13 +991,13 @@ def send_response_to_story(device, conversation_starter, profile_num):
 
     # Click comment box and enter text
     tap(device, comment_x, comment_y)
-    time.sleep(0.5)
+    time.sleep(1.0)  # Increased from 0.5 to 1.0 seconds
     input_text(device, conversation_starter)
-    time.sleep(0.5)
+    time.sleep(1.0)  # Increased from 0.5 to 1.0 seconds
 
     # Close keyboard
     device.shell('input keyevent 4')  # KEYCODE_BACK
-    time.sleep(1.0)  # Increased from 0.5 to 1.0 seconds
+    time.sleep(2.0)  # Increased from 1.0 to 2.0 seconds
 
     # PHASE 2: Find and click Send Priority Like button in new layout
     print("\nPhase 2: Locating Send Priority Like button...")
