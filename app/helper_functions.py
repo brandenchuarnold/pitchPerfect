@@ -555,9 +555,28 @@ STEP 2: IDENTIFY THE MAIN PERSON
    - Photos with no people are interest photos and should be ignored for identity
    - The main person should appear in the majority of photos
    - Note any distinguishing features of the main person for later analysis
+2. Remember this person's identity throughout the rest of the analysis
 
-STEP 3: CHECK FOR UNDESIRABLE TRAITS
-Analyze the main person (not other people in photos) for these traits:
+STEP 3: ORGANIZE ELEMENTS INTO BUCKETS
+For each screenshot, group elements into these buckets:
+a. Photos (6 total)
+   - May have a caption
+   - If captioned, understand she chose that caption to describe the photo
+   - Focus on photos containing the main person for her characteristics
+   - Use photos with other people to understand her social circle
+   - Use photos without people to understand her interests/hobbies
+b. Prompts and Responses (3 total)
+   - Understand she chose the prompt and provided her own response
+   - These directly reflect her personality and preferences
+c. Profile Basics (1 total)
+   - All bullet-points she provided to describe herself
+   - These are her self-reported characteristics
+d. Voice Prompt and/or Poll Prompt (0-2 total)
+   - Voice prompt: Cannot understand the recording, only see the prompt
+   - Poll prompt: Can read her provided options for engagement
+
+STEP 4: CHECK FOR UNDESIRABLE TRAITS
+Analyze ONLY the main person (not other people in photos) for these traits:
 1. Excessive Weight:
    - Look for excessive fat in arms, legs, neck
    - Pay special attention to head/neck photos
@@ -576,7 +595,7 @@ Analyze the main person (not other people in photos) for these traits:
    - Consider if these features appear consistently
    - Only mark as undesirable if confident based on multiple photos
 
-If ANY of these traits are present in the main person with high confidence, return an empty response as below to indicate the profile is undesirable:
+If ANY of these traits are present in the main person with high confidence, return an empty response to indicate the profile is undesirable:
 {{
     "prompt": "",
     "response": "",
@@ -584,31 +603,20 @@ If ANY of these traits are present in the main person with high confidence, retu
     "screenshot_index": -1
 }}
 
-STEP 4: ORGANIZE ELEMENTS INTO BUCKETS
-For each screenshot, group elements into these buckets:
-a. Photos (6 total)
-   - May have a caption
-   - If captioned, understand she chose that caption to describe the photo
-b. Prompts and Responses (3 total)
-   - Understand she chose the prompt and provided her own response
-c. Profile Basics (1 total)
-   - All bullet-points she provided to describe herself
-d. Voice Prompt and/or Poll Prompt (0-2 total)
-   - Voice prompt: Cannot understand the recording, only see the prompt
-   - Poll prompt: Can read her provided options for engagement
-
 STEP 5: ANALYZE EACH STORY'S IMPLICATIONS
-For each story (element), determine what it reveals about the woman:
-1. Photos: Consider what she's doing and how she made it happen
+For each story (element), determine what it reveals about the main person:
+1. Photos of the main person: Consider what she's doing and how she made it happen
    - Example: "Playing uno in forest" → brought cards to wilderness
-2. Prompt/Response: Consider her history and preferences
+2. Photos with others: Consider what this reveals about her social circle
+3. Photos without people: Consider what this reveals about her interests
+4. Prompt/Response: Consider her history and preferences
    - Example: "Bar trivia and salty snacks" → enjoys trivia as hobby
-3. Profile Basics: Take her descriptions at face value
-4. Voice Prompt: Unknown content, only prompt visible
-5. Poll Prompt: Shows topics she'd discuss
+5. Profile Basics: Take her descriptions at face value
+6. Voice Prompt: Unknown content, only prompt visible
+7. Poll Prompt: Shows topics she'd discuss
 
 STEP 6: COMPILE CHARACTERISTICS
-1. List all characteristics derived from stories
+1. List all characteristics derived from stories about the main person
 2. Organize by confidence level
 3. Note when multiple stories support same characteristic
    - Example: Two stories about exercise → high confidence in active lifestyle
