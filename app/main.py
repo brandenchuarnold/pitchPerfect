@@ -204,124 +204,100 @@ def match_prompt_against_authoritative(prompt, prompts_txt_path):
 
 
 def main():
-    device_ip = os.getenv("DEVICE_IP", "192.168.12.32")
-    print(f"Connecting to device at IP: {device_ip}")
+    """Main function to run the Hinge automation."""
+    try:
+        # Get device IP from environment variable
+        device_ip = os.getenv("DEVICE_IP", "192.168.12.32")
+        print(f"Connecting to device at IP: {device_ip}")
 
-    device = connect_device_remote(device_ip)
-    if not device:
-        print("Failed to connect to device")
-        sys.exit(1)
+        # Connect to device
+        device = connect_device_remote(device_ip)
+        if not device:
+            print("Failed to connect to device")
+            sys.exit(1)
 
-    width, height = get_screen_resolution(device)
-    print(f"Screen resolution: {width}x{height}")
+        # Get screen dimensions
+        width, height = get_screen_resolution(device)
+        print(f"Screen resolution: {width}x{height}")
 
-    # Process profiles until stopped
-    profile_num = 1
-    profiles_since_last_dislike = 0
-    next_dislike_after = random.randint(4, 6)  # Random number between 4 and 6
+        # Initialize profile counter
+        profile_num = 1
 
-    while True:
-        print(f"\nProcessing profile #{profile_num}")
-        print("="*50)
+        # Get absolute paths for resource files
+        app_dir = os.path.dirname(__file__)
+        format_txt_path = os.path.join(app_dir, 'format.txt')
+        prompts_txt_path = os.path.join(app_dir, 'prompts.txt')
+        captions_txt_path = os.path.join(app_dir, 'captions.txt')
+        polls_txt_path = os.path.join(app_dir, 'polls.txt')
 
-        # Check if we should dislike this profile
-        if profiles_since_last_dislike >= next_dislike_after:
-            print(
-                f"\nDisliking profile after {profiles_since_last_dislike} profiles")
-            dislike_profile(device)
-            profiles_since_last_dislike = 0
-            # Reset counter with new 4-6 interval
-            next_dislike_after = random.randint(4, 6)
+        while True:  # Main profile loop
+            print(f"\nProcessing profile #{profile_num}")
+
+            # Scroll through profile and capture screenshots
+            screenshots = scroll_profile_and_capture(
+                device, width, height, profile_num)
+
+            # Generate joke response
+            result = generate_joke_from_screenshots(
+                screenshots,
+                format_txt_path,
+                prompts_txt_path,
+                captions_txt_path,
+                polls_txt_path
+            )
+
+            if not result:
+                print("Failed to generate joke response")
+                dislike_profile(device)
+                profile_num += 1
+                continue
+
+            # Match prompt against authoritative list
+            matched_prompt, confidence = match_prompt_against_authoritative(
+                result['prompt'], prompts_txt_path)
+
+            if not matched_prompt or confidence < 0.8:
+                print(
+                    f"Warning: Low confidence prompt match ({confidence:.2f})")
+                print("Original:", result['prompt'])
+                print("Matched:", matched_prompt)
+                dislike_profile(device)
+                profile_num += 1
+                continue
+
+            # Scroll to the screenshot containing the prompt
+            scroll_to_screenshot(device, result['screenshot_index'])
+
+            # Try to find and tap the prompt
+            found, tap_coords = detect_prompt_in_screenshot(
+                device,
+                matched_prompt,
+                result['response'],
+                result['screenshot_index'],
+                profile_num
+            )
+
+            if not found:
+                print("Failed to find prompt on screen")
+                dislike_profile(device)
+                profile_num += 1
+                continue
+
+            # Send the response
+            success = send_response_to_story(
+                device, result['conversation_starter'], profile_num)
+
+            if not success:
+                print("Failed to send response")
+                dislike_profile(device)
+
             profile_num += 1
-            continue
 
-        # Step 1: Scroll and capture screenshots
-        print("\nStep 1: Capturing screenshots...")
-        screenshots = scroll_profile_and_capture(
-            device, width, height, profile_num)
-        print(f"Captured {len(screenshots)} screenshots")
-
-        # Step 2: Generate conversation starter
-        print("\nStep 2: Generating conversation starter...")
-        result = generate_joke_from_screenshots(
-            screenshots=screenshots,
-            format_txt_path=os.path.join(
-                os.path.dirname(__file__), 'format.txt'),
-            prompts_txt_path=os.path.join(
-                os.path.dirname(__file__), 'prompts.txt'),
-            captions_txt_path=os.path.join(
-                os.path.dirname(__file__), 'captions.txt'),
-            polls_txt_path=os.path.join(
-                os.path.dirname(__file__), 'polls.txt')
-        )
-
-        if not result:
-            print("Failed to generate conversation starter")
-            profiles_since_last_dislike += 1
-            profile_num += 1
-            continue
-
-        prompt = result.get("prompt", "")
-        conversation_starter = result.get("conversation_starter", "")
-        screenshot_index = result.get("screenshot_index", 0)
-
-        if not prompt or not conversation_starter:
-            print("Invalid result from conversation starter generator")
-            profiles_since_last_dislike += 1
-            profile_num += 1
-            continue
-
-        print(f"\nGenerated conversation starter: {conversation_starter}")
-        print(f"Target prompt: {prompt}")
-        print(f"Screenshot index: {screenshot_index}")
-
-        # Step 3: Match prompt against authoritative prompts
-        print("\nStep 3: Matching prompt against authoritative prompts...")
-        matched_prompt, confidence = match_prompt_against_authoritative(
-            prompt,
-            os.path.join(os.path.dirname(__file__), 'prompts.txt')
-        )
-
-        if not matched_prompt or confidence < 0.8:
-            print(
-                f"Could not find a good match for prompt '{prompt}' in prompts.txt")
-            profiles_since_last_dislike += 1
-            profile_num += 1
-            continue
-
-        print(f"Matched to authoritative prompt: {matched_prompt}")
-
-        # Step 4: Scroll to the correct screenshot using the same 68% swipe distance
-        print("\nStep 4: Scrolling to target screenshot...")
-        success = scroll_to_screenshot(device, screenshot_index)
-        if not success:
-            print("Failed to scroll to target screenshot")
-            profiles_since_last_dislike += 1
-            profile_num += 1
-            continue
-
-        # Step 5: Detect and visualize the target prompt in the screenshot
-        print("\nStep 5: Detecting and visualizing target prompt...")
-        found, tap_coordinates = detect_prompt_in_screenshot(
-            device, matched_prompt, screenshot_index, profile_num)
-        if not found:
-            print("Failed to detect target prompt in screenshot")
-            profiles_since_last_dislike += 1
-            profile_num += 1
-            continue
-
-        # Step 6: Send the response
-        print("\nStep 6: Sending response...")
-        success = send_response_to_story(
-            device, conversation_starter, profile_num)
-        if not success:
-            print("Failed to send response")
-            profiles_since_last_dislike += 1
-            profile_num += 1
-            continue
-
-        profiles_since_last_dislike += 1
-        profile_num += 1
+    except KeyboardInterrupt:
+        print("\nExiting gracefully...")
+    except Exception as e:
+        print(f"Error in main: {e}")
+        raise
 
 
 if __name__ == "__main__":

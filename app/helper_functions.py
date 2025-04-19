@@ -490,7 +490,7 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
         {
             "prompt": str,      # The exact prompt text being responded to
             "response": str,    # The user's response to the prompt
-            "joke": str,       # The generated joke
+            "conversation_starter": str,  # The generated conversation starter
             "screenshot_index": int,  # 0-based index of screenshot containing prompt/response
         }
     """
@@ -632,9 +632,10 @@ STEP 8: IDENTIFY SCREENSHOT
 1. Note which screenshot (0-5) contains the prompt of the woman's profile that matches the chosen starter
 2. If prompt spans screenshots, use the one with most text
 
-Return the chosen promp, your conversation starter, and the screenshot index in this JSON format exactly. Do not return any other text or comments beyond the JSON.
+Return the chosen prompt, response, your conversation starter, and the screenshot index in this JSON format exactly. Do not return any other text or comments beyond the JSON.
 {{
-    "prompt": "The exact prompt text you're responding to",
+    "prompt": "The exact prompt text the woman chose",
+    "response": "The woman's response to the prompt",
     "conversation_starter": "Your natural conversation starter",
     "screenshot_index": index_of_screenshot_containing_prompt_response  # 0-based index (0-5)
 }}"""
@@ -676,6 +677,7 @@ Return the chosen promp, your conversation starter, and the screenshot index in 
             result = json.loads(response.content[0].text)
             return {
                 "prompt": result.get("prompt", ""),
+                "response": result.get("response", ""),
                 "conversation_starter": result.get("conversation_starter", ""),
                 "screenshot_index": result.get("screenshot_index", 0)
             }
@@ -692,18 +694,19 @@ Return the chosen promp, your conversation starter, and the screenshot index in 
         return None
 
 
-def detect_prompt_in_screenshot(device, target_prompt, screenshot_index, profile_num):
-    """Detect and visualize the target prompt in a screenshot.
+def detect_prompt_in_screenshot(device, target_prompt, target_response, screenshot_index, profile_num):
+    """Detect and visualize the target prompt or response in a screenshot.
 
     Args:
         device: The ADB device
         target_prompt: The prompt text we're looking for
+        target_response: The response text we're looking for
         screenshot_index: Index of the screenshot to analyze
         profile_num: Current profile number
 
     Returns:
         tuple: (found, tap_coordinates) where:
-            - found: bool indicating if prompt was found
+            - found: bool indicating if prompt/response was found
             - tap_coordinates: (x,y) coordinates to tap if found, None if not found
     """
     # Take a fresh screenshot at this position
@@ -719,32 +722,41 @@ def detect_prompt_in_screenshot(device, target_prompt, screenshot_index, profile
     lines = group_boxes_into_lines(boxes)
     paragraphs = group_lines_into_paragraphs(lines)
 
-    # Debug print: Show all paragraphs and their match scores
+    # First try to find the target prompt with high confidence
     print("\nDebug: Comparing target prompt against OCR paragraphs:")
     print(f"Target prompt: '{target_prompt}'")
     print("\nOCR paragraphs found:")
+
+    best_prompt_match = None
+    best_prompt_ratio = 0.0
+    best_response_match = None
+    best_response_ratio = 0.0
+
     for i, para in enumerate(paragraphs):
-        is_match, ratio, matched_text = fuzzy_match_text(
-            target_prompt, para['text'])
+        # Check for prompt match
+        is_prompt_match, prompt_ratio, matched_text = fuzzy_match_text(
+            target_prompt, para['text'], threshold=0.8)
         print(f"Paragraph {i+1}:")
         print(f"  Text: '{para['text']}'")
-        print(f"  Match ratio: {ratio:.2f}")
-        print(f"  Is match: {is_match}")
+        print(f"  Prompt match ratio: {prompt_ratio:.2f}")
+
+        # Also check for response match with lower threshold
+        is_response_match, response_ratio, _ = fuzzy_match_text(
+            target_response, para['text'], threshold=0.7)
+        print(f"  Response match ratio: {response_ratio:.2f}")
         print()
 
-    # Try to find the target prompt in paragraphs
-    best_match = None
-    best_ratio = 0.0
+        if is_prompt_match and prompt_ratio > best_prompt_ratio:
+            best_prompt_match = para
+            best_prompt_ratio = prompt_ratio
+        elif is_response_match and response_ratio > best_response_ratio:
+            best_response_match = para
+            best_response_ratio = response_ratio
 
-    for para in paragraphs:
-        is_match, ratio, matched_text = fuzzy_match_text(
-            target_prompt, para['text'])
-        if is_match and ratio > best_ratio:
-            best_match = para
-            best_ratio = ratio
-
+    # Use prompt match if found, otherwise use response match
+    best_match = best_prompt_match if best_prompt_match else best_response_match
     if best_match:
-        print(f"Found prompt match with ratio {best_ratio:.2f}")
+        print(f"Found {'prompt' if best_prompt_match else 'response'} match with ratio {max(best_prompt_ratio, best_response_ratio):.2f}")
 
         # Calculate tap coordinates (center of the paragraph)
         boxes = best_match['boxes']
@@ -772,7 +784,7 @@ def detect_prompt_in_screenshot(device, target_prompt, screenshot_index, profile
 
         return True, (tap_x, tap_y)
     else:
-        print("No matching prompt found in screenshot")
+        print("No matching prompt or response found in screenshot")
         # Create visualization without tap target
         create_visual_debug_overlay(
             screenshot_path,

@@ -251,14 +251,19 @@ CONTENT ELEMENTS:
          * Free text field
 
       5. Looking For (🔍 Magnifying glass icon)
-         Possible values:
-         * Life partner
-         * Long-term relationship
-         * Long-term relationship, open to short
-         * Short-term relationship, open to long
-         * Short-term relationship
-         * Figuring out my dating goals
-         * Prefer not to say
+         * Fixed value (one of):
+           - Life partner
+           - Long-term relationship
+           - Long-term relationship, open to short
+           - Short-term relationship, open to long
+           - Short-term relationship
+           - Figuring out my dating goals
+           - Prefer not to say
+         * Optional explanation
+           - Appears below the selected value
+           - Smaller gray text
+           - Free-form text written by the woman
+           - Used for personality analysis
 
       6. Location (📍 Pin icon)
          * Current city and state/country
