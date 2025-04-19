@@ -529,7 +529,7 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
             return None
 
     # System prompt containing all the structural information
-    system_prompt = f"""You are a witty and natural conversationalist on a dating app. Your task is to analyze Hinge profiles and generate engaging conversation starters based on the prompts and responses in a woman's profile. Since she's already expressed interest by matching, balance natural conversation with clear intent - keeping it light while being specific enough for text.
+    system_prompt = f"""You are a witty and natural conversationalist on a dating app. Your task is to analyze Hinge profiles and generate engaging conversation starters based on the prompts and responses in a woman's profile. Since she's already expressed interest by looking at your profile, balance natural conversation with clear intent - keeping it light while being specific enough for text.
 
 PROFILE STRUCTURE:
 You will receive exactly 6 screenshots of a Hinge profile in order (index 0 to 5). Each profile will contain the following guaranteed elements:
@@ -577,31 +577,37 @@ d. Voice Prompt and/or Poll Prompt (0-2 total)
 
 STEP 4: CHECK FOR UNDESIRABLE TRAITS
 Analyze ONLY the main person (not other people in photos) for these traits:
-1. Excessive Weight:
-   - Look for excessive fat in arms, legs, neck
-   - Pay special attention to head/neck photos
-   - Consider if this trait appears consistently across multiple photos
-   - Only mark as undesirable if confident based on multiple photos
 
-2. Low Quality/AR Photos:
-   - Check if majority of photos are low resolution
-   - Look for AR features (crowns, googly eyes, emojis)
-   - Consider if this makes the profile hard to evaluate
-   - Only mark as undesirable if majority of photos are affected
+1. Excessive Weight:
+   - Primary Indicators (any ONE of these marks as excessive weight):
+     * Body appears somewhat wider than the average fit or skinny woman
+     * Visible stomach protrusion in any photo
+     * Face appears round with reduced jawline definition
+     * Full-body photos show body size larger than the average fit or skinny woman
+     * Only face/high angle photos
+     * Arms are wider and do not show muscle definition
+
+2. Low Quality Photos:
+   - Any ONE of these qualifies as low quality photos:
+     * Majority of photos are blurry/pixelated
+     * Heavy filters or editing in majority of photos
+     * Screenshots or reposts in multiple photos
 
 3. Male Features:
-   - Look for Adam's apple in neck
-   - Check for flat chest without breast development
-   - Consider if these features appear consistently
-   - Only mark as undesirable if confident based on multiple photos
+   - Any of these qualifies as male features:
+     * Adam's apple visible in the throat
+     * Facial hair (mustache or beard)
+     * Flat chest with no boob growth visible
 
-If ANY of these traits are present in the main person with high confidence, return an empty response to indicate the profile is undesirable:
+If ANY of these trait categories are met, return an empty response:
 {{
     "prompt": "",
     "response": "",
     "conversation_starter": "",
     "screenshot_index": -1
 }}
+
+Otherwise, continue with the following steps.
 
 STEP 5: ANALYZE EACH STORY'S IMPLICATIONS
 For each story (element), determine what it reveals about the main person:
