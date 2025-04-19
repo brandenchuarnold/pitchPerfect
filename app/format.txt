@@ -7,9 +7,13 @@ SCREENSHOT 1 (First Screenshot):
    - Does not contain any profile-specific information
    - Should be ignored for profile analysis and joke generation
 
-2. Profile Identification
+2. Profile Identification (Top Element)
    - Name (Left-aligned) - Used for joke generation
-   - Optional pronouns below name (Not used for joke generation)
+   - Optional purple checkmark button (white checkmark in purple star) after name
+     * Only appears after name if present
+     * Indicates verified profile
+   - Optional subtitle below name that says "Active Now" if the user was active recently (Not used for joke generation)
+   - Optional pronouns below name/subtitle (Not used for joke generation)
     Can select multiple from:
      * she/her/hers
      * he/him/his
@@ -22,22 +26,37 @@ SCREENSHOT 1 (First Screenshot):
    - May contain partial content that continues in Screenshot 2
 
 SCREENSHOT 2 (Second Screenshot):
-1. Profile Information Section
+1. Floating Header (Top Element)
+   - Name appears at top of screen
+   - Center-aligned
+   - Optional purple checkmark button after name if present
+   - Appears as floating header on all screenshots except first
+   - Consistent across all subsequent screenshots
+
+2. Profile Information Section
    - Contains vital statistics and personal information
    - Appears in specific layout (described in CONTENT ELEMENTS)
    - May be partially visible requiring horizontal scroll
    - Contains both required and optional elements
 
-2. Additional Content
+3. Additional Content
    - May contain one photo (described in CONTENT ELEMENTS)
    - May contain one prompt with response (described in CONTENT ELEMENTS)
    - May contain completion of partial content from Screenshot 1
    - May contain partial content that continues in Screenshot 3
 
 SCREENSHOTS 3+ (Subsequent Screenshots):
-- Contain only photos and prompts with responses
-- May contain completion of partial content from previous screenshot
-- May contain partial content that continues in next screenshot
+1. Floating Header (Top Element)
+   - Name appears at top of screen
+   - Center-aligned
+   - Optional purple checkmark button after name if present
+   - Appears as floating header on all screenshots except first
+   - Consistent across all subsequent screenshots
+
+2. Content
+   - Contain only photos and prompts with responses
+   - May contain completion of partial content from previous screenshot
+   - May contain partial content that continues in next screenshot
 
 CONTENT ELEMENTS:
 
@@ -271,6 +290,16 @@ CONTENT ELEMENTS:
    - May be cut off at screenshot boundary:
      * Partial polls continue in adjacent screenshot
      * Must reconstruct complete text from both screenshots
+
+4. ADVERTISEMENTS AND PROMOTIONS (Not relevant for joke generation):
+   A. Prompt Poll Advertisement
+      - Light purple/lavender background box
+      - Contains two distinct text elements:
+        * Left side: "Try it" in purple text on white button background
+        * Right side: "Add a new layer to your profile with a Prompt Poll." in black text
+      - This is a promotional element and should be IGNORED during profile analysis
+      - Not related to the woman's profile or personality
+      - Should not be used for conversation starter generation
 
 NAVIGATION ELEMENTS (Not relevant for joke generation):
 - X button on bottom left for rejecting profile

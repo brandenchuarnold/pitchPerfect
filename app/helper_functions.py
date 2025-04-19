@@ -584,10 +584,9 @@ For each prompt/response pair:
    * Uses natural, everyday language - how you'd actually talk to someone
    * Avoids flowery metaphors or dramatic language
    * Never uses marketing-style words like "perfect", "amazing", "journey", "adventure"
-   * Makes no assumptions about her experiences being positive or negative
    * Asks direct questions without unnecessary qualifiers
    * Shows interest through specificity, not through enthusiasm
-   * Aims for 10-15 words maximum
+   * Aims for 15-20 words maximum
    * Easy to respond to over text
 
 CRITICAL: People don't narrate their lives with dramatic language - they just ask what they want to know.
@@ -608,7 +607,6 @@ The key difference is that natural language:
 2. Doesn't add unnecessary drama or narrative
 3. Asks what you actually want to know
 4. Treats activities as normal parts of life, not epic adventures
-5. Avoids making assumptions about experiences
 
 STEP 6: SIMULATE CONVERSATION
 For each starter:

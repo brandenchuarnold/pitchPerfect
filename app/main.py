@@ -218,7 +218,7 @@ def main():
     # Process profiles until stopped
     profile_num = 1
     profiles_since_last_dislike = 0
-    next_dislike_after = random.randint(4, 8)  # Random number between 4 and 8
+    next_dislike_after = random.randint(4, 6)  # Random number between 4 and 6
 
     while True:
         print(f"\nProcessing profile #{profile_num}")
@@ -230,7 +230,8 @@ def main():
                 f"\nDisliking profile after {profiles_since_last_dislike} profiles")
             dislike_profile(device)
             profiles_since_last_dislike = 0
-            next_dislike_after = random.randint(4, 8)  # Reset counter
+            # Reset counter with new 4-6 interval
+            next_dislike_after = random.randint(4, 6)
             profile_num += 1
             continue
 
