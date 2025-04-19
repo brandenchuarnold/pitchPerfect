@@ -753,7 +753,7 @@ Return the chosen prompt, response, your conversation starter, and the screensho
     try:
         # Make the API call to Claude
         response = client.messages.create(
-            model="claude-3-7-sonnet-20250219",
+            model="claude-3-7-sonnet-latest",
             max_tokens=1000,
             temperature=1,
             system=system_prompt,
