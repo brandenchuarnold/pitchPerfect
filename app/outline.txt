@@ -5,7 +5,14 @@ Current Focus:
   * Opening and closing the keyboard
   * Typing responses with proper timing
 - Finding the prompt on screen
-  * revert to OCR locally?
+  * revert to OCR locally
+  * scroll slightly up/down if the match is at the bottom/top
+  * refine OCr based on colored boxes debugging
+  * try to click prompt location
+  * ask AI if the clikc was successfully by comparing screenshots before and after
+  * if not sucesssful, scroll to bottom and double click center
+  * open keyboard, ener joke, close keyboard
+  * use OCR to determine positioning of Send Priority Like button and click
 
 1. Profile Loading and Initial Screenshot Capture:
    Goals:

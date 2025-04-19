@@ -49,12 +49,22 @@ def capture_screenshot(device, filename):
     return "images/" + str(filename) + ".png"
 
 
-def tap(device, x, y):
-    """Execute a tap at the given coordinates"""
-    print(f"Executing tap at coordinates: {x}, {y}")
-    device.shell(f"input tap {x} {y}")
-    time.sleep(0.3)
-    device.shell(f"input swipe {x} {y} {x} {y} 100")
+def tap(device, x, y, double_tap=False):
+    """Execute a tap or double tap at the given coordinates"""
+    print(
+        f"Executing {'double tap' if double_tap else 'tap'} at coordinates: {x}, {y}")
+    if double_tap:
+        # First tap
+        device.shell(f"input tap {x} {y}")
+        time.sleep(0.15)  # Brief pause between taps
+        # Second tap
+        device.shell(f"input tap {x} {y}")
+        time.sleep(0.5)  # Wait for double-tap to register
+    else:
+        device.shell(f"input tap {x} {y}")
+        time.sleep(0.3)
+        # Additional swipe to ensure tap registers
+        device.shell(f"input swipe {x} {y} {x} {y} 100")
     return True
 
 
@@ -74,22 +84,31 @@ def type_text_slow(device, text, per_char_delay=0.1):
         time.sleep(per_char_delay)
 
 
-def swipe(device, x1, y1, x2, y2, duration=500, last_scroll_position=None):
-    """Execute a swipe gesture.
+def swipe(device, direction="down", duration=1500):
+    """Execute a swipe gesture with consistent 68% scroll distance.
 
     Args:
         device: The ADB device
-        x1, y1: Starting coordinates
-        x2, y2: Ending coordinates
+        direction: "up" or "down" to specify scroll direction
         duration: Duration of swipe in milliseconds
-        last_scroll_position: Previous scroll position (unused)
 
     Returns:
         tuple: (True, 0) for compatibility with existing code
     """
     try:
-        # Execute the swipe
-        device.shell(f"input swipe {x1} {y1} {x2} {y2} {duration}")
+        width, height = get_screen_resolution(device)
+        x_scroll = int(width * 0.5)  # Center of screen
+        y_scroll_start = int(height * 0.84)  # Start at 84% of screen height
+        y_scroll_end = int(height * 0.16)    # End at 16% of screen height
+
+        # Execute the swipe in the specified direction
+        if direction == "down":
+            device.shell(
+                f"input swipe {x_scroll} {y_scroll_start} {x_scroll} {y_scroll_end} {duration}")
+        else:  # up
+            device.shell(
+                f"input swipe {x_scroll} {y_scroll_end} {x_scroll} {y_scroll_start} {duration}")
+
         time.sleep(0.5)  # Wait for scroll to complete
         return True, 0
 
@@ -216,7 +235,7 @@ def extract_text_from_image_with_boxes(image_path):
         return None
 
 
-def group_boxes_into_lines(boxes, y_threshold=5):
+def group_boxes_into_lines(boxes, y_threshold=15):
     """Group text boxes into lines based on vertical alignment.
 
     Args:
@@ -235,25 +254,44 @@ def group_boxes_into_lines(boxes, y_threshold=5):
     lines = []
     current_line = []
     current_y = None
+    current_height = None
 
     for box in sorted_boxes:
         box_y = box['box'][1]
+        box_height = box['box'][3]
 
         if current_y is None:
             # First box
             current_y = box_y
-            current_line.append(box)
-        elif abs(box_y - current_y) <= y_threshold:
-            # Box is aligned with current line
+            current_height = box_height
             current_line.append(box)
         else:
-            # Box starts a new line
-            if current_line:
-                # Sort boxes in line by x position
-                current_line.sort(key=lambda b: b['box'][0])
-                lines.append(current_line)
-            current_line = [box]
-            current_y = box_y
+            # Calculate vertical overlap
+            # If boxes overlap vertically or are within y_threshold, consider them on same line
+            box_top = box_y
+            box_bottom = box_y + box_height
+            current_top = current_y
+            current_bottom = current_y + current_height
+
+            vertical_overlap = (min(box_bottom, current_bottom) -
+                                max(box_top, current_top))
+
+            if vertical_overlap > 0 or abs(box_y - current_y) <= y_threshold:
+                # Box is aligned with current line
+                current_line.append(box)
+                # Update current line bounds
+                current_y = min(current_y, box_y)
+                current_height = max(current_height,
+                                     box_y + box_height - current_y)
+            else:
+                # Box starts a new line
+                if current_line:
+                    # Sort boxes in line by x position
+                    current_line.sort(key=lambda b: b['box'][0])
+                    lines.append(current_line)
+                current_line = [box]
+                current_y = box_y
+                current_height = box_height
 
     # Add the last line
     if current_line:
@@ -335,29 +373,30 @@ def fuzzy_match_text(target_text, text_to_match, threshold=0.8):
         tuple: (is_match, similarity_ratio, matched_text)
     """
     # Convert to lowercase for case-insensitive matching
-    target_lower = target_text.lower()
-    match_lower = text_to_match.lower()
+    target_lower = target_text.lower().strip()
+    match_lower = text_to_match.lower().strip()
 
-    # Try different matching strategies
-    strategies = [
-        # Direct substring match
-        lambda t, m: (m in t, 1.0, m),
-        # Reverse substring match
-        lambda t, m: (t in m, 1.0, t),
-        # Sequence matcher ratio
-        lambda t, m: (True, difflib.SequenceMatcher(None, t, m).ratio(), m)
-    ]
+    # Get base similarity ratio using sequence matcher
+    ratio = difflib.SequenceMatcher(None, target_lower, match_lower).ratio()
 
-    best_ratio = 0.0
-    best_match = None
+    # Apply length penalty if strings are very different in length
+    len_ratio = min(len(target_lower), len(match_lower)) / \
+        max(len(target_lower), len(match_lower))
+    ratio = ratio * len_ratio
 
-    for strategy in strategies:
-        is_match, ratio, matched = strategy(target_lower, match_lower)
-        if ratio > best_ratio:
-            best_ratio = ratio
-            best_match = matched
+    # Small bonus (max 0.1) if one string contains the other
+    contains_bonus = 0.0
+    if target_lower in match_lower or match_lower in target_lower:
+        # Bonus scaled by the length ratio of the contained string
+        contains_ratio = min(len(target_lower), len(
+            match_lower)) / max(len(target_lower), len(match_lower))
+        contains_bonus = 0.1 * contains_ratio
 
-    return best_ratio >= threshold, best_ratio, best_match
+    final_ratio = min(1.0, ratio + contains_bonus)
+
+    # Only consider it a match if the ratio is above threshold
+    is_match = final_ratio >= threshold
+    return is_match, final_ratio, text_to_match
 
 
 def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, output_path=None, tap_target=None):
@@ -447,16 +486,12 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
         polls_txt_path: Path to polls.txt containing available polls
 
     Returns:
-        dict: Contains the prompt-response pair, generated joke, and location info:
+        dict: Contains the prompt-response pair, generated joke, and screenshot index:
         {
-            "prompt": str,      # The prompt text being responded to
+            "prompt": str,      # The exact prompt text being responded to
             "response": str,    # The user's response to the prompt
             "joke": str,       # The generated joke
             "screenshot_index": int,  # 0-based index of screenshot containing prompt/response
-            "coordinates": {    # Center coordinates of the text box
-                "x": int,      # X coordinate (0-1080)
-                "y": int       # Y coordinate (0-2400)
-            }
         }
     """
     # Read the content of our context files
@@ -496,122 +531,106 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
     # System prompt containing all the structural information
     system_prompt = f"""You are a witty and natural conversationalist on a dating app. Your task is to analyze Hinge profiles and generate engaging conversation starters based on the prompts and responses in a woman's profile. Since she's already expressed interest by matching, balance natural conversation with clear intent - keeping it light while being specific enough for text.
 
-Key Principles:
-1. Keep it Light and Direct - Dating should be fun, but text needs clarity
-2. Stay Natural but Specific - Be yourself while referencing concrete details
-3. Show Interest without Trying Too Hard - She's already interested, no need to prove yourself
-4. Be Confident yet Authentic - She's matched with you, so just be genuine
+PROFILE STRUCTURE:
+You will receive exactly 6 screenshots of a Hinge profile in order (index 0 to 5). Each profile will contain the following guaranteed elements:
+1. Exactly 6 photos (may have captions)
+2. Exactly 3 prompt/response pairs
+3. One section of profile basics
+4. Optionally one voice prompt
+5. Optionally one poll prompt
 
-DEVICE INFORMATION:
-- The screenshots are taken from a Google Pixel 6a
-- Screen resolution: 2400 (height) x 1080 (width) pixels
-- When providing coordinates:
-  * X values should be between 0 and 1080 (left to right)
-  * Y values should be between 0 and 2400 (top to bottom)
-  * These are real pixel coordinates on a physical phone screen
-
-You have access to the following information:
-PROFILE STRUCTURE INFORMATION:
-{format_content}
-
-AVAILABLE PROMPTS:
-{prompts_content}
-
-AVAILABLE PHOTO CAPTIONS:
-{captions_content}
-
-AVAILABLE POLLS:
-{polls_content}
+Each of these elements is a "story" about the woman - something she has chosen to share about herself. There will always be at least 10 stories (6 photos + 3 prompts + 1 basics) and up to 12 stories if she includes a voice prompt and poll prompt.
 
 Your process:
 
-STEP A: UNDERSTAND THE CONTEXT
-1. Review her profile holistically:
-   - What's her general vibe and personality?
-   - Which specific details stand out naturally?
-   - What topics would create genuine conversation?
+STEP 1: READ AND UNDERSTAND THE CONTEXT
+1. Read format.txt to understand the profile layout
+2. Consult prompts.txt, captions.txt, and polls.txt to understand possible elements
+3. Examine each screenshot in order (0 to 5) and identify all elements
 
-2. Look for authentic connection points:
-   - What catches your eye without forcing it?
-   - Which details could lead to natural questions?
-   - What would be fun to discuss over text?
+STEP 2: ORGANIZE ELEMENTS INTO BUCKETS
+For each screenshot, group elements into these buckets:
+a. Photos (6 total)
+   - May have a caption
+   - If captioned, understand she chose that caption to describe the photo
+b. Prompts and Responses (3 total)
+   - Understand she chose the prompt and provided her own response
+c. Profile Basics (1 total)
+   - All bullet-points she provided to describe herself
+d. Voice Prompt and/or Poll Prompt (0-2 total)
+   - Voice prompt: Cannot understand the recording, only see the prompt
+   - Poll prompt: Can read her provided options for engagement
 
-STEP B: CREATE ONE STARTER PER PAIR
-1. For each prompt-response pair provided in the profile (there are three pairs):
-   - Identify the prompt given by Hinge
-   - Note the woman's response to that prompt
-   - Create exactly ONE conversation starter that is:
-     * Light and playful, but clear in meaning
-     * Natural, while referencing specific details
-     * Easy to respond over text
-     * Around 10-15 words
+STEP 3: ANALYZE EACH STORY'S IMPLICATIONS
+For each story (element), determine what it reveals about the woman:
+1. Photos: Consider what she's doing and how she made it happen
+   - Example: "Playing uno in forest" → brought cards to wilderness
+2. Prompt/Response: Consider her history and preferences
+   - Example: "Bar trivia and salty snacks" → enjoys trivia as hobby
+3. Profile Basics: Take her descriptions at face value
+4. Voice Prompt: Unknown content, only prompt visible
+5. Poll Prompt: Shows topics she'd discuss
 
-2. For each starter you create, verify it:
-   - Does it feel natural while being clear enough for text?
-   - Does it reference something specific without trying too hard?
-   - Would it be easy and fun to respond to?
-   - Does it maintain both authenticity and interest?
-   - Does it avoid implying you share all their exact interests? (It's okay to show interest without claiming to share every hobby)
+STEP 4: COMPILE CHARACTERISTICS
+1. List all characteristics derived from stories
+2. Organize by confidence level
+3. Note when multiple stories support same characteristic
+   - Example: Two stories about exercise → high confidence in active lifestyle
 
-STEP C: PICK THE WINNING PAIR
-1. Compare all three prompt-response pairs and their starters:
-   - Which combination feels most natural and clear?
-   - Which specific reference feels least forced?
-   - Which would be most fun to respond to?
-   - Which best maintains the matching momentum?
+STEP 5: GENERATE CONVERSATION STARTERS
+For each prompt/response pair:
+1. Use characteristics and stories as context
+2. Create exactly ONE conversation starter that:
+   * Natural and specific (10-15 words)
+   * Shows interest without being overly enthusiastic
+   * Asks about personality, not logistics
+   * Easy to respond to over text
+   * Uses relaxed transitions when connecting interests
+   * Aims for real answers, not narrative framing
+   * 
 
-2. Identify the location:
-   - Determine which screenshot (0-based index) contains the prompt/response
-   - If the text is split across screenshots, use the screenshot with most of the text
-   - Find the exact position of the text content in the screenshot:
-     * Look at where the prompt and response text appears on the screen
-     * Identify the area containing both the prompt and its response
-     * This area should be treated as a single tap target
-     * Calculate the center point of this text area by:
-       - Finding the top and bottom of the combined text area
-       - Finding the left and right edges of the text
-       - Calculating the exact center point:
-         * X = (left_edge + right_edge) / 2
-         * Y = (top_edge + bottom_edge) / 2
-     * The coordinates will be used to tap this exact spot on the real phone screen
-   - Ensure coordinates are within the Pixel 6a's screen bounds (1080x2400)
-   - Example calculation:
-     * If text area spans from:
-       - Left: 200px to Right: 800px (width: 600px)
-       - Top: 1000px to Bottom: 1400px (height: 400px)
-     * Then center point would be:
-       - X = (200 + 800) / 2 = 500
-       - Y = (1000 + 1400) / 2 = 1200
-     * These coordinates (500, 1200) are within bounds and can be used directly
+Context: People don't typically narrate their lives with words like "adventure" or "journey" - they just live them. Ask questions to learn about their actual plans and thoughts, not to create a story about them.
 
-Remember:
-- Don't try to be a perfect match
-- Keep it light while being specific
-- Show interest without overdoing it
-- Make it easy to respond over text
-- Pick the strongest overall prompt-response-starter combination
-- It's okay to be curious about their interests without claiming to share them all
-- The coordinates must be the center of the actual text content area you're targeting
-- These are real pixel coordinates on a physical phone screen
-- Provide accurate coordinates within the Pixel 6a's screen bounds
+Example. Read this and take note of the tone more than the content. This is the tone you should use:
+   Good: "Noticed you want to surf and travel. Thinking about combining the two?"
+   Avoid: "Two passions in one adventure! Let's make it happen!"
 
-Return the chosen prompt, its response, your conversation starter, the screenshot index, and the coordinate info in this JSON format exactly. Do not return any other text or comments beyond the JSON.
+STEP 6: SIMULATE CONVERSATION
+For each starter:
+1. Imagine her potential responses
+2. Evaluate:
+   - Would she find it engaging?
+   - Would she enjoy talking with you?
+   - Does it show clear interest?
+   - Is it fun and natural?
+   - Does it respect the complexity of her personality?
+
+STEP 7: SELECT BEST STARTER
+1. Choose the starter that best:
+   - Balances engagement and natural flow
+   - References specific details without forcing
+   - Creates fun conversation potential
+   - Shows genuine interest
+   - Respects the complexity of her personality
+2. Note which prompt/response pair of the woman's profile matches the chosen starter
+3. Reference prompts.txt and seperate the prompt/response pair into the prompt and the response. Take note of the prompt distinctly from the response.
+
+STEP 8: IDENTIFY SCREENSHOT
+1. Note which screenshot (0-5) contains the prompt of the woman's profile that matches the chosen starter
+2. If prompt spans screenshots, use the one with most text
+
+Return the chosen promp, your conversation starter, and the screenshot index in this JSON format exactly. Do not return any other text or comments beyond the JSON.
 {{
     "prompt": "The exact prompt text you're responding to",
-    "response": "The woman's response to this prompt",
-    "joke": "Your natural conversation starter",
-    "screenshot_index": index_of_screenshot_containing_prompt_response,  # 0-based index of screenshot containing prompt/response
-    "coordinates": {{
-        "x": x_coordinate,  # Center X coordinate of the text content area (0-1080)
-        "y": y_coordinate  # Center Y coordinate of the text content area (0-2400)
-    }}
+    "conversation_starter": "Your natural conversation starter",
+    "screenshot_index": index_of_screenshot_containing_prompt_response  # 0-based index (0-5)
 }}"""
 
     # User message - just the specific task
-    user_message = """Please analyze these profile screenshots and generate a joke that continues the conversation based on the woman's existing response. Remember to:
+    user_message = """Please analyze these profile screenshots and generate a conversation starter based on the woman's existing response. Remember to:
 1. First build your understanding of the woman's personality
-2. Then identify prompt-response pairs and generate jokes that balance flattery, humor, and flirtation
-3. Select the best joke based on simulated conversation flow"""
+2. Then identify prompt-response pairs and generate starters that balance flattery, humor, and flirtation
+3. Select the best starter based on simulated conversation flow"""
 
     # Create the message for Claude
     messages = [
@@ -644,10 +663,8 @@ Return the chosen prompt, its response, your conversation starter, the screensho
             result = json.loads(response.content[0].text)
             return {
                 "prompt": result.get("prompt", ""),
-                "response": result.get("response", ""),
-                "joke": result.get("joke", ""),
-                "screenshot_index": result.get("screenshot_index", 0),
-                "coordinates": result.get("coordinates", {"x": 0, "y": 0})
+                "conversation_starter": result.get("conversation_starter", ""),
+                "screenshot_index": result.get("screenshot_index", 0)
             }
         except json.JSONDecodeError:
             print("Error: Response was not in expected JSON format")
@@ -660,3 +677,119 @@ Return the chosen prompt, its response, your conversation starter, the screensho
     except Exception as e:
         print(f"Error calling Claude API: {e}")
         return None
+
+
+def detect_prompt_in_screenshot(device, target_prompt, screenshot_index, profile_num):
+    """Detect and visualize the target prompt in a screenshot.
+
+    Args:
+        device: The ADB device
+        target_prompt: The prompt text we're looking for
+        screenshot_index: Index of the screenshot to analyze
+        profile_num: Current profile number
+
+    Returns:
+        tuple: (found, tap_coordinates) where:
+            - found: bool indicating if prompt was found
+            - tap_coordinates: (x,y) coordinates to tap if found, None if not found
+    """
+    # Take a fresh screenshot at this position
+    screenshot_path = capture_screenshot(
+        device, f"profile_{profile_num}_prompt_detection")
+
+    # Extract text and group into paragraphs
+    boxes = extract_text_from_image_with_boxes(screenshot_path)
+    if not boxes:
+        print("No text boxes found in screenshot")
+        return False, None
+
+    lines = group_boxes_into_lines(boxes)
+    paragraphs = group_lines_into_paragraphs(lines)
+
+    # Debug print: Show all paragraphs and their match scores
+    print("\nDebug: Comparing target prompt against OCR paragraphs:")
+    print(f"Target prompt: '{target_prompt}'")
+    print("\nOCR paragraphs found:")
+    for i, para in enumerate(paragraphs):
+        is_match, ratio, matched_text = fuzzy_match_text(
+            target_prompt, para['text'])
+        print(f"Paragraph {i+1}:")
+        print(f"  Text: '{para['text']}'")
+        print(f"  Match ratio: {ratio:.2f}")
+        print(f"  Is match: {is_match}")
+        print()
+
+    # Try to find the target prompt in paragraphs
+    best_match = None
+    best_ratio = 0.0
+
+    for para in paragraphs:
+        is_match, ratio, matched_text = fuzzy_match_text(
+            target_prompt, para['text'])
+        if is_match and ratio > best_ratio:
+            best_match = para
+            best_ratio = ratio
+
+    if best_match:
+        print(f"Found prompt match with ratio {best_ratio:.2f}")
+
+        # Calculate tap coordinates (center of the paragraph)
+        boxes = best_match['boxes']
+        min_x = min(box['box'][0] for box in boxes)
+        max_x = max(box['box'][0] + box['box'][2] for box in boxes)
+        min_y = min(box['box'][1] for box in boxes)
+        max_y = max(box['box'][1] + box['box'][3] for box in boxes)
+
+        tap_x = (min_x + max_x) // 2
+        tap_y = (min_y + max_y) // 2
+
+        # Create visualization with tap target
+        create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=f"images/profile_{profile_num}_prompt_detection_visual.png",
+            tap_target=(tap_x, tap_y)
+        )
+
+        # Execute double tap at the calculated coordinates
+        tap(device, tap_x, tap_y, double_tap=True)
+        time.sleep(1)  # Wait for response interface to open
+
+        return True, (tap_x, tap_y)
+    else:
+        print("No matching prompt found in screenshot")
+        # Create visualization without tap target
+        create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=f"images/profile_{profile_num}_prompt_detection_visual.png"
+        )
+
+        # Fallback: Scroll to bottom and double-click center
+        print("\nFallback: Scrolling to bottom and double-clicking center...")
+
+        # Calculate remaining scrolls (we've already done screenshot_index scrolls)
+        # 5 is max scrolls (6 screenshots total, 0-5)
+        remaining_scrolls = 5 - screenshot_index
+
+        # Scroll the remaining distance to bottom
+        for i in range(remaining_scrolls):
+            print(f"Fallback scroll #{i+1}")
+            swipe(device, "down")
+            time.sleep(1)  # Wait for scroll to complete
+
+        # Get screen dimensions for center tap
+        width, height = get_screen_resolution(device)
+        center_x = width // 2
+        center_y = height // 2
+
+        print(f"Double-clicking center of screen at ({center_x}, {center_y})")
+        tap(device, center_x, center_y, double_tap=True)
+        time.sleep(1)  # Wait for response interface to open
+
+        # Return True since we executed the fallback
+        return True, (center_x, center_y)

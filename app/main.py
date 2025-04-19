@@ -33,17 +33,11 @@ def scroll_profile_and_capture(device, width, height, profile_num):
         device, f"profile_{profile_num}_part1")
     screenshots.append(screenshot_path)
 
-    # Scroll and capture fixed number of screenshots
-    x_scroll = int(width * 0.5)  # Center of screen
-    y_scroll_start = int(height * 0.84)  # Start at 84% of screen height
-    # End at 16% of screen height (68% scroll distance)
-    y_scroll_end = int(height * 0.16)
-
     # Take 5 more screenshots (6 total)
     for i in range(1, 6):
         print(f"Scroll down #{i}")
         # Scroll down
-        swipe(device, x_scroll, y_scroll_start, x_scroll, y_scroll_end, 1500)
+        swipe(device, "down")
 
         # Take screenshot after scroll
         screenshot_path = capture_screenshot(
@@ -53,8 +47,8 @@ def scroll_profile_and_capture(device, width, height, profile_num):
     # Scroll back up the same number of times (no screenshots needed)
     for i in range(1, 6):
         print(f"Scroll up #{i}")
-        # Scroll up (reversed coordinates)
-        swipe(device, x_scroll, y_scroll_end, x_scroll, y_scroll_start, 1500)
+        # Scroll up
+        swipe(device, "up")
 
     return screenshots
 
@@ -148,36 +142,153 @@ def capture_profile_screenshots(device, count):
     return screenshots
 
 
-def find_and_click_prompt_response(device, target_prompt, target_response, joke, screenshot_index, coordinates, profile_num):
-    """Find and click on the prompt/response location based on provided coordinates."""
-    width, height = get_screen_resolution(device)
-
-    # First scroll to top
-    swipe(device, width//2, height*0.2, width//2, height*0.8, 100)
-    time.sleep(1)
-
-    # Use the same scrolling logic as scroll_profile_and_capture
-    x_scroll = int(width * 0.5)  # Center of screen
-    y_scroll_start = int(height * 0.84)  # Start at 84% of screen height
-    y_scroll_end = int(height * 0.16)    # End at 16% of screen height
-
-    # Scroll down the exact number of times needed to reach the target screenshot
+def scroll_to_screenshot(device, screenshot_index):
+    """Scroll to the specified screenshot index using consistent 68% swipe distance."""
+    # We're already at the top from scroll_profile_and_capture
+    # Just scroll down to the target screenshot
+    print(f"\nScrolling to screenshot index {screenshot_index}...")
     for i in range(screenshot_index):
-        print(f"Scrolling to position {i+1} of {screenshot_index}")
-        swipe(device, x_scroll, y_scroll_start, x_scroll, y_scroll_end, 1500)
+        print(f"Scroll down #{i+1}")
+        swipe(device, "down")
         time.sleep(1)  # Wait for scroll to complete
 
-    # Double click at the provided coordinates
-    tap(device, coordinates["x"], coordinates["y"])
-    time.sleep(0.1)  # Small delay between clicks
-    tap(device, coordinates["x"], coordinates["y"])
-    time.sleep(1)
-
-    # Type joke
-    type_text_slow(device, joke)
-    print(
-        f"Double-clicked at coordinates ({coordinates['x']}, {coordinates['y']}) in screenshot {screenshot_index}")
     return True
+
+
+def detect_prompt_in_screenshot(device, target_prompt, screenshot_index, profile_num):
+    """Detect and visualize the target prompt in a screenshot.
+
+    Args:
+        device: The ADB device
+        target_prompt: The prompt text we're looking for
+        screenshot_index: Index of the screenshot to analyze
+        profile_num: Current profile number
+
+    Returns:
+        tuple: (found, tap_coordinates) where:
+            - found: bool indicating if prompt was found
+            - tap_coordinates: (x,y) coordinates to tap if found, None if not found
+    """
+    # Take a fresh screenshot at this position
+    screenshot_path = capture_screenshot(
+        device, f"profile_{profile_num}_prompt_detection")
+
+    # Extract text and group into paragraphs
+    boxes = extract_text_from_image_with_boxes(screenshot_path)
+    if not boxes:
+        print("No text boxes found in screenshot")
+        return False, None
+
+    lines = group_boxes_into_lines(boxes)
+    paragraphs = group_lines_into_paragraphs(lines)
+
+    # Debug print: Show all paragraphs and their match scores
+    print("\nDebug: Comparing target prompt against OCR paragraphs:")
+    print(f"Target prompt: '{target_prompt}'")
+    print("\nOCR paragraphs found:")
+    for i, para in enumerate(paragraphs):
+        is_match, ratio, matched_text = fuzzy_match_text(
+            target_prompt, para['text'])
+        print(f"Paragraph {i+1}:")
+        print(f"  Text: '{para['text']}'")
+        print(f"  Match ratio: {ratio:.2f}")
+        print(f"  Is match: {is_match}")
+        print()
+
+    # Try to find the target prompt in paragraphs
+    best_match = None
+    best_ratio = 0.0
+
+    for para in paragraphs:
+        is_match, ratio, matched_text = fuzzy_match_text(
+            target_prompt, para['text'])
+        if is_match and ratio > best_ratio:
+            best_match = para
+            best_ratio = ratio
+
+    if best_match:
+        print(f"Found prompt match with ratio {best_ratio:.2f}")
+
+        # Calculate tap coordinates (center of the paragraph)
+        boxes = best_match['boxes']
+        min_x = min(box['box'][0] for box in boxes)
+        max_x = max(box['box'][0] + box['box'][2] for box in boxes)
+        min_y = min(box['box'][1] for box in boxes)
+        max_y = max(box['box'][1] + box['box'][3] for box in boxes)
+
+        tap_x = (min_x + max_x) // 2
+        tap_y = (min_y + max_y) // 2
+
+        # Create visualization with tap target
+        create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=f"images/profile_{profile_num}_prompt_detection_visual.png",
+            tap_target=(tap_x, tap_y)
+        )
+
+        # Execute double tap at the calculated coordinates
+        tap(device, tap_x, tap_y, double_tap=True)
+        time.sleep(1)  # Wait for response interface to open
+
+        return True, (tap_x, tap_y)
+    else:
+        print("No matching prompt found in screenshot")
+        # Create visualization without tap target
+        create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=f"images/profile_{profile_num}_prompt_detection_visual.png"
+        )
+        return False, None
+
+
+def match_prompt_against_authoritative(prompt, prompts_txt_path):
+    """Match the AI's prompt against the authoritative prompts in prompts.txt.
+
+    Args:
+        prompt: The prompt text returned by the AI
+        prompts_txt_path: Path to prompts.txt containing authoritative prompts
+
+    Returns:
+        tuple: (matched_prompt, confidence) where:
+            - matched_prompt: The best matching prompt from prompts.txt
+            - confidence: The confidence ratio of the match
+    """
+    try:
+        with open(prompts_txt_path, 'r') as f:
+            authoritative_prompts = f.read().splitlines()
+    except Exception as e:
+        print(f"Error reading prompts.txt: {e}")
+        return None, 0.0
+
+    best_match = None
+    best_ratio = 0.0
+
+    # Print all prompts that have a decent match for debugging
+    print("\nChecking prompt matches:")
+    for auth_prompt in authoritative_prompts:
+        is_match, ratio, matched_text = fuzzy_match_text(
+            prompt, auth_prompt, threshold=0.5)  # Lower threshold for debugging
+        if ratio > 0.5:  # Show any decent matches
+            print(f"  {auth_prompt}: {ratio:.2f}")
+        if is_match and ratio > best_ratio:
+            best_match = auth_prompt
+            best_ratio = ratio
+
+    if best_match:
+        print(f"\nBest match:")
+        print(f"AI prompt: '{prompt}'")
+        print(f"Auth prompt: '{best_match}'")
+        print(f"Confidence: {best_ratio:.2f}")
+        return best_match, best_ratio
+    else:
+        print(f"\nNo good matches found for '{prompt}'")
+        return None, 0.0
 
 
 def main():
@@ -204,8 +315,8 @@ def main():
             device, width, height, profile_num)
         print(f"Captured {len(screenshots)} screenshots")
 
-        # Step 2: Generate joke
-        print("\nStep 2: Generating joke...")
+        # Step 2: Generate conversation starter
+        print("\nStep 2: Generating conversation starter...")
         result = generate_joke_from_screenshots(
             screenshots=screenshots,
             format_txt_path=os.path.join(
@@ -219,37 +330,55 @@ def main():
         )
 
         if not result:
-            print("Failed to generate joke")
+            print("Failed to generate conversation starter")
             profile_num += 1
             continue
 
         prompt = result.get("prompt", "")
-        response = result.get("response", "")
-        joke = result.get("joke", "")
+        conversation_starter = result.get("conversation_starter", "")
         screenshot_index = result.get("screenshot_index", 0)
-        coordinates = result.get("coordinates", {"x": 0, "y": 0})
 
-        if not prompt or not joke:
-            print("Invalid result from joke generator")
+        if not prompt or not conversation_starter:
+            print("Invalid result from conversation starter generator")
             profile_num += 1
             continue
 
-        print(f"\nGenerated joke: {joke}")
+        print(f"\nGenerated conversation starter: {conversation_starter}")
         print(f"Target prompt: {prompt}")
-        print(f"Target response: {response}")
         print(f"Screenshot index: {screenshot_index}")
-        print(f"Coordinates: {coordinates}")
 
-        # Step 3: Find and click prompt-response pair
-        print("\nStep 3: Finding and clicking prompt-response pair...")
-        success = find_and_click_prompt_response(
-            device, prompt, response, joke, screenshot_index, coordinates, profile_num)
-        if not success:
-            print("Failed to find and click prompt-response pair")
+        # Step 3: Match prompt against authoritative prompts
+        print("\nStep 3: Matching prompt against authoritative prompts...")
+        matched_prompt, confidence = match_prompt_against_authoritative(
+            prompt,
+            os.path.join(os.path.dirname(__file__), 'prompts.txt')
+        )
+
+        if not matched_prompt or confidence < 0.8:
+            print(
+                f"Could not find a good match for prompt '{prompt}' in prompts.txt")
             profile_num += 1
             continue
 
-        print("\nSuccessfully processed profile!")
+        print(f"Matched to authoritative prompt: {matched_prompt}")
+
+        # Step 4: Scroll to the correct screenshot using the same 68% swipe distance
+        print("\nStep 4: Scrolling to target screenshot...")
+        success = scroll_to_screenshot(device, screenshot_index)
+        if not success:
+            print("Failed to scroll to target screenshot")
+            profile_num += 1
+            continue
+
+        # Step 5: Detect and visualize the target prompt in the screenshot
+        print("\nStep 5: Detecting and visualizing target prompt...")
+        found, tap_coordinates = detect_prompt_in_screenshot(
+            device, matched_prompt, screenshot_index, profile_num)
+        if not found:
+            print("Failed to detect target prompt in screenshot")
+            profile_num += 1
+            continue
+
         profile_num += 1
 
 
