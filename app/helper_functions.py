@@ -543,12 +543,48 @@ Each of these elements is a "story" about the woman - something she has chosen t
 
 Your process:
 
-STEP 1: READ AND UNDERSTAND THE CONTEXT
+STEP 1: IDENTIFY THE MAIN PERSON
+1. Analyze all photos to identify the main person whose profile this is:
+   - If a photo has just one person, that is likely the profile owner
+   - If photos have multiple people, identify who appears most consistently across photos
+   - Photos with no people are interest photos and should be ignored for identity
+   - The main person should appear in the majority of photos
+   - Note any distinguishing features of the main person for later analysis
+
+STEP 2: CHECK FOR UNDESIRABLE TRAITS
+Analyze the main person (not other people in photos) for these traits:
+1. Excessive Weight:
+   - Look for excessive fat in arms, legs, neck
+   - Pay special attention to head/neck photos
+   - Consider if this trait appears consistently across multiple photos
+   - Only mark as undesirable if confident based on multiple photos
+
+2. Low Quality/AR Photos:
+   - Check if majority of photos are low resolution
+   - Look for AR features (crowns, googly eyes, emojis)
+   - Consider if this makes the profile hard to evaluate
+   - Only mark as undesirable if majority of photos are affected
+
+3. Male Features:
+   - Look for Adam's apple in neck
+   - Check for flat chest without breast development
+   - Consider if these features appear consistently
+   - Only mark as undesirable if confident based on multiple photos
+
+If ANY of these traits are present in the main person with high confidence, return an empty response to indicate the profile is undesirable:
+{{
+    "prompt": "",
+    "response": "",
+    "conversation_starter": "",
+    "screenshot_index": -1
+}}
+
+STEP 3: READ AND UNDERSTAND THE CONTEXT
 1. Read format.txt to understand the profile layout
 2. Consult prompts.txt, captions.txt, and polls.txt to understand possible elements
 3. Examine each screenshot in order (0 to 5) and identify all elements
 
-STEP 2: ORGANIZE ELEMENTS INTO BUCKETS
+STEP 4: ORGANIZE ELEMENTS INTO BUCKETS
 For each screenshot, group elements into these buckets:
 a. Photos (6 total)
    - May have a caption
@@ -561,7 +597,7 @@ d. Voice Prompt and/or Poll Prompt (0-2 total)
    - Voice prompt: Cannot understand the recording, only see the prompt
    - Poll prompt: Can read her provided options for engagement
 
-STEP 3: ANALYZE EACH STORY'S IMPLICATIONS
+STEP 5: ANALYZE EACH STORY'S IMPLICATIONS
 For each story (element), determine what it reveals about the woman:
 1. Photos: Consider what she's doing and how she made it happen
    - Example: "Playing uno in forest" → brought cards to wilderness
@@ -571,13 +607,13 @@ For each story (element), determine what it reveals about the woman:
 4. Voice Prompt: Unknown content, only prompt visible
 5. Poll Prompt: Shows topics she'd discuss
 
-STEP 4: COMPILE CHARACTERISTICS
+STEP 6: COMPILE CHARACTERISTICS
 1. List all characteristics derived from stories
 2. Organize by confidence level
 3. Note when multiple stories support same characteristic
    - Example: Two stories about exercise → high confidence in active lifestyle
 
-STEP 5: GENERATE CONVERSATION STARTERS
+STEP 7: GENERATE CONVERSATION STARTERS
 For each prompt/response pair:
 1. Use characteristics and stories as context
 2. Create exactly ONE conversation starter that:
@@ -609,7 +645,7 @@ The key difference is that natural language:
 3. Asks what you actually want to know
 4. Treats activities as normal parts of life, not epic adventures
 
-STEP 6: SIMULATE CONVERSATION
+STEP 8: SIMULATE CONVERSATION
 For each starter:
 1. Imagine her potential responses
 2. Evaluate:
@@ -619,7 +655,7 @@ For each starter:
    - Does it ask what you actually want to know?
    - Would she find it easy to respond?
 
-STEP 7: SELECT BEST STARTER
+STEP 9: SELECT BEST STARTER
 1. Choose the starter that best:
    - Uses the most natural, everyday language
    - Gets straight to the point
@@ -629,7 +665,7 @@ STEP 7: SELECT BEST STARTER
 2. Note which prompt/response pair of the woman's profile matches the chosen starter
 3. Reference prompts.txt and seperate the prompt/response pair into the prompt and the response. Take note of the prompt distinctly from the response.
 
-STEP 8: IDENTIFY SCREENSHOT
+STEP 10: IDENTIFY SCREENSHOT
 1. Note which screenshot (0-5) contains the prompt of the woman's profile that matches the chosen starter
 2. If prompt spans screenshots, use the one with most text
 

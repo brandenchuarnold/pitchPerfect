@@ -4,6 +4,7 @@ import time
 import os
 import sys
 import random
+import threading
 from dotenv import load_dotenv
 from ppadb.client import Client as AdbClient
 import difflib
@@ -27,6 +28,10 @@ from helper_functions import (
     dislike_profile,
 )
 
+# Global variable to store AI response
+ai_response = None
+ai_response_lock = threading.Lock()
+
 
 def scroll_profile_and_capture(device, width, height, profile_num):
     """Scroll through profile and capture screenshots."""
@@ -48,13 +53,29 @@ def scroll_profile_and_capture(device, width, height, profile_num):
             device, f"profile_{profile_num}_part{i+1}")
         screenshots.append(screenshot_path)
 
-    # Scroll back up the same number of times (no screenshots needed)
+    return screenshots
+
+
+def scroll_back_to_top(device):
+    """Scroll back to the top of the profile."""
     for i in range(1, 6):
         print(f"Scroll up #{i}")
         # Scroll up
         swipe(device, "up")
 
-    return screenshots
+
+def process_ai_response(screenshots, format_txt_path, prompts_txt_path, captions_txt_path, polls_txt_path):
+    """Process the AI response in a separate thread."""
+    global ai_response
+    result = generate_joke_from_screenshots(
+        screenshots,
+        format_txt_path,
+        prompts_txt_path,
+        captions_txt_path,
+        polls_txt_path
+    )
+    with ai_response_lock:
+        ai_response = result
 
 
 def take_screenshot_and_extract_text(device, filename):
@@ -248,47 +269,57 @@ def main():
                 profile_num += 1
                 continue
 
+            # Reset AI response
+            global ai_response
+            ai_response = None
+
             # Scroll through profile and capture screenshots
             screenshots = scroll_profile_and_capture(
                 device, width, height, profile_num)
 
-            # Generate joke response
-            result = generate_joke_from_screenshots(
-                screenshots,
-                format_txt_path,
-                prompts_txt_path,
-                captions_txt_path,
-                polls_txt_path
+            # Start AI processing in a separate thread
+            ai_thread = threading.Thread(
+                target=process_ai_response,
+                args=(screenshots, format_txt_path, prompts_txt_path,
+                      captions_txt_path, polls_txt_path)
             )
+            ai_thread.start()
 
-            if not result:
-                print("Failed to generate joke response")
+            # Scroll back to top while AI is processing
+            scroll_back_to_top(device)
+
+            # Wait for AI response
+            ai_thread.join()
+
+            # Check if profile is undesirable (empty response)
+            if not ai_response or not ai_response.get('prompt') or not ai_response.get('response') or not ai_response.get('conversation_starter') or ai_response.get('screenshot_index') == -1:
+                print("Profile marked as undesirable - disliking")
                 dislike_profile(device)
                 profile_num += 1
                 continue
 
             # Match prompt against authoritative list
             matched_prompt, confidence = match_prompt_against_authoritative(
-                result['prompt'], prompts_txt_path)
+                ai_response['prompt'], prompts_txt_path)
 
             if not matched_prompt or confidence < 0.8:
                 print(
                     f"Warning: Low confidence prompt match ({confidence:.2f})")
-                print("Original:", result['prompt'])
+                print("Original:", ai_response['prompt'])
                 print("Matched:", matched_prompt)
                 dislike_profile(device)
                 profile_num += 1
                 continue
 
             # Scroll to the screenshot containing the prompt
-            scroll_to_screenshot(device, result['screenshot_index'])
+            scroll_to_screenshot(device, ai_response['screenshot_index'])
 
             # Try to find and tap the prompt
             found, tap_coords = detect_prompt_in_screenshot(
                 device,
                 matched_prompt,
-                result['response'],
-                result['screenshot_index'],
+                ai_response['response'],
+                ai_response['screenshot_index'],
                 profile_num
             )
 
@@ -300,7 +331,7 @@ def main():
 
             # Send the response
             success = send_response_to_story(
-                device, result['conversation_starter'], profile_num)
+                device, ai_response['conversation_starter'], profile_num)
 
             if not success:
                 print("Failed to send response")

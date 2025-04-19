@@ -1,6 +1,8 @@
 Hinge Dating App Automation Bot - Development Outline
 
 Current Focus:
+- Monetize
+- Compliment first (direct, can root in something in profile, relevant to prompt), then question.
 
 1. Profile Loading and Initial Screenshot Capture:
    Goals:
