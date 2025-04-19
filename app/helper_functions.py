@@ -578,14 +578,29 @@ d. Voice Prompt and/or Poll Prompt (0-2 total)
 STEP 4: CHECK FOR UNDESIRABLE TRAITS
 Analyze ONLY the main person (not other people in photos) for these traits:
 
-1. Excessive Weight:
-   - Primary Indicators (any ONE of these marks as excessive weight):
-     * Body appears somewhat wider than the average fit or skinny woman
-     * Visible stomach protrusion in any photo
-     * Face appears round with reduced jawline definition
-     * Full-body photos show body size larger than the average fit or skinny woman
-     * Only face/high angle photos
-     * Arms are wider and do not show muscle definition
+1. Body Type Analysis (CRITICAL - Mark as undesirable if ANY of these are true):
+   a. Body Shape Indicators:
+      - Body width appears wider than typical fit/skinny woman
+      - Visible stomach protrusion in any photo
+      - Face shape is rounder with less defined jawline
+      - Full-body photos show larger body size than average fit/skinny woman
+      - Arms/legs show significant fat accumulation compared to wrists/ankles
+      - No visible muscle or bone definition in arms/legs
+      - Only face/high angle photos (hiding body)
+   
+   b. Specific Measurements (if visible):
+      - Waist-to-hip ratio appears greater than 0.8
+      - Arms appear wider than wrists by more than 2x
+      - Legs appear wider than ankles by more than 2x
+      - Face width appears greater than 1.5x face height
+   
+   c. Photo Analysis Guidelines:
+      - If ANY full-body photo shows these traits, mark as undesirable
+      - If only face photos, assume undesirable unless face shows very defined jawline
+      - If photos are at angles that hide body shape, assume undesirable
+      - If wearing baggy clothes in all photos, assume undesirable
+      - If any photo shows clear stomach protrusion, mark as undesirable
+      - If arms/legs show no muscle definition, mark as undesirable
 
 2. Low Quality Photos:
    - Any ONE of these qualifies as low quality photos:
