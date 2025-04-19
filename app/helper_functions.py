@@ -581,36 +581,51 @@ STEP 5: GENERATE CONVERSATION STARTERS
 For each prompt/response pair:
 1. Use characteristics and stories as context
 2. Create exactly ONE conversation starter that:
-   * Natural and specific (10-15 words)
-   * Shows interest without being overly enthusiastic
-   * Asks about personality, not logistics
+   * Uses natural, everyday language - how you'd actually talk to someone
+   * Avoids flowery metaphors or dramatic language
+   * Never uses marketing-style words like "perfect", "amazing", "journey", "adventure"
+   * Makes no assumptions about her experiences being positive or negative
+   * Asks direct questions without unnecessary qualifiers
+   * Shows interest through specificity, not through enthusiasm
+   * Aims for 10-15 words maximum
    * Easy to respond to over text
-   * Uses relaxed transitions when connecting interests
-   * Aims for real answers, not narrative framing
-   * 
 
-Context: People don't typically narrate their lives with words like "adventure" or "journey" - they just live them. Ask questions to learn about their actual plans and thoughts, not to create a story about them.
+CRITICAL: People don't narrate their lives with dramatic language - they just ask what they want to know.
 
-Example. Read this and take note of the tone more than the content. This is the tone you should use:
-   Good: "Noticed you want to surf and travel. Thinking about combining the two?"
-   Avoid: "Two passions in one adventure! Let's make it happen!"
+Examples of natural vs artificial language:
+Natural (Good):
+- "What book are you reading?"
+- "How long have you been surfing?"
+- "Which hiking trails do you like around here?"
+
+Artificial (Avoid):
+- "What book are you diving into there?"
+- "How long have you been on your surfing journey?"
+- "Which perfect hiking spots have you discovered?"
+
+The key difference is that natural language:
+1. Gets straight to the point
+2. Doesn't add unnecessary drama or narrative
+3. Asks what you actually want to know
+4. Treats activities as normal parts of life, not epic adventures
+5. Avoids making assumptions about experiences
 
 STEP 6: SIMULATE CONVERSATION
 For each starter:
 1. Imagine her potential responses
 2. Evaluate:
-   - Would she find it engaging?
-   - Would she enjoy talking with you?
-   - Does it show clear interest?
-   - Is it fun and natural?
-   - Does it respect the complexity of her personality?
+   - Would this sound natural in real conversation?
+   - Does it avoid sounding like marketing copy?
+   - Is it free of unnecessary qualifiers and drama?
+   - Does it ask what you actually want to know?
+   - Would she find it easy to respond?
 
 STEP 7: SELECT BEST STARTER
 1. Choose the starter that best:
-   - Balances engagement and natural flow
-   - References specific details without forcing
-   - Creates fun conversation potential
-   - Shows genuine interest
+   - Uses the most natural, everyday language
+   - Gets straight to the point
+   - Shows interest through specificity, not enthusiasm
+   - Creates easy conversation flow
    - Respects the complexity of her personality
 2. Note which prompt/response pair of the woman's profile matches the chosen starter
 3. Reference prompts.txt and seperate the prompt/response pair into the prompt and the response. Take note of the prompt distinctly from the response.
@@ -793,3 +808,102 @@ def detect_prompt_in_screenshot(device, target_prompt, screenshot_index, profile
 
         # Return True since we executed the fallback
         return True, (center_x, center_y)
+
+
+def send_response_to_story(device, conversation_starter, profile_num):
+    """Handle the flow of responding to an opened story.
+
+    Args:
+        device: The ADB device
+        conversation_starter: The text to send as a response
+        profile_num: Current profile number for debugging visualization
+
+    Returns:
+        bool: True if response was sent successfully, False otherwise
+    """
+    # Take screenshot for OCR
+    screenshot_path = capture_screenshot(
+        device, f"profile_{profile_num}_response")
+
+    # Extract text and boxes
+    boxes = extract_text_from_image_with_boxes(screenshot_path)
+    if not boxes:
+        print("No text boxes found in response screenshot")
+        return False
+
+    lines = group_boxes_into_lines(boxes)
+    paragraphs = group_lines_into_paragraphs(lines)
+
+    # Find "Add a comment" box
+    comment_box = None
+    comment_ratio = 0.0
+    for para in paragraphs:
+        is_match, ratio, _ = fuzzy_match_text("Add a comment", para['text'])
+        if is_match and ratio > comment_ratio:
+            comment_box = para
+            comment_ratio = ratio
+
+    # Find "Send Priority Like" button
+    send_button = None
+    send_ratio = 0.0
+    for para in paragraphs:
+        is_match, ratio, _ = fuzzy_match_text(
+            "Send Priority Like", para['text'])
+        if is_match and ratio > send_ratio:
+            send_button = para
+            send_ratio = ratio
+
+    if not comment_box or not send_button:
+        print("Could not find comment box or send button")
+        # Create visualization without tap targets
+        create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=f"images/profile_{profile_num}_response_visual.png"
+        )
+        return False
+
+    # Calculate tap coordinates for comment box
+    comment_boxes = comment_box['boxes']
+    comment_x = (min(box['box'][0] for box in comment_boxes) +
+                 max(box['box'][0] + box['box'][2] for box in comment_boxes)) // 2
+    comment_y = (min(box['box'][1] for box in comment_boxes) +
+                 max(box['box'][1] + box['box'][3] for box in comment_boxes)) // 2
+
+    # Calculate tap coordinates for send button
+    send_boxes = send_button['boxes']
+    send_x = (min(box['box'][0] for box in send_boxes) +
+              max(box['box'][0] + box['box'][2] for box in send_boxes)) // 2
+    send_y = (min(box['box'][1] for box in send_boxes) +
+              max(box['box'][1] + box['box'][3] for box in send_boxes)) // 2
+
+    # Create visualization with both tap targets
+    create_visual_debug_overlay(
+        screenshot_path,
+        boxes=boxes,
+        lines=lines,
+        paragraphs=paragraphs,
+        output_path=f"images/profile_{profile_num}_response_visual.png",
+        # Show primary tap target (comment box)
+        tap_target=(comment_x, comment_y)
+    )
+
+    # Execute the response flow
+    # 1. Tap comment box
+    tap(device, comment_x, comment_y)
+    time.sleep(0.5)
+
+    # 2. Input conversation starter
+    input_text(device, conversation_starter)
+    time.sleep(0.5)
+
+    # 3. Close keyboard (tap back key)
+    device.shell('input keyevent 4')  # KEYCODE_BACK
+    time.sleep(0.5)
+
+    # 4. Tap Send Priority Like
+    tap(device, send_x, send_y)
+
+    return True

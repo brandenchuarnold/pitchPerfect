@@ -21,6 +21,8 @@ from helper_functions import (
     isAtBottom,
     fuzzy_match_text,
     swipe,
+    detect_prompt_in_screenshot,
+    send_response_to_story,
 )
 
 
@@ -155,98 +157,6 @@ def scroll_to_screenshot(device, screenshot_index):
     return True
 
 
-def detect_prompt_in_screenshot(device, target_prompt, screenshot_index, profile_num):
-    """Detect and visualize the target prompt in a screenshot.
-
-    Args:
-        device: The ADB device
-        target_prompt: The prompt text we're looking for
-        screenshot_index: Index of the screenshot to analyze
-        profile_num: Current profile number
-
-    Returns:
-        tuple: (found, tap_coordinates) where:
-            - found: bool indicating if prompt was found
-            - tap_coordinates: (x,y) coordinates to tap if found, None if not found
-    """
-    # Take a fresh screenshot at this position
-    screenshot_path = capture_screenshot(
-        device, f"profile_{profile_num}_prompt_detection")
-
-    # Extract text and group into paragraphs
-    boxes = extract_text_from_image_with_boxes(screenshot_path)
-    if not boxes:
-        print("No text boxes found in screenshot")
-        return False, None
-
-    lines = group_boxes_into_lines(boxes)
-    paragraphs = group_lines_into_paragraphs(lines)
-
-    # Debug print: Show all paragraphs and their match scores
-    print("\nDebug: Comparing target prompt against OCR paragraphs:")
-    print(f"Target prompt: '{target_prompt}'")
-    print("\nOCR paragraphs found:")
-    for i, para in enumerate(paragraphs):
-        is_match, ratio, matched_text = fuzzy_match_text(
-            target_prompt, para['text'])
-        print(f"Paragraph {i+1}:")
-        print(f"  Text: '{para['text']}'")
-        print(f"  Match ratio: {ratio:.2f}")
-        print(f"  Is match: {is_match}")
-        print()
-
-    # Try to find the target prompt in paragraphs
-    best_match = None
-    best_ratio = 0.0
-
-    for para in paragraphs:
-        is_match, ratio, matched_text = fuzzy_match_text(
-            target_prompt, para['text'])
-        if is_match and ratio > best_ratio:
-            best_match = para
-            best_ratio = ratio
-
-    if best_match:
-        print(f"Found prompt match with ratio {best_ratio:.2f}")
-
-        # Calculate tap coordinates (center of the paragraph)
-        boxes = best_match['boxes']
-        min_x = min(box['box'][0] for box in boxes)
-        max_x = max(box['box'][0] + box['box'][2] for box in boxes)
-        min_y = min(box['box'][1] for box in boxes)
-        max_y = max(box['box'][1] + box['box'][3] for box in boxes)
-
-        tap_x = (min_x + max_x) // 2
-        tap_y = (min_y + max_y) // 2
-
-        # Create visualization with tap target
-        create_visual_debug_overlay(
-            screenshot_path,
-            boxes=boxes,
-            lines=lines,
-            paragraphs=paragraphs,
-            output_path=f"images/profile_{profile_num}_prompt_detection_visual.png",
-            tap_target=(tap_x, tap_y)
-        )
-
-        # Execute double tap at the calculated coordinates
-        tap(device, tap_x, tap_y, double_tap=True)
-        time.sleep(1)  # Wait for response interface to open
-
-        return True, (tap_x, tap_y)
-    else:
-        print("No matching prompt found in screenshot")
-        # Create visualization without tap target
-        create_visual_debug_overlay(
-            screenshot_path,
-            boxes=boxes,
-            lines=lines,
-            paragraphs=paragraphs,
-            output_path=f"images/profile_{profile_num}_prompt_detection_visual.png"
-        )
-        return False, None
-
-
 def match_prompt_against_authoritative(prompt, prompts_txt_path):
     """Match the AI's prompt against the authoritative prompts in prompts.txt.
 
@@ -376,6 +286,15 @@ def main():
             device, matched_prompt, screenshot_index, profile_num)
         if not found:
             print("Failed to detect target prompt in screenshot")
+            profile_num += 1
+            continue
+
+        # Step 6: Send the response
+        print("\nStep 6: Sending response...")
+        success = send_response_to_story(
+            device, conversation_starter, profile_num)
+        if not success:
+            print("Failed to send response")
             profile_num += 1
             continue
 
