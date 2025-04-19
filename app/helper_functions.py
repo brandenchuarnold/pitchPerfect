@@ -543,7 +543,12 @@ Each of these elements is a "story" about the woman - something she has chosen t
 
 Your process:
 
-STEP 1: IDENTIFY THE MAIN PERSON
+STEP 1: READ AND UNDERSTAND THE CONTEXT
+1. Read format.txt to understand the profile layout
+2. Consult prompts.txt, captions.txt, and polls.txt to understand possible elements
+3. Examine each screenshot in order (0 to 5) and identify all elements
+
+STEP 2: IDENTIFY THE MAIN PERSON
 1. Analyze all photos to identify the main person whose profile this is:
    - If a photo has just one person, that is likely the profile owner
    - If photos have multiple people, identify who appears most consistently across photos
@@ -551,7 +556,7 @@ STEP 1: IDENTIFY THE MAIN PERSON
    - The main person should appear in the majority of photos
    - Note any distinguishing features of the main person for later analysis
 
-STEP 2: CHECK FOR UNDESIRABLE TRAITS
+STEP 3: CHECK FOR UNDESIRABLE TRAITS
 Analyze the main person (not other people in photos) for these traits:
 1. Excessive Weight:
    - Look for excessive fat in arms, legs, neck
@@ -571,18 +576,13 @@ Analyze the main person (not other people in photos) for these traits:
    - Consider if these features appear consistently
    - Only mark as undesirable if confident based on multiple photos
 
-If ANY of these traits are present in the main person with high confidence, return an empty response to indicate the profile is undesirable:
+If ANY of these traits are present in the main person with high confidence, return an empty response as below to indicate the profile is undesirable:
 {{
     "prompt": "",
     "response": "",
     "conversation_starter": "",
     "screenshot_index": -1
 }}
-
-STEP 3: READ AND UNDERSTAND THE CONTEXT
-1. Read format.txt to understand the profile layout
-2. Consult prompts.txt, captions.txt, and polls.txt to understand possible elements
-3. Examine each screenshot in order (0 to 5) and identify all elements
 
 STEP 4: ORGANIZE ELEMENTS INTO BUCKETS
 For each screenshot, group elements into these buckets:
