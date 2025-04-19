@@ -630,34 +630,61 @@ STEP 6: COMPILE CHARACTERISTICS
 STEP 7: GENERATE CONVERSATION STARTERS
 For each prompt/response pair:
 1. Use characteristics and stories as context
-2. Create exactly ONE conversation starter that:
+2. Create exactly ONE conversation starter that follows this two-step approach:
+   a. First, give a direct, simple compliment rooted in something VISIBLE from her profile
+      - Focus on concrete, observable things:
+        * Physical appearance (only if obvious and tasteful)
+          - "You have a great smile" (when smiling in photos)
+          - "That's a cool jacket" (when wearing something distinctive)
+        * Activities she's doing in photos
+          - "You look comfortable on that surfboard" (when surfing)
+          - "You seem at home in that kitchen" (when cooking)
+        * Places she's shown in photos
+          - "That beach looks amazing" (when at beach)
+          - "That coffee shop looks cozy" (when in cafe)
+        * Specific items or objects in photos
+          - "That's a nice camera" (when holding camera)
+          - "Cool hiking boots" (when wearing hiking gear)
+      - AVOID vague or personality-based compliments like:
+        * "You look like you know how to have fun"
+        * "You seem like a fun person"
+        * "You look adventurous"
+        * "You seem really cool"
+        * "You look like you have a great personality"
+      - Keep it straightforward and obvious
+      - Make it specific to what you see in her profile
+      - The compliment should be something you can point to in a photo or prompt response
+   b. Then, follow up with a question showing interest in the prompt
+      - Keep it natural and direct
+      - Example: "What's your favorite hiking trail around here?"
    * Uses natural, everyday language - how you'd actually talk to someone
    * Avoids flowery metaphors or dramatic language
    * Never uses marketing-style words like "perfect", "amazing", "journey", "adventure"
    * Asks direct questions without unnecessary qualifiers
    * Shows interest through specificity, not through enthusiasm
-   * Aims for 10-15 words maximum
-   * You may reference what you know from her profile if it is specific and relevant to the conversation starter.
+   * Aims for 10-15 words maximum per part (compliment + question)
    * Easy to respond to over text
 
 CRITICAL: People don't narrate their lives with dramatic language - they just ask what they want to know.
 
-Examples of natural vs artificial language:
-Natural (Good):
-- "What book are you reading?"
-- "How long have you been surfing?"
-- "Which hiking trails do you like around here?"
+Examples of good vs bad compliments:
+Good (Concrete and Observable):
+- "You look comfortable in the outdoors. What's your favorite hiking trail around here?"
+- "You have a great smile. How long have you been surfing?"
+- "That's a cool camera you're using. What kind of photography do you enjoy most?"
+- "You look at home in that coffee shop. What's your usual order?"
 
-Artificial (Avoid):
-- "What book are you diving into there?"
-- "How long have you been on your surfing journey?"
-- "Which perfect hiking spots have you discovered?"
+Bad (Too Vague or Personality-Based):
+- "I like your spontaneous spirit. What adventures do you have planned?"
+- "You seem really adventurous. Where do you like to travel?"
+- "You have a great personality. What do you like to do for fun?"
+- "I love your energy. What keeps you motivated?"
 
-The key difference is that natural language:
-1. Gets straight to the point
-2. Doesn't add unnecessary drama or narrative
-3. Asks what you actually want to know
-4. Treats activities as normal parts of life, not epic adventures
+The key difference is that good compliments:
+1. Focus on concrete, observable things from photos (activities, places, items) rather than personality traits
+2. Are specific to what's shown in the profile and lead naturally into the follow-up question
+3. Use straightforward language without unnecessary drama or narrative
+4. Treat activities as normal parts of life, not epic adventures
 
 STEP 8: SIMULATE CONVERSATION
 For each starter:
@@ -680,8 +707,8 @@ STEP 9: SELECT BEST STARTER
 3. Reference prompts.txt and seperate the prompt/response pair into the prompt and the response. Take note of the prompt distinctly from the response.
 
 STEP 10: IDENTIFY SCREENSHOT
-1. Note which screenshot (0-5) contains the prompt of the woman's profile that matches the chosen starter
-2. If prompt spans screenshots, use the one with most text
+1. Note which screenshot (0-5) contains the prompt/response pair text of the woman's profile that matches the chosen starter
+2. If prompt/response pair is cut off or spans multiple screenshots, note which screenshot contains the majority of the prompt/response pair text
 
 Return the chosen prompt, response, your conversation starter, and the screenshot index in this JSON format exactly. Do not return any other text or comments beyond the JSON.
 {{
