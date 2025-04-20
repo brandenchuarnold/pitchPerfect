@@ -6,6 +6,18 @@ Current Implementation:
    - Profile Limit:
      * Maximum of 40 profiles processed
      * Exits gracefully when limit reached
+     * Early exit if end of profiles detected
+   
+   - Early Stopping:
+     * Checks for any of these messages before processing each profile:
+       - "You've seen everyone for now"
+       - "Try changing your filters so more people match your criteria - or check again later!"
+       - "Change filters"
+       - "Review skipped profiles"
+     * Uses OCR with 0.8 similarity threshold
+     * Saves screenshot of end message for verification
+     * Creates visual debug overlay showing matched text
+     * Exits gracefully with specific end message
    
    - Target Interactions:
      * Random target between 4-6 successful interactions

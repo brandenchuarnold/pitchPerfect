@@ -27,6 +27,7 @@ from helper_functions import (
     send_response_to_story,
     dislike_profile,
     save_profile_results,
+    check_for_end_of_profiles,
 )
 
 # Global variable to store AI response
@@ -259,6 +260,14 @@ def main():
 
         while profile_num <= max_profiles:  # Main profile loop with limit
             print(f"\nProcessing profile #{profile_num}")
+
+            # Check if we've reached the end of available profiles
+            end_reached, end_message = check_for_end_of_profiles(
+                device, profile_num)
+            if end_reached:
+                print(
+                    f"Reached end of available profiles: '{end_message}'. Exiting...")
+                break
 
             # Check if we've reached our target interactions
             if successful_interactions >= target_interactions:

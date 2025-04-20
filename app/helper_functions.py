@@ -1126,3 +1126,54 @@ def save_profile_results(profile_num, screenshots, ai_response):
         f.truncate()
 
     return profile_dir
+
+
+def check_for_end_of_profiles(device, profile_num):
+    """Check if we've reached the end of available profiles.
+
+    Args:
+        device: The ADB device
+        profile_num: Current profile number for debugging
+
+    Returns:
+        tuple: (bool, str) - (True if end reached, message that was matched)
+    """
+    # Take a screenshot to check for the message
+    screenshot_path = capture_screenshot(
+        device, f"profile_{profile_num}_end_check")
+
+    # Extract text and group into paragraphs
+    boxes = extract_text_from_image_with_boxes(screenshot_path)
+    if not boxes:
+        return False, ""
+
+    lines = group_boxes_into_lines(boxes)
+    paragraphs = group_lines_into_paragraphs(lines)
+
+    # Messages to check for
+    end_messages = [
+        "You've seen everyone for now",
+        "Try changing your filters so more people match your criteria - or check again later!",
+        "Change filters",
+        "Review skipped profiles"
+    ]
+
+    # Check each paragraph against each message
+    for para in paragraphs:
+        for message in end_messages:
+            is_match, ratio, _ = fuzzy_match_text(
+                message, para['text'], threshold=0.8)
+            if is_match:
+                print(
+                    f"Found end message: '{message}' with confidence {ratio:.2f}")
+                # Create visualization of the match
+                create_visual_debug_overlay(
+                    screenshot_path,
+                    boxes=boxes,
+                    lines=lines,
+                    paragraphs=paragraphs,
+                    output_path=f"images/profile_{profile_num}_end_detected_visual.png"
+                )
+                return True, message
+
+    return False, ""
