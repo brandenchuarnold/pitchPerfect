@@ -3,9 +3,14 @@ Hinge Dating App Automation Bot - Development Outline
 Current Implementation:
 
 1. Profile Processing Flow:
+   - Profile Limit:
+     * Maximum of 40 profiles processed
+     * Exits gracefully when limit reached
+   
    - Target Interactions:
      * Random target between 4-6 successful interactions
      * Resets after reaching target
+     * Resets when disliking for any reason (undesirable, low confidence, etc.)
      * Dislikes profile when target reached
    
    - Profile Analysis:
@@ -18,6 +23,15 @@ Current Implementation:
      * Dislikes if AI returns empty response
      * Dislikes if prompt match confidence < 0.8
      * Dislikes if prompt not found after 3 attempts
+     * Resets interaction counter on any dislike
+   
+   - Results Storage:
+     * Saves all profile data in organized directory structure:
+       - results/profile_X/screenshots/ - Contains all screenshots
+       - results/profile_X/response.json - Contains AI response and timestamp
+     * Saves results for every profile, regardless of outcome
+     * Includes timestamp with each response
+     * Maintains original screenshot files in images/ directory
 
 2. Screenshot Capture:
    - Takes 6 screenshots total

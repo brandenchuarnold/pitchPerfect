@@ -26,6 +26,7 @@ from helper_functions import (
     detect_prompt_in_screenshot,
     send_response_to_story,
     dislike_profile,
+    save_profile_results,
 )
 
 # Global variable to store AI response
@@ -245,7 +246,9 @@ def main():
         profile_num = 1
         successful_interactions = 0
         target_interactions = random.randint(4, 6)
+        max_profiles = 40  # Maximum number of profiles to process
         print(f"Initial target interactions: {target_interactions}")
+        print(f"Maximum profiles to process: {max_profiles}")
 
         # Get absolute paths for resource files
         app_dir = os.path.dirname(__file__)
@@ -254,7 +257,7 @@ def main():
         captions_txt_path = os.path.join(app_dir, 'captions.txt')
         polls_txt_path = os.path.join(app_dir, 'polls.txt')
 
-        while True:  # Main profile loop
+        while profile_num <= max_profiles:  # Main profile loop with limit
             print(f"\nProcessing profile #{profile_num}")
 
             # Check if we've reached our target interactions
@@ -291,10 +294,18 @@ def main():
             # Wait for AI response
             ai_thread.join()
 
+            # Save profile results regardless of outcome
+            results_dir = save_profile_results(
+                profile_num, screenshots, ai_response)
+            print(f"Saved profile results to: {results_dir}")
+
             # Check if profile is undesirable (empty response)
             if not ai_response or not ai_response.get('prompt') or not ai_response.get('response') or not ai_response.get('conversation_starter') or ai_response.get('screenshot_index') == -1:
                 print("Profile marked as undesirable - disliking")
                 dislike_profile(device)
+                successful_interactions = 0  # Reset counter when disliking for any reason
+                target_interactions = random.randint(
+                    4, 6)  # Generate new target
                 profile_num += 1
                 continue
 
@@ -308,6 +319,9 @@ def main():
                 print("Original:", ai_response['prompt'])
                 print("Matched:", matched_prompt)
                 dislike_profile(device)
+                successful_interactions = 0  # Reset counter when disliking for any reason
+                target_interactions = random.randint(
+                    4, 6)  # Generate new target
                 profile_num += 1
                 continue
 
@@ -357,6 +371,9 @@ def main():
                     if not found:
                         print("Failed to find prompt after all attempts")
                         dislike_profile(device)
+                        successful_interactions = 0  # Reset counter when disliking for any reason
+                        target_interactions = random.randint(
+                            4, 6)  # Generate new target
                         profile_num += 1
                         continue
 
@@ -367,6 +384,9 @@ def main():
             if not success:
                 print("Failed to send response")
                 dislike_profile(device)
+                successful_interactions = 0  # Reset counter when disliking for any reason
+                target_interactions = random.randint(
+                    4, 6)  # Generate new target
             else:
                 # Increment successful interactions counter
                 successful_interactions += 1
@@ -374,6 +394,8 @@ def main():
                     f"Successful interactions: {successful_interactions}/{target_interactions}")
 
             profile_num += 1
+
+        print(f"\nReached maximum profile limit of {max_profiles}. Exiting...")
 
     except KeyboardInterrupt:
         print("\nExiting gracefully...")

@@ -8,6 +8,8 @@ import os
 import json
 from config import ANTHROPIC_API_KEY
 import difflib
+import shutil
+from datetime import datetime
 
 load_dotenv()
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
@@ -1075,3 +1077,52 @@ def send_response_to_story(device, conversation_starter, profile_num):
     time.sleep(4)
 
     return True
+
+
+def save_profile_results(profile_num, screenshots, ai_response):
+    """Save profile screenshots and AI response in an organized folder structure.
+
+    Args:
+        profile_num: The profile number
+        screenshots: List of screenshot paths
+        ai_response: The AI response dictionary
+
+    Returns:
+        str: Path to the profile's results directory
+    """
+    # Create results directory if it doesn't exist
+    results_dir = "results"
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
+
+    # Create profile-specific directory
+    profile_dir = os.path.join(results_dir, f"profile_{profile_num}")
+    if not os.path.exists(profile_dir):
+        os.makedirs(profile_dir)
+
+    # Create screenshots subdirectory
+    screenshots_dir = os.path.join(profile_dir, "screenshots")
+    if not os.path.exists(screenshots_dir):
+        os.makedirs(screenshots_dir)
+
+    # Copy screenshots to the profile directory
+    for screenshot in screenshots:
+        filename = os.path.basename(screenshot)
+        dest_path = os.path.join(screenshots_dir, filename)
+        shutil.copy2(screenshot, dest_path)
+
+    # Save AI response as JSON
+    response_path = os.path.join(profile_dir, "response.json")
+    with open(response_path, 'w') as f:
+        json.dump(ai_response, f, indent=2)
+
+    # Add timestamp to response
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(response_path, 'r+') as f:
+        data = json.load(f)
+        data['timestamp'] = timestamp
+        f.seek(0)
+        json.dump(data, f, indent=2)
+        f.truncate()
+
+    return profile_dir
