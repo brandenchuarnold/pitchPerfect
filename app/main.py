@@ -15,6 +15,8 @@ from helper_functions import (
     capture_screenshot,
     extract_text_from_image_with_boxes,
     generate_joke_from_screenshots,
+    tap,
+    input_text,
     create_visual_debug_overlay,
     group_boxes_into_lines,
     group_lines_into_paragraphs,

@@ -15,19 +15,6 @@ load_dotenv()
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
 
-def connect_device(user_ip_address="127.0.0.1"):
-    """Connect to a device directly"""
-    adb = AdbClient(host=user_ip_address, port=5037)
-    devices = adb.devices()
-
-    if len(devices) == 0:
-        print("No devices connected")
-        return None
-    device = devices[0]
-    print(f"Connected to {device.serial}")
-    return device
-
-
 def connect_device_remote(user_ip_address="127.0.0.1"):
     """Connect to a device remotely from docker container"""
     adb = AdbClient(host="host.docker.internal", port=5037)
@@ -77,15 +64,6 @@ def input_text(device, text):
     device.shell(f'input text "{text}"')
 
 
-def type_text_slow(device, text, per_char_delay=0.1):
-    """Type text character by character with a delay"""
-    for char in text:
-        if char == " ":
-            char = "%s"
-        device.shell(f"input text {char}")
-        time.sleep(per_char_delay)
-
-
 def swipe(device, direction="down", duration=1500):
     """Execute a swipe gesture with consistent 68% scroll distance.
 
@@ -128,14 +106,6 @@ def get_screen_resolution(device):
     return width, height
 
 
-def open_hinge(device):
-    """Open the Hinge app"""
-    package_name = "co.match.android.matchhinge"
-    device.shell(
-        f"monkey -p {package_name} -c android.intent.category.LAUNCHER 1")
-    time.sleep(5)
-
-
 def isAtBottom(device, last_scroll_position=None):
     """Check if we've reached the bottom of a scrollable view using multiple methods.
 
@@ -171,44 +141,6 @@ def isAtBottom(device, last_scroll_position=None):
     except Exception as e:
         print(f"Error checking scroll position: {e}")
         return False, 0
-
-
-def scroll_down(device, last_scroll_position=None):
-    """Scroll down the screen and return the new scroll position.
-
-    Args:
-        device: The ADB device
-        last_scroll_position: The Y position from the last scroll operation
-
-    Returns:
-        tuple: (bool, int) - (success, new_scroll_position)
-    """
-    try:
-        width, height = get_screen_resolution(device)
-        x_center = width // 2
-        y_start = height * 0.8
-        y_end = height * 0.2  # Scroll a larger distance to ensure movement
-
-        # Execute the scroll
-        device.shell(
-            f"input swipe {x_center} {y_start} {x_center} {y_end} 500")
-        time.sleep(0.5)  # Wait for scroll to complete
-
-        # Get new scroll position and check if we're at the bottom
-        is_bottom, new_position = isAtBottom(device, last_scroll_position)
-
-        # If we're at the bottom, try one more time with a smaller scroll
-        if is_bottom:
-            device.shell(
-                f"input swipe {x_center} {height*0.6} {x_center} {height*0.4} 300")
-            time.sleep(0.5)
-            is_bottom, new_position = isAtBottom(device, new_position)
-
-        return not is_bottom, new_position
-
-    except Exception as e:
-        print(f"Error during scroll: {e}")
-        return False, last_scroll_position
 
 
 def extract_text_from_image_with_boxes(image_path):
@@ -275,16 +207,16 @@ def group_boxes_into_lines(boxes, y_threshold=15):
             current_top = current_y
             current_bottom = current_y + current_height
 
-            vertical_overlap = (min(box_bottom, current_bottom) -
-                                max(box_top, current_top))
+            vertical_overlap = (
+                min(box_bottom, current_bottom) - max(box_top, current_top))
 
             if vertical_overlap > 0 or abs(box_y - current_y) <= y_threshold:
                 # Box is aligned with current line
                 current_line.append(box)
                 # Update current line bounds
                 current_y = min(current_y, box_y)
-                current_height = max(current_height,
-                                     box_y + box_height - current_y)
+                current_height = max(
+                    current_height, box_y + box_height - current_y)
             else:
                 # Box starts a new line
                 if current_line:
@@ -467,9 +399,8 @@ def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, 
     if tap_target:
         tap_x, tap_y = tap_target
         radius = 30
-        draw.ellipse([tap_x - radius, tap_y - radius,
-                     tap_x + radius, tap_y + radius],
-                     outline='red', width=3)
+        draw.ellipse([tap_x - radius, tap_y - radius, tap_x +
+                     radius, tap_y + radius], outline='red', width=3)
 
     # Save the visualization
     img.save(output_path)
@@ -914,7 +845,9 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
     # Use prompt match if found, otherwise use response match
     best_match = best_prompt_match if best_prompt_match else best_response_match
     if best_match:
-        print(f"Found {'prompt' if best_prompt_match else 'response'} match with ratio {max(best_prompt_ratio, best_response_ratio):.2f}")
+        match_type = 'prompt' if best_prompt_match else 'response'
+        match_ratio = max(best_prompt_ratio, best_response_ratio)
+        print(f"Found {match_type} match with ratio {match_ratio:.2f}")
 
         # Calculate tap coordinates (center of the paragraph)
         boxes = best_match['boxes']
@@ -1042,10 +975,13 @@ def send_response_to_story(device, conversation_starter, profile_num):
 
     # Calculate tap coordinates for comment box
     comment_boxes = comment_box['boxes']
-    comment_x = (min(box['box'][0] for box in comment_boxes) +
-                 max(box['box'][0] + box['box'][2] for box in comment_boxes)) // 2
-    comment_y = (min(box['box'][1] for box in comment_boxes) +
-                 max(box['box'][1] + box['box'][3] for box in comment_boxes)) // 2
+    min_x = min(box['box'][0] for box in comment_boxes)
+    max_x = max(box['box'][0] + box['box'][2] for box in comment_boxes)
+    min_y = min(box['box'][1] for box in comment_boxes)
+    max_y = max(box['box'][1] + box['box'][3] for box in comment_boxes)
+
+    comment_x = (min_x + max_x) // 2
+    comment_y = (min_y + max_y) // 2
 
     # Create visualization of phase 1
     create_visual_debug_overlay(
@@ -1086,7 +1022,6 @@ def send_response_to_story(device, conversation_starter, profile_num):
     send_ratio = 0.0
     for para in paragraphs:
         is_match, ratio, _ = fuzzy_match_text(
-            # Added 0.7 threshold
             "Send Priority Like", para['text'], threshold=0.7)
         if is_match and ratio > send_ratio:
             send_button = para
@@ -1106,10 +1041,13 @@ def send_response_to_story(device, conversation_starter, profile_num):
 
     # Calculate tap coordinates for send button
     send_boxes = send_button['boxes']
-    send_x = (min(box['box'][0] for box in send_boxes) +
-              max(box['box'][0] + box['box'][2] for box in send_boxes)) // 2
-    send_y = (min(box['box'][1] for box in send_boxes) +
-              max(box['box'][1] + box['box'][3] for box in send_boxes)) // 2
+    min_x = min(box['box'][0] for box in send_boxes)
+    max_x = max(box['box'][0] + box['box'][2] for box in send_boxes)
+    min_y = min(box['box'][1] for box in send_boxes)
+    max_y = max(box['box'][1] + box['box'][3] for box in send_boxes)
+
+    send_x = (min_x + max_x) // 2
+    send_y = (min_y + max_y) // 2
 
     # Create visualization of phase 2
     create_visual_debug_overlay(
