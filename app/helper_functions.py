@@ -630,8 +630,8 @@ STEP 5: ANALYZE EACH STORY'S IMPLICATIONS
 For each story (element), determine what it reveals about the main person:
 1. Photos of the main person: Consider what she's doing and how she made it happen
    - Example: "Playing uno in forest" → brought cards to wilderness
-2. Photos with others: Consider what this reveals about her social circle
-3. Photos without people: Consider what this reveals about her interests
+2. Photos with others: Consider why she is with other people in this photo. They are probably people she likes. She might be engaging in an activity that is more fun with others, or perhaps they are all doing something new which is done easiest as a group.
+3. Photos without people: Consider what this reveals about her interests. There will be things like photos of food or nature and we can easily interpret this as her interests.
 4. Prompt/Response: Consider her history and preferences
    - Example: "Bar trivia and salty snacks" → enjoys trivia as hobby
    - CRITICAL: Always analyze the implicit meaning behind responses:
@@ -652,14 +652,15 @@ For each story (element), determine what it reveals about the main person:
 
 STEP 6: COMPILE CHARACTERISTICS
 1. List all characteristics derived from stories about the main person
-2. Organize by confidence level
+2. Organize by confidence level. Also determine what her characteristics are based on all of the analysis of the stories we just did.
 3. Note when multiple stories support same characteristic
    - Example: Two stories about exercise → high confidence in active lifestyle
+4. Read this list out loud to yourself. Does this sound like a reasonable person? Do they have hobbies that seem realistic? If there are characteristics of her that seem vague or exaggerated, be critical of them. Such as, "she's an adventurous person" - it's hard to prove this characteristic because it is vague. It's also hard to prove because it's exaggerated. Imagine you are going to represent this list of characteristics to the woman. Would she be flattered? Shocked? Disinterested? Feel awkward? Focus on things that are highly likely to be true as a few good truths are better than many assumptions.
 
 STEP 7: GENERATE CONVERSATION STARTERS
 For each prompt/response pair:
 1. Use characteristics and stories as context
-2. Create exactly ONE conversation starter that follows this two-step approach:
+2. Create exactly THREE unique conversation starters that follow this two-step approach:
    a. First, give a direct, simple compliment rooted in something VISIBLE from her profile
       - Focus on concrete, observable things:
         * Physical appearance (only if obvious and tasteful)
@@ -685,45 +686,67 @@ For each prompt/response pair:
       - The compliment should be something you can point to in a photo or prompt response
    b. Then, follow up with a question showing interest in the prompt
       - Keep it natural and direct
+      - Keep it specific to something you are curious about. You want to show that you are interested in her life experiences that are easily accessible to her. You don't want to ask her to ideate or create some great big answer. The goal of talking on a dating app is to have fun, flirt, and see if this would lead to a good real-world connection. There is not an expectation by the woman that the connection will happen just via messaging. That is unrealistic. Make a message that satisfies the goals of: "I am making my interest in her real and accessible", "I've put in time to understand her as best as I can using this profile", and "I want to show interest in a way that is manageable so that other things can be talked about later". Manageable is key here. The conversation is not just around content but around two people trying to show each other that they notice each other and like each other.
       - Example: "What's your favorite hiking trail around here?"
+   * Each of the THREE starters should differ in either:
+     - The aspect/item being complimented (e.g., different visible elements)
+     - OR a different way of showing interest in the same topic
+   * Aim to create positive images or stories in her mind - focus on pleasant moments or memories
+   * For "Two truths and a lie" prompts specifically:
+     - First break down her response into the three statements
+     - Evaluate which is most likely the lie based on profile context
+     - For the question part, include your guess about which is the lie
+     - Example: "Those vintage glasses suit you well. I'm guessing the dolphin story is the lie?"
+
    * Uses natural, everyday language - how you'd actually talk to someone
    * Avoids flowery metaphors or dramatic language
    * Never uses marketing-style words like "perfect", "amazing", "journey", "adventure"
    * Asks direct questions without unnecessary qualifiers
-   * Shows interest through specificity, not through enthusiasm
+   * Shows interest through specificity, not enthusiasm
    * Aims for 10-15 words maximum per part (compliment + question)
    * Easy to respond to over text
+   * Avoids asking her to produce another story like the one she already shared
+   * Never reiterates her answer as a question
+   * Avoids demanding questions that require complex mental processing
+   * Creates a pleasant memory or image when possible
 
 CRITICAL: People don't narrate their lives with dramatic language - they just ask what they want to know.
 
-Examples of good vs bad compliments:
-Good (Concrete and Observable):
-- "You look comfortable in the outdoors. What's your favorite hiking trail around here?"
-- "You have a great smile. How long have you been surfing?"
-- "That's a cool camera you're using. What kind of photography do you enjoy most?"
-- "You look at home in that coffee shop. What's your usual order?"
+Examples of good vs bad conversation starters:
 
-Bad (Too Vague or Personality-Based):
-- "I like your spontaneous spirit. What adventures do you have planned?"
-- "You seem really adventurous. Where do you like to travel?"
-- "You have a great personality. What do you like to do for fun?"
-- "I love your energy. What keeps you motivated?"
+GOOD:
+- "That's a cute Carhartt beanie. What's your favorite type of cheese?" (Simple compliment, easy low-stakes question)
+- "That bright pink jacket stands out in your costume photo. Who's your favorite Warriors player this season?" (Specific compliment, fun low-stakes question)
+- "Those are some interesting life stories! That hamster scar sounds like it has a good story behind it. What inspired your short film?" (Comments on multiple things showing specific interest)
+- "You look so at ease in your photos. What's the most random place you've made a new friend?" (Creates an image of a pleasant memory)
 
-The key difference is that good compliments:
-1. Focus on concrete, observable things from photos (activities, places, items) rather than personality traits
-2. Are specific to what's shown in the profile and lead naturally into the follow-up question
-3. Use straightforward language without unnecessary drama or narrative
-4. Treat activities as normal parts of life, not epic adventures
+BAD:
+- "That's a wild fanfic connection! What other pop culture rabbit holes do you enjoy falling into?" (Demands she produce another story)
+- "That's an interesting back tattoo. What's the story behind your favorite metal taste?" (Question is too demanding)
+- "That coffee shop looks cozy in your photo. What's your go-to coffee order when you're having a good conversation?" (Too complex - asks her to think about all good conversations and coffee preferences)
+- "That's a memorable date story for sure. Do tetanus shots and swimming make it into your top 5 worst date endings?" (Reiterates her answer as a question)
+- "That's a solid Obi-Wan reference. Do you have any other Star Wars impressions in your arsenal?" (Asking her to produce more content)
+- "I see you're into adventures. What's the most exciting new thing you've tried recently?" (Reiterates her answer)
 
 STEP 8: SIMULATE CONVERSATION
-For each starter:
-1. Imagine her potential responses
-2. Evaluate:
-   - Would this sound natural in real conversation?
+For each of the NINE starters (3 per prompt/response pair):
+1. Conduct a complete simulated conversation:
+   a. Message 1: Her prompt/response as the first message
+   b. Message 2: Your conversation starter as the response
+   c. Message 3: Imagine her most likely reply based on her profile characteristics
+   d. Message 4: Your natural follow-up to continue the conversation
+   e. Message 5: Her second response
+2. Evaluate based on these criteria:
+   - How natural does this conversation flow?
+   - Would this conversation be enjoyable for both parties?
    - Does it avoid sounding like marketing copy?
    - Is it free of unnecessary qualifiers and drama?
-   - Does it ask what you actually want to know?
-   - Would she find it easy to respond?
+   - Does it create positive imagery or memories?
+   - Is it easy for her to respond without requiring complex thinking?
+   - Does it show genuine interest without being generic?
+   - Does it respect her intelligence without being pretentious?
+3. Rank each conversation on a scale of 1-10 for overall quality
+4. Note which conversation feels most natural and has the best flow
 
 STEP 9: SELECT BEST STARTER
 1. Choose the starter that best:
@@ -732,8 +755,11 @@ STEP 9: SELECT BEST STARTER
    - Shows interest through specificity, not enthusiasm
    - Creates easy conversation flow
    - Respects the complexity of her personality
+   - Creates positive imagery or stories in her mind
+   - Requires minimal mental effort to respond
+   - Has the highest-ranked simulated conversation
 2. Note which prompt/response pair of the woman's profile matches the chosen starter
-3. Reference prompts.txt and seperate the prompt/response pair into the prompt and the response. Take note of the prompt distinctly from the response.
+3. Reference prompts.txt and separate the prompt/response pair into the prompt and the response. Take note of the prompt distinctly from the response.
 
 STEP 10: IDENTIFY SCREENSHOT
 1. Note which screenshot (0-5) contains the prompt/response pair text of the woman's profile that matches the chosen starter
