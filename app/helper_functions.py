@@ -1085,7 +1085,7 @@ def save_profile_results(profile_num, screenshots, ai_response):
     Args:
         profile_num: The profile number
         screenshots: List of screenshot paths
-        ai_response: The AI response dictionary
+        ai_response: The AI response dictionary (can be None)
 
     Returns:
         str: Path to the profile's results directory
@@ -1111,19 +1111,16 @@ def save_profile_results(profile_num, screenshots, ai_response):
         dest_path = os.path.join(screenshots_dir, filename)
         shutil.copy2(screenshot, dest_path)
 
-    # Save AI response as JSON
+    # Save AI response as JSON with timestamp
     response_path = os.path.join(profile_dir, "response.json")
-    with open(response_path, 'w') as f:
-        json.dump(ai_response, f, indent=2)
-
-    # Add timestamp to response
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open(response_path, 'r+') as f:
-        data = json.load(f)
-        data['timestamp'] = timestamp
-        f.seek(0)
-        json.dump(data, f, indent=2)
-        f.truncate()
+
+    # Handle None response by creating an empty response with timestamp
+    response_data = ai_response if ai_response is not None else {}
+    response_data['timestamp'] = timestamp
+
+    with open(response_path, 'w') as f:
+        json.dump(response_data, f, indent=2)
 
     return profile_dir
 
