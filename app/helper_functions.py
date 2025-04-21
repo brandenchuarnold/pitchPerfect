@@ -653,6 +653,8 @@ For each prompt/response pair:
      - Evaluate which is most likely the lie based on profile context
      - For the question part, include your guess about which is the lie
      - Example: "Those vintage glasses suit you well. I'm guessing the dolphin story is the lie?"
+     - Do NOT ask which statement surprises people the most or for additional details about the statements
+     - Just provide a compliment followed by your guess about the lie
 
    * Uses natural, everyday language - how you'd actually talk to someone
    * Avoids flowery metaphors or dramatic language
@@ -671,18 +673,64 @@ CRITICAL: People don't narrate their lives with dramatic language - they just as
 Examples of good vs bad conversation starters:
 
 GOOD:
-- "That's a cute Carhartt beanie. What's your favorite type of cheese?" (Simple compliment, easy low-stakes question)
-- "That bright pink jacket stands out in your costume photo. Who's your favorite Warriors player this season?" (Specific compliment, fun low-stakes question)
-- "Those are some interesting life stories! That hamster scar sounds like it has a good story behind it. What inspired your short film?" (Comments on multiple things showing specific interest)
-- "You look so at ease in your photos. What's the most random place you've made a new friend?" (Creates an image of a pleasant memory)
+- Prompt: "My Love Language is"
+  Response: "Words of affirmation and cheese"
+  Conversation Starter: "That's a cute Carhartt beanie. What's your favorite type of cheese?" 
+  (Simple compliment, easy low-stakes question)
+- Prompt: "I geek out on"
+  Response: "NBA, specifically golden state warriors"
+  Conversation Starter: "That bright pink jacket stands out in your costume photo. 
+                      Who's your favorite Warriors player this season?" 
+  (Specific compliment, fun low-stakes question)
+- Prompt: "Two truths and a lie..."
+  Response: "1) I have a scar on my hand from being bitten by a hamster 2) I wrote and directed a short film 
+          3) I won a county-wide math competition in school"
+  Conversation Starter: "Those are some interesting life stories! That hamster scar sounds like it has a good story behind it. 
+                      What inspired your short film?" 
+  (Comments on multiple things showing specific interest)
+- Prompt: "I take pride in"
+  Response: "my ability to make friends with anyone, anywhere. I can strike up a conversation with a wall."
+  Conversation Starter: "You look so at ease in your photos. What's the most random place you've made a new friend?" 
+  (Creates an image of a pleasant memory)
+- Prompt: "I'll know I've found the one when..."
+  Response: "I walk into a room, there's no one else around me and I still smile"
+  Conversation Starter: "That's a lovely perspective on happiness. Do you find yourself smiling on your own often?"
+  (Simple and builds a pleasant image)
 
 BAD:
-- "That's a wild fanfic connection! What other pop culture rabbit holes do you enjoy falling into?" (Demands she produce another story)
-- "That's an interesting back tattoo. What's the story behind your favorite metal taste?" (Question is too demanding)
-- "That coffee shop looks cozy in your photo. What's your go-to coffee order when you're having a good conversation?" (Too complex - asks her to think about all good conversations and coffee preferences)
-- "That's a memorable date story for sure. Do tetanus shots and swimming make it into your top 5 worst date endings?" (Reiterates her answer as a question)
-- "That's a solid Obi-Wan reference. Do you have any other Star Wars impressions in your arsenal?" (Asking her to produce more content)
-- "I see you're into adventures. What's the most exciting new thing you've tried recently?" (Reiterates her answer)
+- Prompt: "A random fact I love is"
+  Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight. And twilight is a fanfic of 
+          My Chemical Romance, and if 9/11 didn't happen, they wouldn't exist. It's weird I know"
+  Conversation Starter: "That's a wild fanfic connection! 
+                      What other pop culture rabbit holes do you enjoy falling into?" 
+  (Demands she produce another story when she already shared something interesting))
+- Prompt: "The quickest way to my heart is"
+  Response: "Talking over ice cream/coffee"
+  Conversation Starter: "That coffee shop looks cozy in your photo. 
+                      What's your go-to coffee order when you're having a good conversation?" 
+  (Too complex - asks her to think about all good conversations and coffee preferences at once)
+- Prompt: "My biggest date fail"
+  Response: "Going swimming in Lake Mendota and then cutting my foot on a piece of metal... 
+          the date ended because I had to go to Urgent Care for a tetanus shot 😜"
+  Conversation Starter: "That's a memorable date story for sure. 
+                      Do tetanus shots and swimming make it into your top 5 worst date endings?" 
+  (Reiterates her answer as a question - she already said it was her biggest date fail)
+- Prompt: "My best celebrity impression is..."
+  Response: "\"Why hello there,\" in my best Obi-Wan Kenobi voice and my friends hate it."
+  Conversation Starter: "That's a solid Obi-Wan reference. 
+                      Do you have any other Star Wars impressions in your arsenal?" 
+  (Asking her to produce more content when she's already shared something)
+- Prompt: "I'm looking for"
+  Response: "Someone who loves adventure and trying new things. Bonus points if you have a dog 🐶"
+  Conversation Starter: "I see you're into adventures. 
+                      What's the most exciting new thing you've tried recently?" 
+  (Simply reiterates her answer)
+
+SPECIAL CASES:
+- Prompt: "Two truths and a lie"
+  Response: "Lobster was my poverty meal growing up\nA dolphin killed itself in front of me\nA whale has jumped onto a boat I was on"
+  Conversation Starter: "I love the polka dot dress in your photo. I'm guessing the dolphin story is the lie?"
+  (For "Two truths and a lie" prompts, provide a compliment and include your guess about which is the lie)
 
 STEP 8: SIMULATE CONVERSATION
 For each of the NINE starters (3 per prompt/response pair):
