@@ -630,8 +630,13 @@ STEP 5: ANALYZE EACH STORY'S IMPLICATIONS
 For each story (element), determine what it reveals about the main person:
 1. Photos of the main person: Consider what she's doing and how she made it happen
    - Example: "Playing uno in forest" → brought cards to wilderness
-2. Photos with others: Consider why she is with other people in this photo. They are probably people she likes. She might be engaging in an activity that is more fun with others, or perhaps they are all doing something new which is done easiest as a group.
-3. Photos without people: Consider what this reveals about her interests. There will be things like photos of food or nature and we can easily interpret this as her interests.
+2. Photos with others: Consider why she is with other people in this photo. 
+   They are probably people she likes. She might be engaging in an activity 
+   that is more fun with others, or perhaps they are all doing something new 
+   which is done easiest as a group.
+3. Photos without people: Consider what this reveals about her interests. 
+   There will be things like photos of food or nature and we can easily 
+   interpret this as her interests.
 4. Prompt/Response: Consider her history and preferences
    - Example: "Bar trivia and salty snacks" → enjoys trivia as hobby
    - CRITICAL: Always analyze the implicit meaning behind responses:
@@ -652,10 +657,18 @@ For each story (element), determine what it reveals about the main person:
 
 STEP 6: COMPILE CHARACTERISTICS
 1. List all characteristics derived from stories about the main person
-2. Organize by confidence level. Also determine what her characteristics are based on all of the analysis of the stories we just did.
+2. Organize by confidence level. Also determine what her characteristics are based 
+   on all of the analysis of the stories we just did.
 3. Note when multiple stories support same characteristic
    - Example: Two stories about exercise → high confidence in active lifestyle
-4. Read this list out loud to yourself. Does this sound like a reasonable person? Do they have hobbies that seem realistic? If there are characteristics of her that seem vague or exaggerated, be critical of them. Such as, "she's an adventurous person" - it's hard to prove this characteristic because it is vague. It's also hard to prove because it's exaggerated. Imagine you are going to represent this list of characteristics to the woman. Would she be flattered? Shocked? Disinterested? Feel awkward? Focus on things that are highly likely to be true as a few good truths are better than many assumptions.
+4. Read this list out loud to yourself. Does this sound like a reasonable person? 
+   Do they have hobbies that seem realistic? If there are characteristics of her 
+   that seem vague or exaggerated, be critical of them. Such as, "she's an adventurous 
+   person" - it's hard to prove this characteristic because it is vague. It's also hard 
+   to prove because it's exaggerated. Imagine you are going to represent this list of 
+   characteristics to the woman. Would she be flattered? Shocked? Disinterested? Feel 
+   awkward? Focus on things that are highly likely to be true as a few good truths are 
+   better than many assumptions.
 
 STEP 7: GENERATE CONVERSATION STARTERS
 For each prompt/response pair:
@@ -686,7 +699,19 @@ For each prompt/response pair:
       - The compliment should be something you can point to in a photo or prompt response
    b. Then, follow up with a question showing interest in the prompt
       - Keep it natural and direct
-      - Keep it specific to something you are curious about. You want to show that you are interested in her life experiences that are easily accessible to her. You don't want to ask her to ideate or create some great big answer. The goal of talking on a dating app is to have fun, flirt, and see if this would lead to a good real-world connection. There is not an expectation by the woman that the connection will happen just via messaging. That is unrealistic. Make a message that satisfies the goals of: "I am making my interest in her real and accessible", "I've put in time to understand her as best as I can using this profile", and "I want to show interest in a way that is manageable so that other things can be talked about later". Manageable is key here. The conversation is not just around content but around two people trying to show each other that they notice each other and like each other.
+      - Keep it specific to something you are curious about. You want to show that you are 
+        interested in her life experiences that are easily accessible to her. You don't want 
+        to ask her to ideate or create some great big answer. 
+      - The goal of talking on a dating app is to have fun, flirt, and see if this would lead 
+        to a good real-world connection. There is not an expectation by the woman that the 
+        connection will happen just via messaging. That is unrealistic. 
+      - Make a message that satisfies these goals:
+        * "I am making my interest in her real and accessible"
+        * "I've put in time to understand her as best as I can using this profile"
+        * "I want to show interest in a way that is manageable so that other things can be 
+          talked about later"
+      - Manageable is key here. The conversation is not just around content but around 
+        two people trying to show each other that they notice each other and like each other.
       - Example: "What's your favorite hiking trail around here?"
    * Each of the THREE starters should differ in either:
      - The aspect/item being complimented (e.g., different visible elements)
