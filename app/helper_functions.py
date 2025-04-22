@@ -811,19 +811,30 @@ Return the chosen prompt, response, your conversation starter, and the screensho
         try:
             # The response should be in JSON format as requested
             import json
-            result = json.loads(response.content[0].text.strip())
-            return {
-                "prompt": result.get("prompt", ""),
-                "response": result.get("response", ""),
-                "conversation_starter": result.get("conversation_starter", ""),
-                "screenshot_index": result.get("screenshot_index", 0)
-            }
-        except json.JSONDecodeError:
-            print("Error: Response was not in expected JSON format")
+
+            # Extract just the JSON portion from the response
+            response_text = response.content[0].text
+
+            # Find the JSON part by locating the first { and last }
+            start_idx = response_text.find('{')
+            end_idx = response_text.rfind('}') + 1
+
+            if start_idx != -1 and end_idx > start_idx:
+                json_text = response_text[start_idx:end_idx]
+                result = json.loads(json_text)
+                return {
+                    "prompt": result.get("prompt", ""),
+                    "response": result.get("response", ""),
+                    "conversation_starter": result.get("conversation_starter", ""),
+                    "screenshot_index": result.get("screenshot_index", 0)
+                }
+            else:
+                print("Error: No valid JSON object found in response")
+                print("Raw response:", response.content[0].text)
+                return None
+        except Exception as e:
+            print(f"Error parsing response: {e}")
             print("Raw response:", response.content[0].text)
-            return None
-        except (ValueError, TypeError) as e:
-            print(f"Error parsing response values: {e}")
             return None
 
     except Exception as e:
