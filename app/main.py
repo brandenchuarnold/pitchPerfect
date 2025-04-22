@@ -8,6 +8,7 @@ import threading
 from dotenv import load_dotenv
 from ppadb.client import Client as AdbClient
 import difflib
+import logging
 
 from helper_functions import (
     connect_device_remote,
@@ -27,6 +28,7 @@ from helper_functions import (
     dislike_profile,
     save_profile_results,
     check_for_end_of_profiles,
+    logger,
 )
 
 # Global variable to store AI response
@@ -36,33 +38,47 @@ ai_response_lock = threading.Lock()
 
 def scroll_profile_and_capture(device, width, height, profile_num):
     """Scroll through profile and capture screenshots."""
-    screenshots = []
+    try:
+        screenshots = []
 
-    # Take initial screenshot
-    screenshot_path = capture_screenshot(
-        device, f"profile_{profile_num}_part1")
-    screenshots.append(screenshot_path)
-
-    # Take 6 more screenshots (7 total)
-    for i in range(1, 7):
-        print(f"Scroll down #{i}")
-        # Scroll down
-        swipe(device, "down")
-
-        # Take screenshot after scroll
+        # Take initial screenshot
+        logger.info("Capturing initial screenshot")
         screenshot_path = capture_screenshot(
-            device, f"profile_{profile_num}_part{i+1}")
+            device, f"profile_{profile_num}_part1")
         screenshots.append(screenshot_path)
 
-    return screenshots
+        # Take 6 more screenshots (7 total)
+        for i in range(1, 7):
+            logger.info(f"Scroll down #{i}")
+            # Scroll down
+            swipe(device, "down")
+
+            # Take screenshot after scroll
+            screenshot_path = capture_screenshot(
+                device, f"profile_{profile_num}_part{i+1}")
+            screenshots.append(screenshot_path)
+
+        logger.info(
+            f"Captured {len(screenshots)} screenshots for profile #{profile_num}")
+        return screenshots
+    except Exception as e:
+        logger.error(f"Error in scroll_profile_and_capture: {e}")
+        logger.debug("", exc_info=True)  # Log full traceback at debug level
+        return []
 
 
 def scroll_back_to_top(device):
     """Scroll back to the top of the profile."""
-    for i in range(1, 7):
-        print(f"Scroll up #{i}")
-        # Scroll up
-        swipe(device, "up")
+    try:
+        for i in range(1, 7):
+            logger.info(f"Scroll up #{i}")
+            # Scroll up
+            swipe(device, "up")
+        return True
+    except Exception as e:
+        logger.error(f"Error in scroll_back_to_top: {e}")
+        logger.debug("", exc_info=True)  # Log full traceback at debug level
+        return False
 
 
 def process_ai_response(screenshots, format_txt_path, prompts_txt_path, captions_txt_path, polls_txt_path, locations_txt_path):
@@ -116,7 +132,7 @@ def process_screenshot_with_visualization(image_path, profile_num, screenshot_nu
     # Extract text boxes
     boxes = extract_text_from_image_with_boxes(image_path)
     if not boxes:
-        print("No text boxes found in screenshot")
+        logger.warning("No text boxes found in screenshot")
         return None, None
 
     # Group boxes into lines and paragraphs
@@ -132,50 +148,18 @@ def process_screenshot_with_visualization(image_path, profile_num, screenshot_nu
         paragraphs=paragraphs,
         output_path=f"images/profile_{profile_num}_screenshot_{screenshot_num}_visual.png"
     )
-    print(f"Created visualization: {vis_path}")
+    logger.debug(f"Created visualization: {vis_path}")
 
     return paragraphs, vis_path
-
-
-def capture_profile_screenshots(device, count):
-    """Capture screenshots while scrolling through the profile."""
-    screenshots = []
-    last_position = None
-
-    # Take initial screenshot
-    screenshot_path = capture_screenshot(device, f"profile_{count}_part0")
-    screenshots.append(screenshot_path)
-
-    # Scroll and capture until bottom
-    width, height = get_screen_resolution(device)
-    x_center = width // 2
-    y_start = height * 0.8
-    y_end = height * 0.7
-
-    i = 1
-    while True:
-        # Scroll down and check if we can continue
-        can_scroll, last_position = swipe(
-            device, x_center, y_start, x_center, y_end, 100, last_position)
-        if not can_scroll:
-            break
-
-        # Take screenshot after scroll
-        screenshot_path = capture_screenshot(
-            device, f"profile_{count}_part{i}")
-        screenshots.append(screenshot_path)
-        i += 1
-
-    return screenshots
 
 
 def scroll_to_screenshot(device, screenshot_index):
     """Scroll to the specified screenshot index using consistent 68% swipe distance."""
     # We're already at the top from scroll_profile_and_capture
     # Just scroll down to the target screenshot
-    print(f"\nScrolling to screenshot index {screenshot_index}...")
+    logger.info(f"\nScrolling to screenshot index {screenshot_index}...")
     for i in range(screenshot_index):
-        print(f"Scroll down #{i+1}")
+        logger.info(f"Scroll down #{i+1}")
         swipe(device, "down")
         time.sleep(1)  # Wait for scroll to complete
 
@@ -198,31 +182,32 @@ def match_prompt_against_authoritative(prompt, prompts_txt_path):
         with open(prompts_txt_path, 'r') as f:
             authoritative_prompts = f.read().splitlines()
     except Exception as e:
-        print(f"Error reading prompts.txt: {e}")
+        logger.error(f"Error reading prompts.txt: {e}")
+        logger.debug("", exc_info=True)  # Log full traceback at debug level
         return None, 0.0
 
     best_match = None
     best_ratio = 0.0
 
     # Print all prompts that have a decent match for debugging
-    print("\nChecking prompt matches:")
+    logger.info("Checking prompt matches:")
     for auth_prompt in authoritative_prompts:
         is_match, ratio, matched_text = fuzzy_match_text(
             prompt, auth_prompt, threshold=0.5)  # Lower threshold for debugging
         if ratio > 0.5:  # Show any decent matches
-            print(f"  {auth_prompt}: {ratio:.2f}")
+            logger.info(f"  {auth_prompt}: {ratio:.2f}")
         if is_match and ratio > best_ratio:
             best_match = auth_prompt
             best_ratio = ratio
 
     if best_match:
-        print(f"\nBest match:")
-        print(f"AI prompt: '{prompt}'")
-        print(f"Auth prompt: '{best_match}'")
-        print(f"Confidence: {best_ratio:.2f}")
+        logger.info("\nBest match:")
+        logger.info(f"AI prompt: '{prompt}'")
+        logger.info(f"Auth prompt: '{best_match}'")
+        logger.info(f"Confidence: {best_ratio:.2f}")
         return best_match, best_ratio
     else:
-        print(f"\nNo good matches found for '{prompt}'")
+        logger.warning(f"\nNo good matches found for '{prompt}'")
         return None, 0.0
 
 
@@ -231,25 +216,25 @@ def main():
     try:
         # Get device IP from environment variable
         device_ip = os.getenv("DEVICE_IP", "192.168.12.32")
-        print(f"Connecting to device at IP: {device_ip}")
+        logger.info(f"Connecting to device at IP: {device_ip}")
 
         # Connect to device
         device = connect_device_remote(device_ip)
         if not device:
-            print("Failed to connect to device")
+            logger.error("Failed to connect to device")
             sys.exit(1)
 
         # Get screen dimensions
         width, height = get_screen_resolution(device)
-        print(f"Screen resolution: {width}x{height}")
+        logger.info(f"Screen resolution: {width}x{height}")
 
         # Initialize profile counter, successful interaction counter, and target interactions
         profile_num = 1
         successful_interactions = 0
         target_interactions = random.randint(4, 6)
         max_profiles = 40  # Maximum number of profiles to process
-        print(f"Initial target interactions: {target_interactions}")
-        print(f"Maximum profiles to process: {max_profiles}")
+        logger.info(f"Initial target interactions: {target_interactions}")
+        logger.info(f"Maximum profiles to process: {max_profiles}")
 
         # Get absolute paths for resource files
         app_dir = os.path.dirname(__file__)
@@ -260,25 +245,25 @@ def main():
         locations_txt_path = os.path.join(app_dir, 'locations.txt')
 
         while profile_num <= max_profiles:  # Main profile loop with limit
-            print(f"\nProcessing profile #{profile_num}")
+            logger.info(f"\nProcessing profile #{profile_num}")
 
             # Check if we've reached the end of available profiles
             end_reached, end_message = check_for_end_of_profiles(
                 device, profile_num)
             if end_reached:
-                print(
+                logger.info(
                     f"Reached end of available profiles: '{end_message}'. Exiting...")
                 break
 
             # Check if we've reached our target interactions
             if successful_interactions >= target_interactions:
-                print(
+                logger.info(
                     f"Reached target of {target_interactions} successful interactions")
                 dislike_profile(device)
                 successful_interactions = 0  # Reset counter
                 target_interactions = random.randint(
                     4, 6)  # Generate new target
-                print(f"New target interactions: {target_interactions}")
+                logger.info(f"New target interactions: {target_interactions}")
                 profile_num += 1
                 continue
 
@@ -291,6 +276,7 @@ def main():
                 device, width, height, profile_num)
 
             # Start AI processing in a separate thread
+            logger.info("Starting AI processing in separate thread")
             ai_thread = threading.Thread(
                 target=process_ai_response,
                 args=(screenshots, format_txt_path, prompts_txt_path,
@@ -299,19 +285,22 @@ def main():
             ai_thread.start()
 
             # Scroll back to top while AI is processing
+            logger.info("Scrolling back to top while AI processes")
             scroll_back_to_top(device)
 
             # Wait for AI response
+            logger.info("Waiting for AI processing to complete")
             ai_thread.join()
+            logger.info("AI processing complete")
 
             # Save profile results regardless of outcome
             results_dir = save_profile_results(
                 profile_num, screenshots, ai_response)
-            print(f"Saved profile results to: {results_dir}")
+            logger.info(f"Saved profile results to: {results_dir}")
 
             # Check if profile is undesirable (empty response)
             if not ai_response or not ai_response.get('prompt') or not ai_response.get('response') or not ai_response.get('conversation_starter') or ai_response.get('screenshot_index') == -1:
-                print("Profile marked as undesirable - disliking")
+                logger.info("Profile marked as undesirable - disliking")
                 dislike_profile(device)
                 successful_interactions = 0  # Reset counter when disliking for any reason
                 target_interactions = random.randint(
@@ -324,10 +313,10 @@ def main():
                 ai_response['prompt'], prompts_txt_path)
 
             if not matched_prompt or confidence < 0.8:
-                print(
-                    f"Warning: Low confidence prompt match ({confidence:.2f})")
-                print("Original:", ai_response['prompt'])
-                print("Matched:", matched_prompt)
+                logger.warning(
+                    f"Low confidence prompt match ({confidence:.2f})")
+                logger.warning(f"Original: {ai_response['prompt']}")
+                logger.warning(f"Matched: {matched_prompt}")
                 dislike_profile(device)
                 successful_interactions = 0  # Reset counter when disliking for any reason
                 target_interactions = random.randint(
@@ -348,7 +337,7 @@ def main():
             )
 
             if not found:
-                print(
+                logger.warning(
                     "Failed to find prompt on target screenshot - trying one screen up...")
                 # Scroll up one screen and try again
                 swipe(device, "up")
@@ -363,7 +352,7 @@ def main():
                 )
 
                 if not found:
-                    print(
+                    logger.warning(
                         "Failed to find prompt on screen above - returning to target screenshot...")
                     # Scroll back down to target screenshot
                     swipe(device, "down")
@@ -379,7 +368,8 @@ def main():
                     )
 
                     if not found:
-                        print("Failed to find prompt after all attempts")
+                        logger.error(
+                            "Failed to find prompt after all attempts")
                         dislike_profile(device)
                         successful_interactions = 0  # Reset counter when disliking for any reason
                         target_interactions = random.randint(
@@ -392,7 +382,7 @@ def main():
                 device, ai_response['conversation_starter'], profile_num)
 
             if not success:
-                print("Failed to send response")
+                logger.error("Failed to send response")
                 dislike_profile(device)
                 successful_interactions = 0  # Reset counter when disliking for any reason
                 target_interactions = random.randint(
@@ -400,17 +390,19 @@ def main():
             else:
                 # Increment successful interactions counter
                 successful_interactions += 1
-                print(
+                logger.info(
                     f"Successful interactions: {successful_interactions}/{target_interactions}")
 
             profile_num += 1
 
-        print(f"\nReached maximum profile limit of {max_profiles}. Exiting...")
+        logger.info(
+            f"\nReached maximum profile limit of {max_profiles}. Exiting...")
 
     except KeyboardInterrupt:
-        print("\nExiting gracefully...")
+        logger.info("\nExiting gracefully...")
     except Exception as e:
-        print(f"Error in main: {e}")
+        logger.error(f"Error in main: {e}")
+        logger.debug("", exc_info=True)  # Log full traceback at debug level
         raise
 
 

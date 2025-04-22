@@ -10,6 +10,9 @@ from config import ANTHROPIC_API_KEY
 import difflib
 import shutil
 from datetime import datetime
+import logging
+import traceback
+import sys
 
 load_dotenv()
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
@@ -17,54 +20,161 @@ client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 # Generate a unique timestamp for this run
 RUN_TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
 
+# Set up logging to file and console
+
+
+def setup_logging():
+    # Create results directory if it doesn't exist
+    results_dir = "results"
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
+
+    # Create logs directory
+    logs_dir = os.path.join(results_dir, "logs")
+    if not os.path.exists(logs_dir):
+        os.makedirs(logs_dir)
+
+    # Create a desktop logs directory
+    desktop_logs_dir = f"/app/desktop/PitchPerfect_Results_{RUN_TIMESTAMP}/logs"
+    if not os.path.exists(desktop_logs_dir):
+        os.makedirs(desktop_logs_dir)
+
+    # Configure logging to write to both file and console
+    log_file = os.path.join(logs_dir, f"pitchperfect_{RUN_TIMESTAMP}.log")
+    desktop_log_file = os.path.join(
+        desktop_logs_dir, f"pitchperfect_{RUN_TIMESTAMP}.log")
+
+    # Configure the root logger
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+
+    # Create formatter
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+
+    # File handler for internal logs directory
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(formatter)
+
+    # File handler for desktop logs directory
+    desktop_file_handler = logging.FileHandler(desktop_log_file)
+    desktop_file_handler.setLevel(logging.DEBUG)
+    desktop_file_handler.setFormatter(formatter)
+
+    # Console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(formatter)
+
+    # Add the handlers to the logger
+    logger.addHandler(file_handler)
+    logger.addHandler(desktop_file_handler)
+    logger.addHandler(console_handler)
+
+    logging.info(
+        f"Logging initialized. Log files: {log_file} and {desktop_log_file}")
+
+    return logger
+
+
+# Initialize logger
+logger = setup_logging()
+
+# Custom exception handler to log uncaught exceptions
+
+
+def log_uncaught_exceptions(exc_type, exc_value, exc_traceback):
+    if issubclass(exc_type, KeyboardInterrupt):
+        # Call the default handler for KeyboardInterrupt
+        sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        return
+
+    # Log the exception
+    logger.error("Uncaught exception", exc_info=(
+        exc_type, exc_value, exc_traceback))
+    logger.error(f"Exception type: {exc_type.__name__}")
+    logger.error(f"Exception value: {exc_value}")
+    logger.error("Traceback:")
+    for line in traceback.format_tb(exc_traceback):
+        logger.error(line.rstrip())
+
+    # Call the default exception handler
+    sys.__excepthook__(exc_type, exc_value, exc_traceback)
+
+
+# Set the exception handler
+sys.excepthook = log_uncaught_exceptions
+
 
 def connect_device_remote(user_ip_address="127.0.0.1"):
     """Connect to a device remotely from docker container"""
-    adb = AdbClient(host="host.docker.internal", port=5037)
-    connection_result = adb.remote_connect(user_ip_address, 5555)
-    print("Connection result:", connection_result)
-    devices = adb.devices()
+    try:
+        adb = AdbClient(host="host.docker.internal", port=5037)
+        connection_result = adb.remote_connect(user_ip_address, 5555)
+        logger.info(f"Connection result: {connection_result}")
+        devices = adb.devices()
 
-    if len(devices) == 0:
-        print("No devices connected")
+        if len(devices) == 0:
+            logger.error("No devices connected")
+            return None
+        device = devices[0]
+        logger.info(f"Connected to {device.serial}")
+        return device
+    except Exception as e:
+        logger.error(f"Error connecting to device: {e}")
+        logger.debug("", exc_info=True)  # Log full traceback at debug level
         return None
-    device = devices[0]
-    print(f"Connected to {device.serial}")
-    return device
 
 
 def capture_screenshot(device, filename):
     """Capture a screenshot and save it to the images directory"""
-    result = device.screencap()
-    with open("images/" + str(filename) + ".png", "wb") as fp:
-        fp.write(result)
-    return "images/" + str(filename) + ".png"
+    try:
+        result = device.screencap()
+        if not os.path.exists("images"):
+            os.makedirs("images")
+        with open("images/" + str(filename) + ".png", "wb") as fp:
+            fp.write(result)
+        logger.debug(f"Screenshot captured: images/{filename}.png")
+        return "images/" + str(filename) + ".png"
+    except Exception as e:
+        logger.error(f"Error capturing screenshot '{filename}': {e}")
+        logger.debug("", exc_info=True)  # Log full traceback at debug level
+        return None
 
 
 def tap(device, x, y, double_tap=False):
     """Execute a tap or double tap at the given coordinates"""
-    print(
-        f"Executing {'double tap' if double_tap else 'tap'} at coordinates: {x}, {y}")
-    if double_tap:
-        # First tap
-        device.shell(f"input tap {x} {y}")
-        time.sleep(0.15)  # Brief pause between taps
-        # Second tap
-        device.shell(f"input tap {x} {y}")
-        time.sleep(0.5)  # Wait for double-tap to register
-    else:
-        device.shell(f"input tap {x} {y}")
-        time.sleep(0.3)
-        # Additional swipe to ensure tap registers
-        device.shell(f"input swipe {x} {y} {x} {y} 100")
-    return True
+    try:
+        logger.info(
+            f"Executing {'double tap' if double_tap else 'tap'} at coordinates: {x}, {y}")
+        if double_tap:
+            # First tap
+            device.shell(f"input tap {x} {y}")
+            time.sleep(0.15)  # Brief pause between taps
+            # Second tap
+            device.shell(f"input tap {x} {y}")
+            time.sleep(0.5)  # Wait for double-tap to register
+        else:
+            device.shell(f"input tap {x} {y}")
+            time.sleep(0.3)
+            # Additional swipe to ensure tap registers
+            device.shell(f"input swipe {x} {y} {x} {y} 100")
+        return True
+    except Exception as e:
+        logger.error(f"Error executing tap at ({x}, {y}): {e}")
+        logger.debug("", exc_info=True)  # Log full traceback at debug level
+        return False
 
 
 def input_text(device, text):
     """Input text into the device"""
-    text = text.replace(" ", "%s")
-    print("text to be written: ", text)
-    device.shell(f'input text "{text}"')
+    try:
+        text = text.replace(" ", "%s")
+        logger.debug(f"Text to be written: {text}")
+        device.shell(f'input text "{text}"')
+    except Exception as e:
+        logger.error(f"Error inputting text: {e}")
+        logger.debug("", exc_info=True)
 
 
 def swipe(device, direction="down", duration=1500):
@@ -96,54 +206,23 @@ def swipe(device, direction="down", duration=1500):
         return True, 0
 
     except Exception as e:
-        print(f"Error during swipe: {e}")
+        logger.error(f"Error during swipe: {e}")
+        logger.debug("", exc_info=True)
         return False, 0
 
 
 def get_screen_resolution(device):
     """Get the screen resolution of the device"""
-    output = device.shell("wm size")
-    print("screen size: ", output)
-    resolution = output.strip().split(":")[1].strip()
-    width, height = map(int, resolution.split("x"))
-    return width, height
-
-
-def isAtBottom(device, last_scroll_position=None):
-    """Check if we've reached the bottom of a scrollable view using multiple methods.
-
-    Args:
-        device: The ADB device
-        last_scroll_position: The Y position from the last scroll operation
-
-    Returns:
-        tuple: (bool, int) - (is_at_bottom, current_scroll_position)
-    """
     try:
-        # Method 1: Check scroll position
-        window_info = device.shell("dumpsys window")
-        current_position = 0
-        for line in window_info.split('\n'):
-            if 'mScrollY=' in line:
-                current_position = int(line.split('=')[1].strip())
-                break
-
-        # If we have a last position to compare with
-        if last_scroll_position is not None:
-            # If we haven't moved since last scroll, we might be at the bottom
-            if current_position == last_scroll_position:
-                # Method 2: Check if we can scroll further using UiScrollable
-                scrollable_check = device.shell("uiautomator dump /dev/tty")
-                if "scrollable=\"true\"" in scrollable_check:
-                    return False, current_position
-                else:
-                    return True, current_position
-
-        return False, current_position
-
+        output = device.shell("wm size")
+        logger.debug(f"Screen size: {output}")
+        resolution = output.strip().split(":")[1].strip()
+        width, height = map(int, resolution.split("x"))
+        return width, height
     except Exception as e:
-        print(f"Error checking scroll position: {e}")
-        return False, 0
+        logger.error(f"Error getting screen resolution: {e}")
+        logger.debug("", exc_info=True)
+        return 1080, 1920  # Default fallback resolution
 
 
 def extract_text_from_image_with_boxes(image_path):
@@ -168,7 +247,8 @@ def extract_text_from_image_with_boxes(image_path):
                 boxes.append(box)
         return boxes
     except Exception as e:
-        print(f"Error extracting text from image: {e}")
+        logger.error(f"Error extracting text from image: {e}")
+        logger.debug("", exc_info=True)
         return None
 
 
@@ -350,64 +430,72 @@ def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, 
     Returns:
         PIL Image object with the visualization overlay
     """
-    # Load the original image
-    img = Image.open(image_path)
-    draw = ImageDraw.Draw(img)
+    try:
+        # Load the original image
+        img = Image.open(image_path)
+        draw = ImageDraw.Draw(img)
 
-    # Create output path if not provided
-    if output_path is None:
-        base, ext = os.path.splitext(image_path)
-        output_path = f"{base}_visual{ext}"
+        # Create output path if not provided
+        if output_path is None:
+            base, ext = os.path.splitext(image_path)
+            output_path = f"{base}_visual{ext}"
 
-    # Draw text boxes (gray)
-    for box in boxes:
-        x, y, w, h = box['box']
-        # Draw box
-        draw.rectangle([x, y, x + w, y + h], outline='gray', width=2)
-        # Add text label - handle Unicode text
-        try:
-            font = ImageFont.truetype("Arial.ttf", 12)
-        except:
-            font = ImageFont.load_default()
-        try:
-            # Try to draw the text, replacing any problematic characters
-            safe_text = box['text'].encode('ascii', 'replace').decode('ascii')
-            draw.text((x, y - 15), safe_text, fill='gray', font=font)
-        except Exception as e:
-            print(f"Warning: Could not draw text '{box['text']}': {e}")
+        # Draw text boxes (gray)
+        for box in boxes:
+            x, y, w, h = box['box']
+            # Draw box
+            draw.rectangle([x, y, x + w, y + h], outline='gray', width=2)
+            # Add text label - handle Unicode text
+            try:
+                font = ImageFont.truetype("Arial.ttf", 12)
+            except:
+                font = ImageFont.load_default()
+            try:
+                # Try to draw the text, replacing any problematic characters
+                safe_text = box['text'].encode(
+                    'ascii', 'replace').decode('ascii')
+                draw.text((x, y - 15), safe_text, fill='gray', font=font)
+            except Exception as e:
+                logger.warning(f"Could not draw text '{box['text']}': {e}")
 
-    # Draw lines (red)
-    if lines:
-        for line in lines:
-            # Find bounding box of line
-            min_x = min(box['box'][0] for box in line)
-            min_y = min(box['box'][1] for box in line)
-            max_x = max(box['box'][0] + box['box'][2] for box in line)
-            max_y = max(box['box'][1] + box['box'][3] for box in line)
-            draw.rectangle([min_x, min_y, max_x, max_y],
-                           outline='red', width=2)
+        # Draw lines (red)
+        if lines:
+            for line in lines:
+                # Find bounding box of line
+                min_x = min(box['box'][0] for box in line)
+                min_y = min(box['box'][1] for box in line)
+                max_x = max(box['box'][0] + box['box'][2] for box in line)
+                max_y = max(box['box'][1] + box['box'][3] for box in line)
+                draw.rectangle([min_x, min_y, max_x, max_y],
+                               outline='red', width=2)
 
-    # Draw paragraphs (green)
-    if paragraphs:
-        for para in paragraphs:
-            # Find bounding box of paragraph
-            min_x = min(box['box'][0] for box in para['boxes'])
-            min_y = min(box['box'][1] for box in para['boxes'])
-            max_x = max(box['box'][0] + box['box'][2] for box in para['boxes'])
-            max_y = max(box['box'][1] + box['box'][3] for box in para['boxes'])
-            draw.rectangle([min_x, min_y, max_x, max_y],
-                           outline='green', width=2)
+        # Draw paragraphs (green)
+        if paragraphs:
+            for para in paragraphs:
+                # Find bounding box of paragraph
+                min_x = min(box['box'][0] for box in para['boxes'])
+                min_y = min(box['box'][1] for box in para['boxes'])
+                max_x = max(box['box'][0] + box['box'][2]
+                            for box in para['boxes'])
+                max_y = max(box['box'][1] + box['box'][3]
+                            for box in para['boxes'])
+                draw.rectangle([min_x, min_y, max_x, max_y],
+                               outline='green', width=2)
 
-    # Draw tap target circle if provided
-    if tap_target:
-        tap_x, tap_y = tap_target
-        radius = 30
-        draw.ellipse([tap_x - radius, tap_y - radius, tap_x +
-                     radius, tap_y + radius], outline='red', width=3)
+        # Draw tap target circle if provided
+        if tap_target:
+            tap_x, tap_y = tap_target
+            radius = 30
+            draw.ellipse([tap_x - radius, tap_y - radius, tap_x +
+                         radius, tap_y + radius], outline='red', width=3)
 
-    # Save the visualization
-    img.save(output_path)
-    return img
+        # Save the visualization
+        img.save(output_path)
+        return img
+    except Exception as e:
+        logger.error(f"Error creating visual debug overlay: {e}")
+        logger.debug("", exc_info=True)
+        return None
 
 
 def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_path, captions_txt_path, polls_txt_path, locations_txt_path):
@@ -444,7 +532,8 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
         with open(locations_txt_path, 'r') as f:
             locations_content = f.read()
     except Exception as e:
-        print(f"Error reading context files: {e}")
+        logger.error(f"Error reading context files: {e}")
+        logger.debug("", exc_info=True)  # Log full traceback at debug level
         return None
 
     # Convert screenshots to base64 for API transmission
@@ -464,7 +553,10 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
                     }
                 })
         except Exception as e:
-            print(f"Error processing screenshot {i}: {e}")
+            logger.error(
+                f"Error processing screenshot {i} ({screenshot_path}): {e}")
+            # Log full traceback at debug level
+            logger.debug("", exc_info=True)
             return None
 
     # System prompt containing all the structural information
@@ -802,6 +894,7 @@ Return the chosen prompt, response, your conversation starter, and the screensho
 
     try:
         # Make the API call to Claude
+        logger.info("Making API call to Claude...")
         response = client.messages.create(
             model="claude-3-7-sonnet-latest",
             max_tokens=1000,
@@ -809,6 +902,7 @@ Return the chosen prompt, response, your conversation starter, and the screensho
             system=system_prompt,
             messages=messages
         )
+        logger.info("Claude API call successful")
 
         # Parse the response
         try:
@@ -817,6 +911,7 @@ Return the chosen prompt, response, your conversation starter, and the screensho
 
             # Extract just the JSON portion from the response
             response_text = response.content[0].text
+            logger.debug(f"Raw response from Claude: {response_text[:500]}...")
 
             # Find the JSON part by locating the first { and last }
             start_idx = response_text.find('{')
@@ -825,6 +920,7 @@ Return the chosen prompt, response, your conversation starter, and the screensho
             if start_idx != -1 and end_idx > start_idx:
                 json_text = response_text[start_idx:end_idx]
                 result = json.loads(json_text)
+                logger.info("Successfully parsed Claude response")
                 return {
                     "prompt": result.get("prompt", ""),
                     "response": result.get("response", ""),
@@ -832,16 +928,19 @@ Return the chosen prompt, response, your conversation starter, and the screensho
                     "screenshot_index": result.get("screenshot_index", 0)
                 }
             else:
-                print("Error: No valid JSON object found in response")
-                print("Raw response:", response.content[0].text)
+                logger.error("No valid JSON object found in response")
+                logger.error(f"Raw response: {response_text}")
                 return None
         except Exception as e:
-            print(f"Error parsing response: {e}")
-            print("Raw response:", response.content[0].text)
+            logger.error(f"Error parsing Claude response: {e}")
+            logger.error(f"Raw response: {response.content[0].text[:1000]}...")
+            # Log full traceback at debug level
+            logger.debug("", exc_info=True)
             return None
 
     except Exception as e:
-        print(f"Error calling Claude API: {e}")
+        logger.error(f"Error calling Claude API: {e}")
+        logger.debug("", exc_info=True)  # Log full traceback at debug level
         return None
 
 
@@ -860,118 +959,128 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
             - found: bool indicating if prompt/response was found
             - tap_coordinates: (x,y) coordinates to tap if found, None if not found
     """
-    # Take a fresh screenshot at this position
-    screenshot_path = capture_screenshot(
-        device, f"profile_{profile_num}_prompt_detection")
+    try:
+        # Take a fresh screenshot at this position
+        screenshot_path = capture_screenshot(
+            device, f"profile_{profile_num}_prompt_detection")
 
-    # Extract text and group into paragraphs
-    boxes = extract_text_from_image_with_boxes(screenshot_path)
-    if not boxes:
-        print("No text boxes found in screenshot")
+        # Extract text and group into paragraphs
+        boxes = extract_text_from_image_with_boxes(screenshot_path)
+        if not boxes:
+            logger.warning("No text boxes found in screenshot")
+            return False, None
+
+        lines = group_boxes_into_lines(boxes)
+        paragraphs = group_lines_into_paragraphs(lines)
+
+        # First try to find the target prompt with high confidence
+        logger.debug("\nComparing target prompt against OCR paragraphs:")
+        logger.debug(f"Target prompt: '{target_prompt}'")
+        logger.debug("\nOCR paragraphs found:")
+
+        best_prompt_match = None
+        best_prompt_ratio = 0.0
+        best_response_match = None
+        best_response_ratio = 0.0
+
+        for i, para in enumerate(paragraphs):
+            # Check for prompt match
+            is_prompt_match, prompt_ratio, matched_text = fuzzy_match_text(
+                target_prompt, para['text'], threshold=0.8)
+            logger.debug(f"Paragraph {i+1}:")
+            logger.debug(f"  Text: '{para['text']}'")
+            logger.debug(f"  Prompt match ratio: {prompt_ratio:.2f}")
+
+            # Also check for response match with lower threshold
+            is_response_match, response_ratio, _ = fuzzy_match_text(
+                target_response, para['text'], threshold=0.7)
+            logger.debug(f"  Response match ratio: {response_ratio:.2f}")
+            logger.debug("")
+
+            if is_prompt_match and prompt_ratio > best_prompt_ratio:
+                best_prompt_match = para
+                best_prompt_ratio = prompt_ratio
+            elif is_response_match and response_ratio > best_response_ratio:
+                best_response_match = para
+                best_response_ratio = response_ratio
+
+        # Use prompt match if found, otherwise use response match
+        best_match = best_prompt_match if best_prompt_match else best_response_match
+        if best_match:
+            match_type = 'prompt' if best_prompt_match else 'response'
+            match_ratio = max(best_prompt_ratio, best_response_ratio)
+            logger.info(
+                f"Found {match_type} match with ratio {match_ratio:.2f}")
+
+            # Calculate tap coordinates (center of the paragraph)
+            boxes = best_match['boxes']
+            min_x = min(box['box'][0] for box in boxes)
+            max_x = max(box['box'][0] + box['box'][2] for box in boxes)
+            min_y = min(box['box'][1] for box in boxes)
+            max_y = max(box['box'][1] + box['box'][3] for box in boxes)
+
+            tap_x = (min_x + max_x) // 2
+            tap_y = (min_y + max_y) // 2
+
+            # Create visualization with tap target
+            create_visual_debug_overlay(
+                screenshot_path,
+                boxes=boxes,
+                lines=lines,
+                paragraphs=paragraphs,
+                output_path=f"images/profile_{profile_num}_prompt_detection_visual.png",
+                tap_target=(tap_x, tap_y)
+            )
+
+            # Execute double tap at the calculated coordinates
+            tap(device, tap_x, tap_y, double_tap=True)
+            # Increased from 1.0 to 2.0 seconds to wait for response interface to open
+            time.sleep(2.0)
+
+            return True, (tap_x, tap_y)
+        else:
+            logger.warning(
+                "No matching prompt or response found in screenshot")
+            # Create visualization without tap target
+            create_visual_debug_overlay(
+                screenshot_path,
+                boxes=boxes,
+                lines=lines,
+                paragraphs=paragraphs,
+                output_path=f"images/profile_{profile_num}_prompt_detection_visual.png"
+            )
+
+            # Fallback: Scroll to bottom and double-click center
+            logger.info(
+                "\nFallback: Scrolling to bottom and double-clicking center...")
+
+            # Calculate remaining scrolls (we've already done screenshot_index scrolls)
+            # 6 is max scrolls (7 screenshots total, 0-6)
+            remaining_scrolls = 6 - screenshot_index
+
+            # Scroll the remaining distance to bottom
+            for i in range(remaining_scrolls):
+                logger.info(f"Fallback scroll #{i+1}")
+                swipe(device, "down")
+                time.sleep(1)  # Wait for scroll to complete
+
+            # Get screen dimensions for center tap
+            width, height = get_screen_resolution(device)
+            center_x = width // 2
+            center_y = height // 2
+
+            logger.info(
+                f"Double-clicking center of screen at ({center_x}, {center_y})")
+            tap(device, center_x, center_y, double_tap=True)
+            time.sleep(1)  # Wait for response interface to open
+
+            # Return True since we executed the fallback
+            return True, (center_x, center_y)
+
+    except Exception as e:
+        logger.error(f"Error in detect_prompt_in_screenshot: {e}")
+        logger.debug("", exc_info=True)
         return False, None
-
-    lines = group_boxes_into_lines(boxes)
-    paragraphs = group_lines_into_paragraphs(lines)
-
-    # First try to find the target prompt with high confidence
-    print("\nDebug: Comparing target prompt against OCR paragraphs:")
-    print(f"Target prompt: '{target_prompt}'")
-    print("\nOCR paragraphs found:")
-
-    best_prompt_match = None
-    best_prompt_ratio = 0.0
-    best_response_match = None
-    best_response_ratio = 0.0
-
-    for i, para in enumerate(paragraphs):
-        # Check for prompt match
-        is_prompt_match, prompt_ratio, matched_text = fuzzy_match_text(
-            target_prompt, para['text'], threshold=0.8)
-        print(f"Paragraph {i+1}:")
-        print(f"  Text: '{para['text']}'")
-        print(f"  Prompt match ratio: {prompt_ratio:.2f}")
-
-        # Also check for response match with lower threshold
-        is_response_match, response_ratio, _ = fuzzy_match_text(
-            target_response, para['text'], threshold=0.7)
-        print(f"  Response match ratio: {response_ratio:.2f}")
-        print()
-
-        if is_prompt_match and prompt_ratio > best_prompt_ratio:
-            best_prompt_match = para
-            best_prompt_ratio = prompt_ratio
-        elif is_response_match and response_ratio > best_response_ratio:
-            best_response_match = para
-            best_response_ratio = response_ratio
-
-    # Use prompt match if found, otherwise use response match
-    best_match = best_prompt_match if best_prompt_match else best_response_match
-    if best_match:
-        match_type = 'prompt' if best_prompt_match else 'response'
-        match_ratio = max(best_prompt_ratio, best_response_ratio)
-        print(f"Found {match_type} match with ratio {match_ratio:.2f}")
-
-        # Calculate tap coordinates (center of the paragraph)
-        boxes = best_match['boxes']
-        min_x = min(box['box'][0] for box in boxes)
-        max_x = max(box['box'][0] + box['box'][2] for box in boxes)
-        min_y = min(box['box'][1] for box in boxes)
-        max_y = max(box['box'][1] + box['box'][3] for box in boxes)
-
-        tap_x = (min_x + max_x) // 2
-        tap_y = (min_y + max_y) // 2
-
-        # Create visualization with tap target
-        create_visual_debug_overlay(
-            screenshot_path,
-            boxes=boxes,
-            lines=lines,
-            paragraphs=paragraphs,
-            output_path=f"images/profile_{profile_num}_prompt_detection_visual.png",
-            tap_target=(tap_x, tap_y)
-        )
-
-        # Execute double tap at the calculated coordinates
-        tap(device, tap_x, tap_y, double_tap=True)
-        # Increased from 1.0 to 2.0 seconds to wait for response interface to open
-        time.sleep(2.0)
-
-        return True, (tap_x, tap_y)
-    else:
-        print("No matching prompt or response found in screenshot")
-        # Create visualization without tap target
-        create_visual_debug_overlay(
-            screenshot_path,
-            boxes=boxes,
-            lines=lines,
-            paragraphs=paragraphs,
-            output_path=f"images/profile_{profile_num}_prompt_detection_visual.png"
-        )
-
-        # Fallback: Scroll to bottom and double-click center
-        print("\nFallback: Scrolling to bottom and double-clicking center...")
-
-        # Calculate remaining scrolls (we've already done screenshot_index scrolls)
-        # 6 is max scrolls (7 screenshots total, 0-6)
-        remaining_scrolls = 6 - screenshot_index
-
-        # Scroll the remaining distance to bottom
-        for i in range(remaining_scrolls):
-            print(f"Fallback scroll #{i+1}")
-            swipe(device, "down")
-            time.sleep(1)  # Wait for scroll to complete
-
-        # Get screen dimensions for center tap
-        width, height = get_screen_resolution(device)
-        center_x = width // 2
-        center_y = height // 2
-
-        print(f"Double-clicking center of screen at ({center_x}, {center_y})")
-        tap(device, center_x, center_y, double_tap=True)
-        time.sleep(1)  # Wait for response interface to open
-
-        # Return True since we executed the fallback
-        return True, (center_x, center_y)
 
 
 def dislike_profile(device):
@@ -1001,14 +1110,14 @@ def send_response_to_story(device, conversation_starter, profile_num):
         bool: True if response was sent successfully, False otherwise
     """
     # PHASE 1: Find and click comment box
-    print("\nPhase 1: Locating comment box...")
+    logger.info("\nPhase 1: Locating comment box...")
     screenshot_path = capture_screenshot(
         device, f"profile_{profile_num}_response_phase1")
 
     # Extract text and boxes
     boxes = extract_text_from_image_with_boxes(screenshot_path)
     if not boxes:
-        print("No text boxes found in initial screenshot")
+        logger.warning("No text boxes found in initial screenshot")
         return False
 
     lines = group_boxes_into_lines(boxes)
@@ -1024,7 +1133,7 @@ def send_response_to_story(device, conversation_starter, profile_num):
             comment_ratio = ratio
 
     if not comment_box:
-        print("Could not find comment box")
+        logger.warning("Could not find comment box")
         # Create visualization without tap target
         create_visual_debug_overlay(
             screenshot_path,
@@ -1073,14 +1182,14 @@ def send_response_to_story(device, conversation_starter, profile_num):
     time.sleep(2.0)  # Increased from 1.0 to 2.0 seconds
 
     # PHASE 2: Find and click Send Priority Like button in new layout
-    print("\nPhase 2: Locating Send Priority Like button...")
+    logger.info("\nPhase 2: Locating Send Priority Like button...")
     screenshot_path = capture_screenshot(
         device, f"profile_{profile_num}_response_phase2")
 
     # Extract text and boxes again for new layout
     boxes = extract_text_from_image_with_boxes(screenshot_path)
     if not boxes:
-        print("No text boxes found in post-input screenshot")
+        logger.warning("No text boxes found in post-input screenshot")
         return False
 
     lines = group_boxes_into_lines(boxes)
@@ -1097,7 +1206,7 @@ def send_response_to_story(device, conversation_starter, profile_num):
             send_ratio = ratio
 
     if not send_button:
-        print("Could not find Send Priority Like button")
+        logger.warning("Could not find Send Priority Like button")
         # Create visualization without tap target
         create_visual_debug_overlay(
             screenshot_path,
@@ -1203,8 +1312,8 @@ def save_profile_results(profile_num, screenshots, ai_response):
     with open(desktop_response_path, 'w') as f:
         json.dump(response_data, f, indent=2)
 
-    print(f"Results saved to container path: {profile_dir}")
-    print(f"Results also saved to desktop path: {desktop_profile_dir}")
+    logger.info(f"Results saved to container path: {profile_dir}")
+    logger.info(f"Results also saved to desktop path: {desktop_profile_dir}")
 
     return profile_dir
 
@@ -1245,7 +1354,7 @@ def check_for_end_of_profiles(device, profile_num):
             is_match, ratio, _ = fuzzy_match_text(
                 message, para['text'], threshold=0.8)
             if is_match:
-                print(
+                logger.info(
                     f"Found end message: '{message}' with confidence {ratio:.2f}")
                 # Create visualization of the match
                 create_visual_debug_overlay(
