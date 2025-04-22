@@ -36,11 +36,28 @@ Current Implementation:
      * Dislikes if prompt match confidence < 0.8
      * Dislikes if prompt not found after 3 attempts
      * Resets interaction counter on any dislike
+     * AI automatically filters profiles with these undesirable traits:
+       - Body Type Analysis:
+         · Visible excess weight or body fat
+         · Body width appears wider than typical fit/skinny woman
+         · Visible stomach protrusion in any photo
+         · Face shape is rounder with less defined jawline
+         · Only face/high angle photos (hiding body)
+       - Low Quality Photos:
+         · Majority of photos are blurry/pixelated
+         · Heavy filters or editing in majority of photos
+         · Screenshots or reposts in multiple photos
+       - Male Features:
+         · Adam's apple visible in the throat
+         · Facial hair (mustache or beard)
+         · Flat chest with no boob growth visible
    
    - Results Storage:
      * Saves all profile data in organized directory structure:
        - results/profile_X/screenshots/ - Contains all screenshots
        - results/profile_X/response.json - Contains AI response and timestamp
+     * Duplicates results in desktop accessible location:
+       - /app/desktop/PitchPerfect_Results/profile_X/
      * Saves results for every profile, regardless of outcome
      * Includes timestamp with each response
      * Maintains original screenshot files in images/ directory
@@ -57,13 +74,17 @@ Current Implementation:
      * Profile structure guide
      * Analysis requirements
      * Response generation rules
+     * Trait detection for filtering undesirable profiles
    
    - Response Processing:
+     * Parses JSON from text response by extracting between first { and last }
      * Returns JSON with:
        - prompt: Exact prompt text
        - response: User's response
        - conversation_starter: Generated response
        - screenshot_index: Location of prompt
+     * Handles empty or error responses gracefully
+     * Returns empty response for profiles with undesirable traits
    
    - Prompt Matching:
      * Matches against authoritative prompts.txt
@@ -81,6 +102,7 @@ Current Implementation:
    
    - Response Flow:
      * Finds "Add a comment" box
+     * Clears any existing text with backspace keys
      * Types response with proper timing
      * Closes keyboard
      * Finds "Send Priority Like" button
@@ -92,6 +114,7 @@ Current Implementation:
      * Low confidence prompt matches
      * Failed prompt location
      * Failed response sending
+     * Profiles with undesirable traits (weight, filters, masculine features)
    
    - Recovery Actions:
      * Dislikes profile on failure
@@ -109,18 +132,3 @@ Current Implementation:
      * Match confidence scores
      * Success/failure states
      * Interaction counts
-
-Future Improvements:
-1. Adaptive Timing:
-   - Device performance based delays
-   - Dynamic scroll parameters
-   
-2. Enhanced Detection:
-   - Keyboard state detection
-   - Screen layout adaptation
-   - Edge case handling
-   
-3. Performance Optimization:
-   - Screenshot quality verification
-   - Scroll parameter optimization
-   - Resource management
