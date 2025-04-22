@@ -14,6 +14,9 @@ from datetime import datetime
 load_dotenv()
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
+# Generate a unique timestamp for this run
+RUN_TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
+
 
 def connect_device_remote(user_ip_address="127.0.0.1"):
     """Connect to a device remotely from docker container"""
@@ -1150,8 +1153,8 @@ def save_profile_results(profile_num, screenshots, ai_response):
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
 
-    # Create desktop directory path for easy access from host
-    desktop_dir = "/app/desktop/PitchPerfect_Results"
+    # Create desktop directory path with timestamp for easy access from host
+    desktop_dir = f"/app/desktop/PitchPerfect_Results_{RUN_TIMESTAMP}"
     if not os.path.exists(desktop_dir):
         os.makedirs(desktop_dir)
 
