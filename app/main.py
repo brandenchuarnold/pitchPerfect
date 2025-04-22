@@ -65,7 +65,7 @@ def scroll_back_to_top(device):
         swipe(device, "up")
 
 
-def process_ai_response(screenshots, format_txt_path, prompts_txt_path, captions_txt_path, polls_txt_path):
+def process_ai_response(screenshots, format_txt_path, prompts_txt_path, captions_txt_path, polls_txt_path, locations_txt_path):
     """Process the AI response in a separate thread."""
     global ai_response
     result = generate_joke_from_screenshots(
@@ -73,7 +73,8 @@ def process_ai_response(screenshots, format_txt_path, prompts_txt_path, captions
         format_txt_path,
         prompts_txt_path,
         captions_txt_path,
-        polls_txt_path
+        polls_txt_path,
+        locations_txt_path
     )
     with ai_response_lock:
         ai_response = result
@@ -256,6 +257,7 @@ def main():
         prompts_txt_path = os.path.join(app_dir, 'prompts.txt')
         captions_txt_path = os.path.join(app_dir, 'captions.txt')
         polls_txt_path = os.path.join(app_dir, 'polls.txt')
+        locations_txt_path = os.path.join(app_dir, 'locations.txt')
 
         while profile_num <= max_profiles:  # Main profile loop with limit
             print(f"\nProcessing profile #{profile_num}")
@@ -292,7 +294,7 @@ def main():
             ai_thread = threading.Thread(
                 target=process_ai_response,
                 args=(screenshots, format_txt_path, prompts_txt_path,
-                      captions_txt_path, polls_txt_path)
+                      captions_txt_path, polls_txt_path, locations_txt_path)
             )
             ai_thread.start()
 

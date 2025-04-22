@@ -407,7 +407,7 @@ def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, 
     return img
 
 
-def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_path, captions_txt_path, polls_txt_path):
+def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_path, captions_txt_path, polls_txt_path, locations_txt_path):
     """
     Generate a contextually appropriate joke response for a Hinge profile based on screenshots.
 
@@ -417,6 +417,7 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
         prompts_txt_path: Path to prompts.txt containing available prompts
         captions_txt_path: Path to captions.txt containing possible captions
         polls_txt_path: Path to polls.txt containing available polls
+        locations_txt_path: Path to locations.txt containing Madison, WI establishments
 
     Returns:
         dict: Contains the prompt-response pair, generated joke, and screenshot index:
@@ -437,6 +438,8 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
             captions_content = f.read()
         with open(polls_txt_path, 'r') as f:
             polls_content = f.read()
+        with open(locations_txt_path, 'r') as f:
+            locations_content = f.read()
     except Exception as e:
         print(f"Error reading context files: {e}")
         return None
