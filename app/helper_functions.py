@@ -1055,6 +1055,13 @@ def send_response_to_story(device, conversation_starter, profile_num):
     # Click comment box and enter text
     tap(device, comment_x, comment_y)
     time.sleep(1.0)  # Increased from 0.5 to 1.0 seconds
+
+    # Clear any existing text in the comment box by sending 5 backspace keys
+    for _ in range(5):
+        device.shell("input keyevent KEYCODE_DEL")
+    time.sleep(0.5)  # Wait after clearing text
+
+    # Now input the conversation starter
     input_text(device, conversation_starter)
     time.sleep(1.0)  # Increased from 0.5 to 1.0 seconds
 
