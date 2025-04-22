@@ -468,7 +468,7 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
     system_prompt = f"""You are a witty and natural conversationalist on a dating app. Your task is to analyze Hinge profiles and generate engaging conversation starters based on the prompts and responses in a woman's profile. Since she's already expressed interest by looking at your profile, balance natural conversation with clear intent - keeping it light while being specific enough for text.
 
 PROFILE STRUCTURE:
-You will receive exactly 6 screenshots of a Hinge profile in order (index 0 to 5). Each profile will contain the following guaranteed elements:
+You will receive exactly 7 screenshots of a Hinge profile in order (index 0 to 6). Each profile will contain the following guaranteed elements:
 1. Exactly 6 photos (may have captions)
 2. Exactly 3 prompt/response pairs
 3. One section of profile basics
@@ -482,7 +482,7 @@ Your process:
 STEP 1: READ AND UNDERSTAND THE CONTEXT
 1. Read format.txt to understand the profile layout
 2. Consult prompts.txt, captions.txt, and polls.txt to understand possible elements
-3. Examine each screenshot in order (0 to 5) and identify all elements
+3. Examine each screenshot in order (0 to 6) and identify all elements
 4. Consult locations.txt to understand the types of establishments that exist in Madison, Wisconsin
 
 STEP 2: IDENTIFY THE MAIN PERSON
@@ -766,7 +766,7 @@ STEP 9: SELECT BEST STARTER
 3. Reference prompts.txt and separate the prompt/response pair into the prompt and the response. Take note of the prompt distinctly from the response.
 
 STEP 10: IDENTIFY SCREENSHOT
-1. Note which screenshot (0-5) contains the prompt/response pair text of the woman's profile that matches the chosen starter
+1. Note which screenshot (0-6) contains the prompt/response pair text of the woman's profile that matches the chosen starter
 2. If prompt/response pair is cut off or spans multiple screenshots, note which screenshot contains the majority of the prompt/response pair text
 
 Return the chosen prompt, response, your conversation starter, and the screenshot index in this JSON format exactly. Do not return any other text or comments beyond the JSON.
@@ -774,7 +774,7 @@ Return the chosen prompt, response, your conversation starter, and the screensho
     "prompt": "The exact prompt text the woman chose",
     "response": "The woman's response to the prompt",
     "conversation_starter": "Your natural conversation starter",
-    "screenshot_index": index_of_screenshot_containing_prompt_response  # 0-based index (0-5)
+    "screenshot_index": index_of_screenshot_containing_prompt_response  # 0-based index (0-6)
 }}"""
 
     # User message - just the specific task
@@ -949,8 +949,8 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
         print("\nFallback: Scrolling to bottom and double-clicking center...")
 
         # Calculate remaining scrolls (we've already done screenshot_index scrolls)
-        # 5 is max scrolls (6 screenshots total, 0-5)
-        remaining_scrolls = 5 - screenshot_index
+        # 6 is max scrolls (7 screenshots total, 0-6)
+        remaining_scrolls = 6 - screenshot_index
 
         # Scroll the remaining distance to bottom
         for i in range(remaining_scrolls):

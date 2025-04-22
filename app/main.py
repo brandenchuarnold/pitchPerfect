@@ -43,8 +43,8 @@ def scroll_profile_and_capture(device, width, height, profile_num):
         device, f"profile_{profile_num}_part1")
     screenshots.append(screenshot_path)
 
-    # Take 5 more screenshots (6 total)
-    for i in range(1, 6):
+    # Take 6 more screenshots (7 total)
+    for i in range(1, 7):
         print(f"Scroll down #{i}")
         # Scroll down
         swipe(device, "down")
@@ -59,7 +59,7 @@ def scroll_profile_and_capture(device, width, height, profile_num):
 
 def scroll_back_to_top(device):
     """Scroll back to the top of the profile."""
-    for i in range(1, 6):
+    for i in range(1, 7):
         print(f"Scroll up #{i}")
         # Scroll up
         swipe(device, "up")
