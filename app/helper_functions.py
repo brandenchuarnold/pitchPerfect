@@ -480,6 +480,7 @@ STEP 1: READ AND UNDERSTAND THE CONTEXT
 1. Read format.txt to understand the profile layout
 2. Consult prompts.txt, captions.txt, and polls.txt to understand possible elements
 3. Examine each screenshot in order (0 to 5) and identify all elements
+4. Consult locations.txt to understand the types of establishments that exist in Madison, Wisconsin
 
 STEP 2: IDENTIFY THE MAIN PERSON
 1. Analyze all photos to identify the main person whose profile this is:
