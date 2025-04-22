@@ -811,7 +811,7 @@ Return the chosen prompt, response, your conversation starter, and the screensho
         try:
             # The response should be in JSON format as requested
             import json
-            result = json.loads(response.content[0].text)
+            result = json.loads(response.content[0].text.strip())
             return {
                 "prompt": result.get("prompt", ""),
                 "response": result.get("response", ""),
