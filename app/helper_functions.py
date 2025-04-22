@@ -608,7 +608,7 @@ STEP 7: GENERATE CONVERSATION STARTERS
 For each prompt/response pair:
 1. Use characteristics and stories as context
 2. Create exactly THREE unique conversation starters that follow this two-step approach:
-   a. First, give a direct, simple compliment rooted in something VISIBLE from her profile
+   a. First, give a direct, simple acknowledgment that shows you've understood something visible from her profile
       - Focus on concrete, observable things:
         * Physical appearance (only if obvious and tasteful)
           - "You have a great smile" (when smiling in photos)
@@ -631,76 +631,57 @@ For each prompt/response pair:
       - Keep it straightforward and obvious
       - Make it specific to what you see in her profile
       - The compliment should be something you can point to in a photo or prompt response
-   b. Then, follow up with a question showing interest in the prompt
-      - Keep it natural and direct
-      - Keep it specific to something you are curious about. You want to show that you are 
-        interested in her life experiences that are easily accessible to her. You don't want 
-        to ask her to ideate or create some great big answer. 
-      - The goal of talking on a dating app is to have fun, flirt, and see if this would lead 
-        to a good real-world connection. There is not an expectation by the woman that the 
-        connection will happen just via messaging. That is unrealistic. 
-      - Make a message that satisfies these goals:
-        * "I am making my interest in her real and accessible"
-        * "I've put in time to understand her as best as I can using this profile"
-        * "I want to show interest in a way that is manageable so that other things can be 
-          talked about later"
-      - Manageable is key here. The conversation is not just around content but around 
-        two people trying to show each other that they notice each other and like each other.
-      - Example: "What's your favorite hiking trail around here?"
-   * Each of the THREE starters should differ in either:
-     - The aspect/item being complimented (e.g., different visible elements)
-     - OR a different way of showing interest in the same topic
-   * Aim to create positive images or stories in her mind - focus on pleasant moments or memories
-   * For "Two truths and a lie" prompts specifically:
-     - First break down her response into the three statements
-     - Evaluate which is most likely the lie based on profile context
-     - For the question part, include your guess about which is the lie
-     - Example: "Those vintage glasses suit you well. I'm guessing the dolphin story is the lie?"
-     - Do NOT ask which statement surprises people the most or for additional details about the statements
-     - Just provide a compliment followed by your guess about the lie
+   b. Then, suggest a shared activity or experience related to the prompt
+      - Express that you'd like to share in an activity she mentioned
+      - Make it clear you want to participate with her, not just discuss the topic
+      - Suggest something fun and specific that connects to her interests
+      - Examples:
+        * For food-related prompts: "Carbs, cheese, and wine—my idea of a perfect evening!"
+        * For learning/skills: "World history's fascinating—need a study partner or trivia rival?"
+        * For hobbies: "Reverse-engineering dishes sounds amazing—what's your latest culinary success?"
+      - Avoid just asking questions about her experience
+      - Instead, position yourself as a potential companion in the activity
+      * Each of the THREE starters should differ in either:
+        - The aspect/item being acknowledged (e.g., different visible elements)
+        - OR a different shared activity suggestion for the same topic
+      * Aim to create inviting scenarios that feel natural and fun
 
    * Uses natural, everyday language - how you'd actually talk to someone
    * Avoids flowery metaphors or dramatic language
    * Never uses marketing-style words like "perfect", "amazing", "journey", "adventure"
-   * Asks direct questions without unnecessary qualifiers
-   * Shows interest through specificity, not enthusiasm
-   * Aims for 10-15 words maximum per part (compliment + question)
+   * Shows interest through specificity and shared experiences
+   * Aims for 10-15 words maximum per part (acknowledgment + shared activity suggestion)
    * Easy to respond to over text
-   * Avoids asking her to produce another story like the one she already shared
-   * Never reiterates her answer as a question
-   * Avoids demanding questions that require complex mental processing
-   * Creates a pleasant memory or image when possible
+   * Creates a pleasant shared experience when possible
 
-CRITICAL: People don't narrate their lives with dramatic language - they just ask what they want to know.
+CRITICAL: People don't narrate their lives with dramatic language - they just express interest in things they want to do together.
 
-CRITICAL: Your jokes must be rooted in reality and be based on the actual reasons for the things people say or do.
+CRITICAL: Your conversation starters must be rooted in reality and suggest real shared activities based on her interests.
 
 Examples of good vs bad conversation starters:
 
 GOOD:
 - Prompt: "My Love Language is"
   Response: "Words of affirmation and cheese"
-  Conversation Starter: "That's a cute Carhartt beanie. What's your favorite type of cheese?" 
-  (Simple compliment, easy low-stakes question)
+  Conversation Starter: "Words of affirmation and cheese—we should have a wine and cheese night sometime!" 
+  (Simple acknowledgment, shared activity suggestion)
 - Prompt: "I geek out on"
   Response: "NBA, specifically golden state warriors"
-  Conversation Starter: "That bright pink jacket stands out in your costume photo. 
-                      Who's your favorite Warriors player this season?" 
-  (Specific compliment, fun low-stakes question)
+  Conversation Starter: "Warriors fan! We should catch a game together this season." 
+  (Specific acknowledgment, clear shared activity)
 - Prompt: "Two truths and a lie..."
   Response: "1) I have a scar on my hand from being bitten by a hamster 2) I wrote and directed a short film 
           3) I won a county-wide math competition in school"
-  Conversation Starter: "Those are some interesting life stories! That hamster scar sounds like it has a good story behind it. 
-                      What inspired your short film?" 
-  (Comments on multiple things showing specific interest)
+  Conversation Starter: "Filmmaking is impressive! I'd love to collaborate on a short film project sometime." 
+  (Shows interest through suggesting a shared creative activity)
 - Prompt: "I take pride in"
   Response: "my ability to make friends with anyone, anywhere. I can strike up a conversation with a wall."
-  Conversation Starter: "You look so at ease in your photos. What's the most random place you've made a new friend?" 
-  (Creates an image of a pleasant memory)
-- Prompt: "I'll know I've found the one when..."
-  Response: "I walk into a room, there's no one else around me and I still smile"
-  Conversation Starter: "That's a lovely perspective on happiness. Do you find yourself smiling on your own often?"
-  (Simple and builds a pleasant image)
+  Conversation Starter: "Social butterfly! Let's go to a networking event and see who can make more connections." 
+  (Suggests a fun competitive activity together)
+- Prompt: "What I order for the table"
+  Response: "Carbs, cheese and wine"
+  Conversation Starter: "Carbs, cheese, and wine—my idea of a perfect evening!" 
+  (Expresses shared enjoyment of these items)
 
 BAD:
 - Prompt: "A random fact I love is"
@@ -708,54 +689,29 @@ BAD:
           My Chemical Romance, and if 9/11 didn't happen, they wouldn't exist. It's weird I know"
   Conversation Starter: "That's a wild fanfic connection! 
                       What other pop culture rabbit holes do you enjoy falling into?" 
-  (Demands she produce another story when she already shared something interesting))
+  (Just asks a question instead of suggesting a shared activity)
 - Prompt: "The quickest way to my heart is"
   Response: "Talking over ice cream/coffee"
   Conversation Starter: "That coffee shop looks cozy in your photo. 
                       What's your go-to coffee order when you're having a good conversation?" 
-  (Too complex - asks her to think about all good conversations and coffee preferences at once)
+  (Asks about preferences rather than suggesting "Let's grab coffee at that cozy spot in your photo")
 - Prompt: "My biggest date fail"
   Response: "Going swimming in Lake Mendota and then cutting my foot on a piece of metal... 
           the date ended because I had to go to Urgent Care for a tetanus shot 😜"
   Conversation Starter: "That's a memorable date story for sure. 
                       Do tetanus shots and swimming make it into your top 5 worst date endings?" 
-  (Reiterates her answer as a question - she already said it was her biggest date fail)
+  (Asks a question instead of suggesting "Let's try a safer water activity like kayaking instead!")
 - Prompt: "My best celebrity impression is..."
   Response: "\"Why hello there,\" in my best Obi-Wan Kenobi voice and my friends hate it."
   Conversation Starter: "That's a solid Obi-Wan reference. 
                       Do you have any other Star Wars impressions in your arsenal?" 
-  (Asking her to produce more content when she's already shared something)
-- Prompt: "I'm looking for"
-  Response: "Someone who loves adventure and trying new things. Bonus points if you have a dog 🐶"
-  Conversation Starter: "I see you're into adventures. 
-                      What's the most exciting new thing you've tried recently?" 
-  (Simply reiterates her answer)
-
-ADDITIONAL EXAMPLES TO AVOID:
-- Prompt: "What if I told you that"
-  Response: "i put on a tinfoil hat before using the microwave"
-  BAD Conversation Starter: "Love the tattoo collection. Are you worried about government mind control or just protecting your cooking secrets?"
-  (This is bad because it misunderstands the actual reason for the tinfoil hat - it's about radiation protection, not mind control)
-  GOOD Conversation Starter: "That hat in your beach photo looks cute on you. Are you trying to avoid getting microwave superpowers?"
-  (This acknowledges the actual reason for the tinfoil hat - radiation protection - and makes a relatable joke)
-
-- Prompt: "Dating me is like"
-  Response: "having an evil witch cast a spell on you to make you fall in love with her but also you're kinda having fun w it"
-  BAD Conversation Starter: "Love the tattoos on your arms. So when did you realize you had these witchy powers?"
-  (This is bad because it treats the witch comparison as literal rather than metaphorical)
-  GOOD Conversation Starter: "Your smile is pretty enchanting in that hiking photo. What's your spell for making dates fun?"
-  (This acknowledges the metaphor about feeling magically attracted while having fun)
-
-CAPTION VS PROMPT IDENTIFICATION:
-- CRITICAL: A caption is text that describes a photo, while a prompt is a question with a text response
-- Prompts will be followed by the person's actual written response
-- DO NOT generate conversation starters for captions - only for valid prompt/response pairs
-
-SPECIAL CASES:
-- Prompt: "Two truths and a lie"
-  Response: "Lobster was my poverty meal growing up\nA dolphin killed itself in front of me\nA whale has jumped onto a boat I was on"
-  Conversation Starter: "I love the polka dot dress in your photo. I'm guessing the dolphin story is the lie?"
-  (For "Two truths and a lie" prompts, provide a compliment and include your guess about which is the lie)
+  (Asks for more content instead of suggesting "We should watch Star Wars and trade our best impressions")
+- Prompt: "The dorkiest thing about me is"
+  Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
+  BAD Conversation Starter: "How long have you been studying for your teaching exam?" 
+  (Just asks a question without offering to help)
+  GOOD Conversation Starter: "World history's fascinating—need a study partner or trivia rival?" 
+  (Offers to participate in the activity with her)
 
 STEP 8: SIMULATE CONVERSATION
 For each of the NINE starters (3 per prompt/response pair):
@@ -768,11 +724,11 @@ For each of the NINE starters (3 per prompt/response pair):
 2. Evaluate based on these criteria:
    - How natural does this conversation flow?
    - Would this conversation be enjoyable for both parties?
+   - Does it offer a clear shared activity or experience?
    - Does it avoid sounding like marketing copy?
    - Is it free of unnecessary qualifiers and drama?
-   - Does it create positive imagery or memories?
    - Is it easy for her to respond without requiring complex thinking?
-   - Does it show genuine interest without being generic?
+   - Does it show genuine interest in shared experiences?
    - Does it respect her intelligence without being pretentious?
 3. Rank each conversation on a scale of 1-10 for overall quality
 4. Note which conversation feels most natural and has the best flow
