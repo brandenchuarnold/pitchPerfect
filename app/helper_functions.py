@@ -635,16 +635,29 @@ For each prompt/response pair:
       - Express that you'd like to share in an activity she mentioned
       - Make it clear you want to participate with her, not just discuss the topic
       - Suggest something fun and specific that connects to her interests
+      - CRITICAL: When suggesting a specific location in Madison, Wisconsin:
+         * First check the locations.txt file to see if the type of establishment exists in Madison
+         * If suggesting a specific named establishment (e.g., "Barriques", "Eno Vino"), ONLY use establishments listed in locations.txt
+         * If the specific type of establishment isn't in locations.txt, just use the generic type (e.g., "a cafe downtown" instead of naming one)
+         * NEVER suggest a specific named establishment that isn't in locations.txt
+         * It's always safe to suggest general areas like "downtown", "near the Capitol", or "by the lake" without naming a specific establishment
+      - CRITICAL: The suggested activity MUST be suitable for a date context:
+         * Takes between 30-90 minutes (half hour to hour and a half)
+         * Fun, casual and low-stakes (avoid high-pressure or complex activities)
+         * No larger goals that overshadow the natural connection (avoid activities focused on "mastering" or "perfecting" something)
+         * Should allow conversation to flow naturally while doing something enjoyable
+         * Examples of good date activities: coffee shop visit, wine tasting, casual walk, museum visit, dessert spot, casual game
+         * Examples of poor date activities: full sporting events, multi-day projects, competitive activities, professional networking
       - Examples:
-        * For food-related prompts: "Carbs, cheese, and wine—my idea of a perfect evening!"
-        * For learning/skills: "World history's fascinating—need a study partner or trivia rival?"
-        * For hobbies: "Reverse-engineering dishes sounds amazing—what's your latest culinary success?"
+        * For food-related prompts: "Carbs, cheese, and wine—my idea of a perfect evening! There's a great wine bar downtown we should check out."
+        * For learning/skills: "World history's fascinating—we could quiz each other over coffee sometime."
+        * For hobbies: "I'd love to try one of your recreated dishes sometime—maybe over a casual dinner?"
       - Avoid just asking questions about her experience
       - Instead, position yourself as a potential companion in the activity
       * Each of the THREE starters should differ in either:
         - The aspect/item being acknowledged (e.g., different visible elements)
         - OR a different shared activity suggestion for the same topic
-      * Aim to create inviting scenarios that feel natural and fun
+      * Aim to create inviting scenarios that feel natural, fun and time-limited
 
    * Uses natural, everyday language - how you'd actually talk to someone
    * Avoids flowery metaphors or dramatic language
@@ -663,25 +676,25 @@ Examples of good vs bad conversation starters:
 GOOD:
 - Prompt: "My Love Language is"
   Response: "Words of affirmation and cheese"
-  Conversation Starter: "Words of affirmation and cheese—we should have a wine and cheese night sometime!" 
-  (Simple acknowledgment, shared activity suggestion)
+  Conversation Starter: "That beanie in your hiking photo is super cute. We should have a wine and cheese tasting at Eno Vino sometime!" 
+  (Simple acknowledgment, date-appropriate shared activity)
 - Prompt: "I geek out on"
   Response: "NBA, specifically golden state warriors"
-  Conversation Starter: "Warriors fan! We should catch a game together this season." 
-  (Specific acknowledgment, clear shared activity)
+  Conversation Starter: "Your smile in that outdoor concert photo is contagious! We could grab drinks during the next Warriors game at The Coopers Tavern." 
+  (Specific acknowledgment, casual viewing activity rather than full game commitment)
 - Prompt: "Two truths and a lie..."
   Response: "1) I have a scar on my hand from being bitten by a hamster 2) I wrote and directed a short film 
           3) I won a county-wide math competition in school"
-  Conversation Starter: "Filmmaking is impressive! I'd love to collaborate on a short film project sometime." 
-  (Shows interest through suggesting a shared creative activity)
+  Conversation Starter: "That kayak adventure in your lake photo looks amazing. I'd love to hear about your film over coffee at Barriques." 
+  (Shows interest through suggesting a casual date activity)
 - Prompt: "I take pride in"
   Response: "my ability to make friends with anyone, anywhere. I can strike up a conversation with a wall."
-  Conversation Starter: "Social butterfly! Let's go to a networking event and see who can make more connections." 
-  (Suggests a fun competitive activity together)
+  Conversation Starter: "I like your colorful scarf in your profile picture. Let's test your conversation skills at one of the cafes near the Capitol." 
+  (Suggests a fun, casual activity without competitive pressure)
 - Prompt: "What I order for the table"
   Response: "Carbs, cheese and wine"
-  Conversation Starter: "Carbs, cheese, and wine—my idea of a perfect evening!" 
-  (Expresses shared enjoyment of these items)
+  Conversation Starter: "Those sunglasses in your beach photo suit you really well. We should share a cheese board at a wine bar downtown!" 
+  (Expresses shared enjoyment with specific, time-limited activity)
 
 BAD:
 - Prompt: "A random fact I love is"
@@ -710,7 +723,7 @@ BAD:
   Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
   BAD Conversation Starter: "How long have you been studying for your teaching exam?" 
   (Just asks a question without offering to help)
-  GOOD Conversation Starter: "World history's fascinating—need a study partner or trivia rival?" 
+  GOOD Conversation Starter: "World history's fascinating—we could quiz each other over coffee sometime." 
   (Offers to participate in the activity with her)
 
 STEP 8: SIMULATE CONVERSATION
@@ -743,6 +756,8 @@ STEP 9: SELECT BEST STARTER
    - Creates positive imagery or stories in her mind
    - Requires minimal mental effort to respond
    - Has the highest-ranked simulated conversation
+   - CRITICAL: If a starter suggests a specific named establishment (e.g., "Barriques", "Eno Vino"), verify it exists in locations.txt
+   - IMMEDIATELY DISQUALIFY any starter that mentions a specific named establishment not found in locations.txt
 2. Note which prompt/response pair of the woman's profile matches the chosen starter
 3. Reference prompts.txt and separate the prompt/response pair into the prompt and the response. Take note of the prompt distinctly from the response.
 
