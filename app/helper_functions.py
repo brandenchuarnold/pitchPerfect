@@ -501,6 +501,9 @@ a. Photos (6 total)
 b. Prompts and Responses (3 total)
    - Understand she chose the prompt and provided her own response
    - These directly reflect her personality and preferences
+   - CRITICAL: Verify these are actual prompts from prompts.txt and not captions
+   - A prompt will NEVER have a photo or image as the response
+   - If you see a response that describes a photo (e.g., "[Photo showing person posing with friend]"), this is a caption, not a prompt
 c. Profile Basics (1 total)
    - All bullet-points she provided to describe herself
    - These are her self-reported characteristics
@@ -670,6 +673,8 @@ For each prompt/response pair:
 
 CRITICAL: People don't narrate their lives with dramatic language - they just ask what they want to know.
 
+CRITICAL: Your jokes must be rooted in reality and be based on the actual reasons for the things people say or do.
+
 Examples of good vs bad conversation starters:
 
 GOOD:
@@ -725,6 +730,26 @@ BAD:
   Conversation Starter: "I see you're into adventures. 
                       What's the most exciting new thing you've tried recently?" 
   (Simply reiterates her answer)
+
+ADDITIONAL EXAMPLES TO AVOID:
+- Prompt: "What if I told you that"
+  Response: "i put on a tinfoil hat before using the microwave"
+  BAD Conversation Starter: "Love the tattoo collection. Are you worried about government mind control or just protecting your cooking secrets?"
+  (This is bad because it misunderstands the actual reason for the tinfoil hat - it's about radiation protection, not mind control)
+  GOOD Conversation Starter: "That hat in your beach photo looks cute on you. Are you trying to avoid getting microwave superpowers?"
+  (This acknowledges the actual reason for the tinfoil hat - radiation protection - and makes a relatable joke)
+
+- Prompt: "Dating me is like"
+  Response: "having an evil witch cast a spell on you to make you fall in love with her but also you're kinda having fun w it"
+  BAD Conversation Starter: "Love the tattoos on your arms. So when did you realize you had these witchy powers?"
+  (This is bad because it treats the witch comparison as literal rather than metaphorical)
+  GOOD Conversation Starter: "Your smile is pretty enchanting in that hiking photo. What's your spell for making dates fun?"
+  (This acknowledges the metaphor about feeling magically attracted while having fun)
+
+CAPTION VS PROMPT IDENTIFICATION:
+- CRITICAL: A caption is text that describes a photo, while a prompt is a question with a text response
+- Prompts will be followed by the person's actual written response
+- DO NOT generate conversation starters for captions - only for valid prompt/response pairs
 
 SPECIAL CASES:
 - Prompt: "Two truths and a lie"
@@ -1150,32 +1175,58 @@ def save_profile_results(profile_num, screenshots, ai_response):
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
 
-    # Create profile-specific directory
+    # Create desktop directory path for easy access from host
+    desktop_dir = "/app/desktop/PitchPerfect_Results"
+    if not os.path.exists(desktop_dir):
+        os.makedirs(desktop_dir)
+
+    # Create profile-specific directory in both locations
     profile_dir = os.path.join(results_dir, f"profile_{profile_num}")
+    desktop_profile_dir = os.path.join(desktop_dir, f"profile_{profile_num}")
+
     if not os.path.exists(profile_dir):
         os.makedirs(profile_dir)
+    if not os.path.exists(desktop_profile_dir):
+        os.makedirs(desktop_profile_dir)
 
-    # Create screenshots subdirectory
+    # Create screenshots subdirectory in both locations
     screenshots_dir = os.path.join(profile_dir, "screenshots")
+    desktop_screenshots_dir = os.path.join(desktop_profile_dir, "screenshots")
+
     if not os.path.exists(screenshots_dir):
         os.makedirs(screenshots_dir)
+    if not os.path.exists(desktop_screenshots_dir):
+        os.makedirs(desktop_screenshots_dir)
 
-    # Copy screenshots to the profile directory
+    # Copy screenshots to both profile directories
     for screenshot in screenshots:
         filename = os.path.basename(screenshot)
+        # Save to container results directory
         dest_path = os.path.join(screenshots_dir, filename)
         shutil.copy2(screenshot, dest_path)
+        # Also save to desktop directory
+        desktop_dest_path = os.path.join(desktop_screenshots_dir, filename)
+        shutil.copy2(screenshot, desktop_dest_path)
 
-    # Save AI response as JSON with timestamp
+    # Save AI response as JSON with timestamp in both locations
     response_path = os.path.join(profile_dir, "response.json")
+    desktop_response_path = os.path.join(desktop_profile_dir, "response.json")
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     # Handle None response by creating an empty response with timestamp
     response_data = ai_response if ai_response is not None else {}
     response_data['timestamp'] = timestamp
 
+    # Save to container results directory
     with open(response_path, 'w') as f:
         json.dump(response_data, f, indent=2)
+
+    # Also save to desktop directory
+    with open(desktop_response_path, 'w') as f:
+        json.dump(response_data, f, indent=2)
+
+    print(f"Results saved to container path: {profile_dir}")
+    print(f"Results also saved to desktop path: {desktop_profile_dir}")
 
     return profile_dir
 
