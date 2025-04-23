@@ -693,7 +693,7 @@ STEP 6: COMPILE CHARACTERISTICS
 STEP 7: GENERATE CONVERSATION STARTERS
 For each prompt/response pair:
 1. Use characteristics and stories as context
-2. Create exactly THREE unique conversation starters that follow this two-step approach:
+2. Create exactly THREE unique conversation starters that follow this three-step approach:
    a. First, give a direct, simple acknowledgment that shows you've understood something visible from her profile
       - Focus on concrete, observable things:
         * Physical appearance (only if obvious and tasteful)
@@ -717,7 +717,12 @@ For each prompt/response pair:
       - Keep it straightforward and obvious
       - Make it specific to what you see in her profile
       - The compliment should be something you can point to in a photo or prompt response
-   b. Then, suggest a shared activity or experience related to the prompt
+   b. Next, provide a brief connection (5-7 words) between her prompt/response and your suggested date activity
+      - Explain why you're suggesting the particular activity
+      - Reference something specific from her prompt or response
+      - Keep it concise but clear why this activity relates to what she shared
+      - This creates context for your suggestion and shows you paid attention
+   c. Finally, suggest a shared activity or experience related to the prompt
       - Express that you'd like to share in an activity she mentioned
       - Make it clear you want to participate with her, not just discuss the topic
       - Suggest something fun and specific that connects to her interests
@@ -749,7 +754,7 @@ For each prompt/response pair:
    * Avoids flowery metaphors or dramatic language
    * Never uses marketing-style words like "perfect", "amazing", "journey", "adventure"
    * Shows interest through specificity and shared experiences
-   * Aims for 10-15 words maximum per part (acknowledgment + shared activity suggestion)
+   * Aims for brevity - 8-10 words for part one (acknowledgment), 5-7 words for part two (connection), and 8-10 words for part three (activity suggestion)
    * Easy to respond to over text
    * Creates a pleasant shared experience when possible
 
@@ -757,30 +762,32 @@ CRITICAL: People don't narrate their lives with dramatic language - they just ex
 
 CRITICAL: Your conversation starters must be rooted in reality and suggest real shared activities based on her interests.
 
+CRITICAL: Shorter messages are significantly more understandable over text. Keep messages brief, direct, and immediately clear - avoid any unnecessary words.
+
 Examples of good vs bad conversation starters:
 
 GOOD:
 - Prompt: "My Love Language is"
   Response: "Words of affirmation and cheese"
-  Conversation Starter: "That beanie in your hiking photo is super cute. We should have a wine and cheese tasting at Eno Vino sometime!" 
-  (Simple acknowledgment, date-appropriate shared activity)
+  Conversation Starter: "Cute beanie in your hiking photo. Cheese lovers unite for snacking. Wine and cheese at Eno Vino?" 
+  (Simple acknowledgment, connection to her interest, date-appropriate shared activity)
 - Prompt: "I geek out on"
-  Response: "NBA, specifically golden state warriors"
-  Conversation Starter: "Your smile in that outdoor concert photo is contagious! We could grab drinks during the next Warriors game at The Coopers Tavern." 
-  (Specific acknowledgment, casual viewing activity rather than full game commitment)
+  Response: "NBA, specifically golden state warriors" 
+  Conversation Starter: "Great smile in your concert photo. Warriors fans need sports bars. Warriors game at Coopers Tavern?" 
+  (Specific acknowledgment, connection explaining why bar, casual viewing activity)
 - Prompt: "Two truths and a lie..."
   Response: "1) I have a scar on my hand from being bitten by a hamster 2) I wrote and directed a short film 
           3) I won a county-wide math competition in school"
-  Conversation Starter: "That kayak adventure in your lake photo looks amazing. I'd love to hear about your film over coffee at Barriques." 
-  (Shows interest through suggesting a casual date activity)
+  Conversation Starter: "Nice kayak in your lake photo. Filmmakers deserve coffee breaks. Tell me about your film at Barriques?" 
+  (Visible object acknowledgment, connection to her filmmaking, casual date activity)
 - Prompt: "I take pride in"
   Response: "my ability to make friends with anyone, anywhere. I can strike up a conversation with a wall."
-  Conversation Starter: "I like your colorful scarf in your profile picture. Let's test your conversation skills at one of the cafes near the Capitol." 
-  (Suggests a fun, casual activity without competitive pressure)
+  Conversation Starter: "Love your colorful scarf. Social skills shine in cafes. Test your conversation skills at Capitol cafes?" 
+  (Specific compliment, connection to her social ability, fun casual activity)
 - Prompt: "What I order for the table"
   Response: "Carbs, cheese and wine"
-  Conversation Starter: "Those sunglasses in your beach photo suit you really well. We should share a cheese board at a wine bar downtown!" 
-  (Expresses shared enjoyment with specific, time-limited activity)
+  Conversation Starter: "Cool sunglasses in your beach photo. Wine pairs with good company. Cheese board at downtown wine bar?" 
+  (Specific visible element, connection to wine interest, specific time-limited activity)
 
 BAD:
 - Prompt: "A random fact I love is"
@@ -809,8 +816,8 @@ BAD:
   Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
   BAD Conversation Starter: "How long have you been studying for your teaching exam?" 
   (Just asks a question without offering to help)
-  GOOD Conversation Starter: "World history's fascinating—we could quiz each other over coffee sometime." 
-  (Offers to participate in the activity with her)
+  GOOD Conversation Starter: "World history's fascinating. Study dates need coffee breaks. We could quiz each other over coffee sometime." 
+  (Offers to participate in the activity with her, with context for why coffee makes sense)
 
 STEP 8: SIMULATE CONVERSATION
 For each of the NINE starters (3 per prompt/response pair):
