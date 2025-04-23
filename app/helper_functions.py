@@ -739,12 +739,6 @@ For each prompt/response pair:
          * Should allow conversation to flow naturally while doing something enjoyable
          * Examples of good date activities: coffee shop visit, wine tasting, casual walk, museum visit, dessert spot, casual game
          * Examples of poor date activities: full sporting events, multi-day projects, competitive activities, professional networking
-      - Examples:
-        * For food-related prompts: "Carbs, cheese, and wine—my idea of a perfect evening! There's a great wine bar downtown we should check out."
-        * For learning/skills: "World history's fascinating—we could quiz each other over coffee sometime."
-        * For hobbies: "I'd love to try one of your recreated dishes sometime—maybe over a casual dinner?"
-      - Avoid just asking questions about her experience
-      - Instead, position yourself as a potential companion in the activity
       * Each of the THREE starters should differ in either:
         - The aspect/item being acknowledged (e.g., different visible elements)
         - OR a different shared activity suggestion for the same topic
@@ -788,36 +782,40 @@ GOOD:
   Response: "Carbs, cheese and wine"
   Conversation Starter: "Cool sunglasses in your beach photo. Wine pairs with good company. Cheese board at downtown wine bar?" 
   (Specific visible element, connection to wine interest, specific time-limited activity)
+        - More Good Examples:
+        * Prompt: "My simple pleasures"
+          Response: "Carbs, cheese, and wine"
+          Conversation Starter: "Great earrings in your dinner photo. Carbs and wine need proper venue. Let's enjoy a charcuterie board downtown."
+        * Prompt: "The dorkiest thing about me is"
+          Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
+          Conversation Starter: "Love your smile in profile pic. History buffs need study breaks. Let's quiz each other over coffee at Barriques."  
+        * Prompt: "I geek out on"
+          Response: "Recreating dishes from my favorite restaurants"
+          Conversation Starter: "Cool hiking boots in mountain photo. Food recreation deserves audience. Would love to try your dishes sometime."
 
 BAD:
 - Prompt: "A random fact I love is"
   Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight. And twilight is a fanfic of 
           My Chemical Romance, and if 9/11 didn't happen, they wouldn't exist. It's weird I know"
-  Conversation Starter: "That's a wild fanfic connection! 
-                      What other pop culture rabbit holes do you enjoy falling into?" 
+  Conversation Starter: "That's a wild fanfic connection! Pop culture creates unexpected links. What other rabbit holes do you enjoy falling into?" 
   (Just asks a question instead of suggesting a shared activity)
 - Prompt: "The quickest way to my heart is"
   Response: "Talking over ice cream/coffee"
-  Conversation Starter: "That coffee shop looks cozy in your photo. 
-                      What's your go-to coffee order when you're having a good conversation?" 
-  (Asks about preferences rather than suggesting "Let's grab coffee at that cozy spot in your photo")
+  Conversation Starter: "That coffee shop looks cozy. Conversations need the right ambiance. What's your go-to coffee order for good talks?" 
+  (Asks about preferences rather than suggesting "Let's meet at that cozy coffee shop in your photo")
 - Prompt: "My biggest date fail"
   Response: "Going swimming in Lake Mendota and then cutting my foot on a piece of metal... 
           the date ended because I had to go to Urgent Care for a tetanus shot 😜"
-  Conversation Starter: "That's a memorable date story for sure. 
-                      Do tetanus shots and swimming make it into your top 5 worst date endings?" 
-  (Asks a question instead of suggesting "Let's try a safer water activity like kayaking instead!")
+  Conversation Starter: "That's a memorable date story. Lake accidents happen to everyone. Do tetanus shots make your top 5 worst dates?" 
+  (Asks a question instead of suggesting "Let's try kayaking on Mendota without the injury")
 - Prompt: "My best celebrity impression is..."
   Response: "\"Why hello there,\" in my best Obi-Wan Kenobi voice and my friends hate it."
-  Conversation Starter: "That's a solid Obi-Wan reference. 
-                      Do you have any other Star Wars impressions in your arsenal?" 
-  (Asks for more content instead of suggesting "We should watch Star Wars and trade our best impressions")
+  Conversation Starter: "That's a solid Obi-Wan reference. Star Wars fans understand the appeal. Do you have other impressions in your arsenal?" 
+  (Asks for more content instead of suggesting "Let's watch Star Wars and trade our best impressions")
 - Prompt: "The dorkiest thing about me is"
   Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
-  BAD Conversation Starter: "How long have you been studying for your teaching exam?" 
+  BAD Conversation Starter: "Your dedication is impressive. History exams are challenging tasks. How long have you been studying for it?" 
   (Just asks a question without offering to help)
-  GOOD Conversation Starter: "World history's fascinating. Study dates need coffee breaks. We could quiz each other over coffee sometime." 
-  (Offers to participate in the activity with her, with context for why coffee makes sense)
 
 STEP 8: SIMULATE CONVERSATION
 For each of the NINE starters (3 per prompt/response pair):
