@@ -29,18 +29,12 @@ def setup_logging():
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
 
-    # Create logs directory
-    logs_dir = os.path.join(results_dir, "logs")
-    if not os.path.exists(logs_dir):
-        os.makedirs(logs_dir)
-
     # Create a desktop logs directory
     desktop_logs_dir = f"/app/desktop/PitchPerfect_Results_{RUN_TIMESTAMP}/logs"
     if not os.path.exists(desktop_logs_dir):
         os.makedirs(desktop_logs_dir)
 
     # Configure logging to write to both file and console
-    log_file = os.path.join(logs_dir, f"pitchperfect_{RUN_TIMESTAMP}.log")
     desktop_log_file = os.path.join(
         desktop_logs_dir, f"pitchperfect_{RUN_TIMESTAMP}.log")
 
@@ -50,11 +44,6 @@ def setup_logging():
 
     # Create formatter
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-
-    # File handler for internal logs directory
-    file_handler = logging.FileHandler(log_file)
-    file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(formatter)
 
     # File handler for desktop logs directory
     desktop_file_handler = logging.FileHandler(desktop_log_file)
@@ -67,12 +56,10 @@ def setup_logging():
     console_handler.setFormatter(formatter)
 
     # Add the handlers to the logger
-    logger.addHandler(file_handler)
     logger.addHandler(desktop_file_handler)
     logger.addHandler(console_handler)
 
-    logging.info(
-        f"Logging initialized. Log files: {log_file} and {desktop_log_file}")
+    logging.info(f"Logging initialized. Log file: {desktop_log_file}")
 
     return logger
 
