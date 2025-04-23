@@ -1276,3 +1276,480 @@ def generate_hinge_reply_from_screenshots(screenshots, format_txt_path, prompts_
         "conversation_starter": result.get("conversation_starter", ""),
         "screenshot_index": result.get("screenshot_index", 0)
     }
+
+
+def find_prompt_response_match(screenshot_path, target_prompt, target_response, profile_num, suffix=""):
+    """Find prompt or response match in a screenshot.
+
+    Args:
+        screenshot_path: Path to the screenshot image
+        target_prompt: The prompt text to look for
+        target_response: The response text to look for
+        profile_num: Current profile number for debugging
+        suffix: Suffix for debug image filename (e.g. "_up" for scrolled up screenshot)
+
+    Returns:
+        tuple: (best_match, tap_coordinates, visualization_path) where:
+            - best_match: The paragraph object that matched, or None if no match
+            - tap_coordinates: (x, y) coordinates to tap if found, None if not found
+            - visualization_path: Path to the created visualization image
+    """
+    # Extract text and group into paragraphs
+    boxes = extract_text_from_image_with_boxes(screenshot_path)
+    if not boxes:
+        logger.warning(f"No text boxes found in screenshot{suffix}")
+        return None, None, None
+
+    lines = group_boxes_into_lines(boxes)
+    paragraphs = group_lines_into_paragraphs(lines)
+
+    # Try to find the target prompt with high confidence
+    logger.debug(f"\nComparing target prompt against OCR paragraphs{suffix}:")
+    logger.debug(f"Target prompt: '{target_prompt}'")
+    logger.debug("\nOCR paragraphs found:")
+
+    best_prompt_match = None
+    best_prompt_ratio = 0.0
+    best_response_match = None
+    best_response_ratio = 0.0
+
+    for i, para in enumerate(paragraphs):
+        # Check for prompt match
+        is_prompt_match, prompt_ratio, matched_text = fuzzy_match_text(
+            target_prompt, para['text'], threshold=0.8)
+        logger.debug(f"Paragraph {i+1}:")
+        logger.debug(f"  Text: '{para['text']}'")
+        logger.debug(f"  Prompt match ratio: {prompt_ratio:.2f}")
+
+        # Also check for response match with lower threshold
+        is_response_match, response_ratio, _ = fuzzy_match_text(
+            target_response, para['text'], threshold=0.7)
+        logger.debug(f"  Response match ratio: {response_ratio:.2f}")
+        logger.debug("")
+
+        if is_prompt_match and prompt_ratio > best_prompt_ratio:
+            best_prompt_match = para
+            best_prompt_ratio = prompt_ratio
+        elif is_response_match and response_ratio > best_response_ratio:
+            best_response_match = para
+            best_response_ratio = response_ratio
+
+    # Use prompt match if found, otherwise use response match
+    best_match = best_prompt_match if best_prompt_match else best_response_match
+    visualization_path = f"images/profile_{profile_num}_prompt_detection{suffix}_visual.png"
+
+    if best_match:
+        match_type = 'prompt' if best_prompt_match else 'response'
+        match_ratio = max(best_prompt_ratio, best_response_ratio)
+        logger.info(
+            f"Found {match_type} match{suffix} with ratio {match_ratio:.2f}")
+
+        # Calculate tap coordinates (center of the paragraph)
+        boxes_match = best_match['boxes']
+        min_x = min(box['box'][0] for box in boxes_match)
+        max_x = max(box['box'][0] + box['box'][2] for box in boxes_match)
+        min_y = min(box['box'][1] for box in boxes_match)
+        max_y = max(box['box'][1] + box['box'][3] for box in boxes_match)
+
+        tap_x = (min_x + max_x) // 2
+        tap_y = (min_y + max_y) // 2
+
+        # Create visualization with tap target
+        create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=visualization_path,
+            tap_target=(tap_x, tap_y)
+        )
+
+        return best_match, (tap_x, tap_y), visualization_path
+    else:
+        logger.warning(
+            f"No matching prompt or response found in screenshot{suffix}")
+        # Create visualization without tap target
+        create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=visualization_path
+        )
+
+        return None, None, visualization_path
+
+
+def detect_prompt_in_screenshot(device, target_prompt, target_response, screenshot_index, profile_num):
+    """Detect and visualize the target prompt or response in a screenshot.
+
+    Args:
+        device: The ADB device
+        target_prompt: The prompt text we're looking for
+        target_response: The response text we're looking for
+        screenshot_index: Index of the screenshot to analyze
+        profile_num: Current profile number
+
+    Returns:
+        tuple: (found, tap_coordinates) where:
+            - found: bool indicating if prompt/response was found
+            - tap_coordinates: (x,y) coordinates to tap if found, None if not found
+    """
+    try:
+        # Take a fresh screenshot at this position
+        screenshot_path = capture_screenshot(
+            device, f"profile_{profile_num}_prompt_detection")
+
+        # Check for match in current screenshot
+        best_match, tap_coordinates, _ = find_prompt_response_match(
+            screenshot_path, target_prompt, target_response, profile_num)
+
+        # If found a match, tap it and return
+        if best_match and tap_coordinates:
+            tap_x, tap_y = tap_coordinates
+            # Execute double tap at the calculated coordinates
+            tap(device, tap_x, tap_y, double_tap=True)
+            # Wait for response interface to open
+            time.sleep(2.0)
+            return True, tap_coordinates
+
+        # If no match found, try scrolling up
+        logger.info("\nAttempting to scroll up once to find prompt/response...")
+        swipe(device, "up")  # Scroll up
+        time.sleep(1)  # Wait for scroll to complete
+
+        # Take another screenshot after scrolling up
+        screenshot_path_up = capture_screenshot(
+            device, f"profile_{profile_num}_prompt_detection_up")
+
+        # Check for match in scrolled up screenshot
+        best_match_up, tap_coordinates_up, _ = find_prompt_response_match(
+            screenshot_path_up, target_prompt, target_response, profile_num, suffix="_up")
+
+        # If found a match after scrolling up, tap it and return
+        if best_match_up and tap_coordinates_up:
+            tap_x, tap_y = tap_coordinates_up
+            # Execute double tap at the calculated coordinates
+            tap(device, tap_x, tap_y, double_tap=True)
+            # Wait for response interface to open
+            time.sleep(2.0)
+            return True, tap_coordinates_up
+        else:
+            # Scroll back down to original position
+            logger.info("Scrolling back down to original position...")
+            swipe(device, "down")
+            time.sleep(1)
+
+        # Fallback: Scroll to bottom and double-click center
+        logger.info(
+            "\nFallback: Scrolling to bottom and double-clicking center...")
+
+        # Calculate remaining scrolls (we've already done screenshot_index scrolls)
+        # 6 is max scrolls (7 screenshots total, 0-6)
+        remaining_scrolls = 6 - screenshot_index
+
+        # Scroll the remaining distance to bottom
+        for i in range(remaining_scrolls):
+            logger.info(f"Fallback scroll #{i+1}")
+            swipe(device, "down")
+            time.sleep(1)  # Wait for scroll to complete
+
+        # Get screen dimensions for center tap
+        width, height = get_screen_resolution(device)
+        center_x = width // 2
+        center_y = height // 2
+
+        logger.info(
+            f"Double-clicking center of screen at ({center_x}, {center_y})")
+        tap(device, center_x, center_y, double_tap=True)
+        time.sleep(1)  # Wait for response interface to open
+
+        # Return True since we executed the fallback
+        return True, (center_x, center_y)
+
+    except Exception as e:
+        logger.error(f"Error in detect_prompt_in_screenshot: {e}")
+        logger.debug("", exc_info=True)
+        return False, None
+
+
+def dislike_profile(device):
+    """Execute a dislike action by tapping the X button.
+
+    Args:
+        device: The ADB device
+
+    Returns:
+        None
+    """
+    # Dislike button is always at x=125, y=2075
+    tap(device, 125, 2075)
+    # Wait 4 seconds for next profile to load
+    time.sleep(4)
+
+
+def send_response_to_story(device, conversation_starter, profile_num):
+    """Handle the flow of responding to an opened story.
+
+    Args:
+        device: The ADB device
+        conversation_starter: The text to send as a response
+        profile_num: Current profile number for debugging visualization
+
+    Returns:
+        bool: True if response was sent successfully, False otherwise
+    """
+    # PHASE 1: Find and click comment box
+    logger.info("\nPhase 1: Locating comment box...")
+    screenshot_path = capture_screenshot(
+        device, f"profile_{profile_num}_response_phase1")
+
+    # Extract text and boxes
+    boxes = extract_text_from_image_with_boxes(screenshot_path)
+    if not boxes:
+        logger.warning("No text boxes found in initial screenshot")
+        return False
+
+    lines = group_boxes_into_lines(boxes)
+    paragraphs = group_lines_into_paragraphs(lines)
+
+    # Find "Add a comment" box
+    comment_box = None
+    comment_ratio = 0.0
+    for para in paragraphs:
+        is_match, ratio, _ = fuzzy_match_text("Add a comment", para['text'])
+        if is_match and ratio > comment_ratio:
+            comment_box = para
+            comment_ratio = ratio
+
+    if not comment_box:
+        logger.warning("Could not find comment box")
+        # Create visualization without tap target
+        create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=f"images/profile_{profile_num}_response_phase1_visual.png"
+        )
+        return False
+
+    # Calculate tap coordinates for comment box
+    comment_boxes = comment_box['boxes']
+    min_x = min(box['box'][0] for box in comment_boxes)
+    max_x = max(box['box'][0] + box['box'][2] for box in comment_boxes)
+    min_y = min(box['box'][1] for box in comment_boxes)
+    max_y = max(box['box'][1] + box['box'][3] for box in comment_boxes)
+
+    comment_x = (min_x + max_x) // 2
+    comment_y = (min_y + max_y) // 2
+
+    # Create visualization of phase 1
+    create_visual_debug_overlay(
+        screenshot_path,
+        boxes=boxes,
+        lines=lines,
+        paragraphs=paragraphs,
+        output_path=f"images/profile_{profile_num}_response_phase1_visual.png",
+        tap_target=(comment_x, comment_y)
+    )
+
+    # Click comment box and enter text
+    tap(device, comment_x, comment_y)
+    time.sleep(1.0)  # Increased from 0.5 to 1.0 seconds
+
+    # Clear any existing text in the comment box by sending 5 backspace keys
+    for _ in range(5):
+        device.shell("input keyevent KEYCODE_DEL")
+    time.sleep(0.5)  # Wait after clearing text
+
+    # Now input the conversation starter
+    input_text(device, conversation_starter)
+    time.sleep(1.0)  # Increased from 0.5 to 1.0 seconds
+
+    # Close keyboard
+    device.shell('input keyevent 4')  # KEYCODE_BACK
+    time.sleep(2.0)  # Increased from 1.0 to 2.0 seconds
+
+    # PHASE 2: Find and click Send Priority Like button in new layout
+    logger.info("\nPhase 2: Locating Send Priority Like button...")
+    screenshot_path = capture_screenshot(
+        device, f"profile_{profile_num}_response_phase2")
+
+    # Extract text and boxes again for new layout
+    boxes = extract_text_from_image_with_boxes(screenshot_path)
+    if not boxes:
+        logger.warning("No text boxes found in post-input screenshot")
+        return False
+
+    lines = group_boxes_into_lines(boxes)
+    paragraphs = group_lines_into_paragraphs(lines)
+
+    # Find "Send Priority Like" button in new layout
+    send_button = None
+    send_ratio = 0.0
+    for para in paragraphs:
+        is_match, ratio, _ = fuzzy_match_text(
+            "Send Priority Like", para['text'], threshold=0.7)
+        if is_match and ratio > send_ratio:
+            send_button = para
+            send_ratio = ratio
+
+    if not send_button:
+        logger.warning("Could not find Send Priority Like button")
+        # Create visualization without tap target
+        create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=f"images/profile_{profile_num}_response_phase2_visual.png"
+        )
+        return False
+
+    # Calculate tap coordinates for send button
+    send_boxes = send_button['boxes']
+    min_x = min(box['box'][0] for box in send_boxes)
+    max_x = max(box['box'][0] + box['box'][2] for box in send_boxes)
+    min_y = min(box['box'][1] for box in send_boxes)
+    max_y = max(box['box'][1] + box['box'][3] for box in send_boxes)
+
+    send_x = (min_x + max_x) // 2
+    send_y = (min_y + max_y) // 2
+
+    # Create visualization of phase 2
+    create_visual_debug_overlay(
+        screenshot_path,
+        boxes=boxes,
+        lines=lines,
+        paragraphs=paragraphs,
+        output_path=f"images/profile_{profile_num}_response_phase2_visual.png",
+        tap_target=(send_x, send_y)
+    )
+
+    # Click Send Priority Like button
+    tap(device, send_x, send_y)
+
+    # Wait 4 seconds for next profile to load
+    time.sleep(4)
+
+    return True
+
+
+def save_profile_results(profile_num, screenshots, ai_response):
+    """Save profile screenshots and AI response in an organized folder structure.
+
+    Args:
+        profile_num: The profile number
+        screenshots: List of screenshot paths
+        ai_response: The AI response dictionary (can be None)
+
+    Returns:
+        str: Path to the profile's results directory
+    """
+    # Create results directory if it doesn't exist
+    results_dir = "results"
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
+
+    # Create desktop directory path with timestamp for easy access from host
+    desktop_dir = f"/app/desktop/PitchPerfect_Results_{RUN_TIMESTAMP}"
+    if not os.path.exists(desktop_dir):
+        os.makedirs(desktop_dir)
+
+    # Create profile-specific directory in both locations
+    profile_dir = os.path.join(results_dir, f"profile_{profile_num}")
+    desktop_profile_dir = os.path.join(desktop_dir, f"profile_{profile_num}")
+
+    if not os.path.exists(profile_dir):
+        os.makedirs(profile_dir)
+    if not os.path.exists(desktop_profile_dir):
+        os.makedirs(desktop_profile_dir)
+
+    # Create screenshots subdirectory in both locations
+    screenshots_dir = os.path.join(profile_dir, "screenshots")
+    desktop_screenshots_dir = os.path.join(desktop_profile_dir, "screenshots")
+
+    if not os.path.exists(screenshots_dir):
+        os.makedirs(screenshots_dir)
+    if not os.path.exists(desktop_screenshots_dir):
+        os.makedirs(desktop_screenshots_dir)
+
+    # Copy screenshots to both profile directories
+    for screenshot in screenshots:
+        filename = os.path.basename(screenshot)
+        # Save to container results directory
+        dest_path = os.path.join(screenshots_dir, filename)
+        shutil.copy2(screenshot, dest_path)
+        # Also save to desktop directory
+        desktop_dest_path = os.path.join(desktop_screenshots_dir, filename)
+        shutil.copy2(screenshot, desktop_dest_path)
+
+    # Save AI response as JSON with timestamp, but only to desktop
+    desktop_response_path = os.path.join(desktop_profile_dir, "response.json")
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Handle None response by creating an empty response with timestamp
+    response_data = ai_response if ai_response is not None else {}
+    response_data['timestamp'] = timestamp
+
+    # Save only to desktop directory
+    with open(desktop_response_path, 'w') as f:
+        json.dump(response_data, f, indent=2)
+
+    logger.info(f"Screenshots saved to container path: {profile_dir}")
+    logger.info(
+        f"Results and screenshots saved to desktop path: {desktop_profile_dir}")
+
+    return profile_dir
+
+
+def check_for_end_of_profiles(device, profile_num):
+    """Check if we've reached the end of available profiles.
+
+    Args:
+        device: The ADB device
+        profile_num: Current profile number for debugging
+
+    Returns:
+        tuple: (bool, str) - (True if end reached, message that was matched)
+    """
+    # Take a screenshot to check for the message
+    screenshot_path = capture_screenshot(
+        device, f"profile_{profile_num}_end_check")
+
+    # Extract text and group into paragraphs
+    boxes = extract_text_from_image_with_boxes(screenshot_path)
+    if not boxes:
+        return False, ""
+
+    lines = group_boxes_into_lines(boxes)
+    paragraphs = group_lines_into_paragraphs(lines)
+
+    # Messages to check for
+    end_messages = [
+        "You've seen everyone for now",
+        "Try changing your filters so more people match your criteria - or check again later!",
+        "Change filters",
+        "Review skipped profiles"
+    ]
+
+    # Check each paragraph against each message
+    for para in paragraphs:
+        for message in end_messages:
+            is_match, ratio, _ = fuzzy_match_text(
+                message, para['text'], threshold=0.8)
+            if is_match:
+                logger.info(
+                    f"Found end message: '{message}' with confidence {ratio:.2f}")
+                # Create visualization of the match
+                create_visual_debug_overlay(
+                    screenshot_path,
+                    boxes=boxes,
+                    lines=lines,
+                    paragraphs=paragraphs,
+                    output_path=f"images/profile_{profile_num}_end_detected_visual.png"
+                )
+                return True, message
+
+    return False, ""
