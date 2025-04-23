@@ -3,108 +3,120 @@ BUMBLE PROFILE SCREENSHOT FORMAT
 GENERAL LAYOUT:
 - Header Section: Contains Bumble logo, time, and status icons
 - Profile Main Section: Contains all profile content
+- Star button on bottom right of profile to superlike
 - Bottom Navigation: Profile, Discover, People, Liked You, Chats
-
-SCREENSHOT 1 (Initial View):
-1. Profile Identification
-   - Name (Bottom of screen): First name, age (e.g., "Hunter, 30")
-   - Pronouns (if provided): appears as an icon with text (e.g., "she/her")
-   - Star button on bottom right to superlike the profile
-   - Heart button on bottom left to like the profile
-
-2. Main Profile Photo
-   - Takes up majority of the screen
-   - Appears above the name/age information
-   - Share button (upper right) allows sharing the profile
-
-SCREENSHOTS 2+ (Subsequent Views):
-As the user scrolls down, they'll encounter the following sections (always in this exact order):
-
-1. About Me Section
-   - Header "About me"
-   - Free text paragraph written by the user
-
-2. Basic Information/Attributes
-   - Displayed as pills/chips with icons and text
-   - Examples:
-     * Height (ruler icon): "6' 0""
-     * Education (graduation cap): "Undergraduate degree"
-     * Drinking (wine glass): "Sometimes" 
-     * Smoking (no icon): "No"
-     * Gender identity (person icon): "Woman"
-     * Children status (baby carriage): "Open to kids"
-     * Children (baby bottle): "Don't have kids"
-     * Politics (building icon): "Liberal"
-     * Religion (temple icon): "Agnostic"
-
-3. "I'm looking for" Section
-   - Header "I'm looking for"
-   - Contains relationship goals and desired qualities
-   - Displayed as pills/chips with icon and text
-   - Examples:
-     * Search icon: "Fun, casual dates"
-     * Search icon: "A long-term relationship"
-     * Text only: "Empathy"
-     * Text only: "Humor"
-     * Text only: "Kindness"
-
-4. "My interests" Section
-   - Header "My interests"
-   - Displayed as horizontal row of pills/chips with icons and text
-   - May highlight certain interests with "standout" designation
-   - Examples:
-     * "Concerts" with ticket icon
-     * "Yoga" with yoga pose icon
-     * "Coffee" with coffee cup icon
-     * "Foodie" with fork/knife icon
-     * "Dogs" with dog icon
-
-5. Custom Statements
-   - Free-form statements with responses
-   - Examples:
-     * "I know the best spot in town for espresso martinis."
-     * "I get way too excited about seeing dogs out in public."
-     * "What I'd really like to find is someone to go to concerts with."
-   - Heart button below statement to send a compliment
-
-6. "My causes and communities" Section
-   - Header "My causes and communities"
-   - Lists social causes the user supports
-   - Displayed as pills/chips with text only
-   - Examples:
-     * "LGBTQ+ rights"
-     * "Reproductive rights"
-
-7. "My location" Section
-   - Header "My location"
-   - Location pin icon with city name
-   - Example: "Madison"
-
-8. Additional Photos
-   - Multiple photos throughout the profile
-   - Heart button on each photo to send a compliment
-   - Star button on bottom right of profile to superlike
-   - X (dislike) and check mark (like) buttons at bottom
-
-INTERACTION ELEMENTS:
-1. Heart Button (Yellow circle with black heart)
-   - Appears below prompts/responses at a fixed distance below the bottom of the response and always at the same distance from the left of the screen
-   or on bottom-left of photos always a fixed distance above the bottom of the photo and always at the same distance from the left of the screen
-   - Used to "Send a Compliment" or react to specific content
-   - Limited to 2 per week for free users
-
-2. Navigation
-   - Bottom bar with 5 icons: Profile, Discover, People, Liked You, Chats
-   - X button to reject profile
-   - Star button to superlike profile
-   - Check mark to like profile
 
 PROFILE LIMITS:
 - 1-6 photos per profile
-- 0-3 custom statements/prompts (all optional)
+- 0-3 prompt/responses (all optional)
 - Basic information fields are optional except name/age
 - Interests are optional (0-5 selections allowed)
 - Causes are optional (0-3)
 
 SCROLLING BEHAVIOR:
-- 8 screenshots needed to capture full profile
+- Each section appears in the exact order specified below if present
+- Not all profiles will contain all sections (sections are optional as indicated)
+- When any section is present, it follows the specified sequence
+- Multiple screenshots needed to capture full profile
+
+EXACT SECTION ORDERING:
+Sections always appear in this exact sequence if present:
+
+1. Photo (Main Profile Photo)
+   - Takes up majority of the screen
+   - Name (Bottom of screen): First name, age (format: "Name, Age")
+   - Pronouns (if provided): appears as an icon with text (format: "she/her")
+   - Star button on bottom right to superlike the profile
+   - Heart button on bottom left to like the profile
+   - Share button (upper right) allows sharing the profile
+
+2. About Me Section (Optional)
+   - Header "About me"
+   - Free text paragraph written by the user
+
+3. Basic Information/Attributes (Optional)
+   - Displayed as pills/chips with icons and text
+   - For specific attribute types and values, refer to bumbleMetadata.txt
+   - Common attributes include height, education, drinking habits, smoking status, 
+     gender identity, children status, political views, and religious beliefs
+
+4. "I'm looking for" Section (Optional)
+   - Header "I'm looking for"
+   - Contains relationship goals and desired qualities
+   - Displayed as pills/chips with icon and text
+   - For specific relationship goals and qualities, refer to bumbleLookingFor.txt
+
+5. "My interests" Section (Optional)
+   - Header "My interests"
+   - May have one pill/chip with icon and text by itself with the below description "PROFILE_NAME loves INTEREST"
+   - This means that the woman specifically wants to highlight this interest
+   - All other interests displayed as horizontal row of pills/chips with icons and text
+   - For specific interest categories and options, refer to bumbleInterests.txt
+
+6. Photo (Optional)
+   - Additional profile photo
+   - Heart button on each photo to send a compliment
+   - Star button on bottom right of profile to superlike
+
+7. Prompt and Response Statement 1 (Optional)
+   - Optional section: profiles may contain 0-3 prompt/response pairs
+   - Prompts are pre-defined questions/statements selected from bumblePrompts.txt
+   - Responses are free-form text provided by the profile owner
+   - Each prompt appears as a statement followed by the user's personalized response
+   - Format example: "What I'd really like to find is" followed by user's answer
+   - Heart button appears below each prompt/response to send a compliment
+   - For complete list of available prompts, refer to bumblePrompts.txt
+
+8. "My causes and communities" Section (Optional)
+   - Header "My causes and communities"
+   - Lists social causes the user supports
+   - Displayed as pills/chips with text only
+   - For specific cause categories, refer to bumbleCauses.txt
+
+9. Photo (Optional)
+   - Additional profile photo
+   - Heart button on each photo to send a compliment
+
+10. Prompt and Response Statement 2 (Optional)
+    - Same format as Prompt and Response Statement 1
+    - Only appears if profile has multiple prompts/responses
+
+11. Photo (Optional)
+    - Additional profile photo
+    - Heart button on each photo to send a compliment
+
+12. Prompt and Response Statement 3 (Optional)
+    - Same format as Prompt and Response Statements 1 & 2
+    - Only appears if profile has three prompts/responses
+
+13. Photo (Optional)
+    - Additional profile photo
+    - Heart button on each photo to send a compliment
+
+14. "My location" Section (Optional)
+    - Header "My location"
+    - Location pin icon with city name
+    - Displayed as current city of residence
+
+INTERACTION ELEMENTS:
+1. Heart Button (Yellow circle with black message icon within the yellow circle and yellow heart within the black message icon within the yellow circle)
+   - Appears in multiple locations throughout the profile:
+     * On profile photos: Fixed position at bottom-left corner of the photo
+     * Below prompt/responses: fixed position below the response and left-aligned with the prompt/response
+     * Sometimes may have the label "Send a Compliment" after the icon within the same yellow circle
+   - Heart buttons allow users to react to specific content (photos or statements)
+   - Position is consistent: approximately same distance from left edge across all instances
+   - Same visual appearance throughout: bright yellow circular button with black heart icon
+
+2. Navigation
+   - Bottom bar with 5 icons: Profile, Discover, People, Liked You, Chats
+   - Action buttons for profile interaction:
+     * X button (bottom left): To reject/pass on profile
+     * Star button (bottom center): To superlike profile
+     * Check mark (bottom right): To like profile
+   - "Hide and Report" text option at bottom of profile
+
+3. Star Button (Yellow circle with black star)
+   - Appears at bottom right corner of profile photos
+   - Also appears as larger button in center of decision interface
+   - Used to "Superlike" a profile, a premium feature that shows special interest

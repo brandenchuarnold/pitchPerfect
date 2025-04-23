@@ -1,58 +1,139 @@
-BASIC INFORMATION CATEGORIES:
+BUMBLE PROFILE METADATA:
 
-Height (Ruler icon):
-- Height in feet and inches (e.g., "6' 0"")
+ABOUT YOU:
 
-Education (Graduation cap icon):
-- Undergraduate degree
-- Graduate degree
-- High school
-- Trade/technical school
-- Some college
+Work (Briefcase icon) 💼:
+- Freeform text input (e.g., "Product Manager")
 
-Drinking (Wine glass icon):
-- Yes
-- Sometimes
-- No
+Education (Graduation cap icon) 🎓:
+- Freeform text input with school name (e.g., "Virginia Tech 2018")
 
-Smoking (No smoking icon):
-- Yes 
-- Sometimes
-- No
-
-Gender (Person icon):
+Gender (Person icon) 🧍:
 - Woman
 - Man
 - Nonbinary
-- More gender options...
 
-Children (Baby carriage icon):
+Location (Map pin icon) 📍:
+- Freeform text input (e.g., "Madison")
+
+Hometown (House icon) 🏠:
+- Freeform text input (e.g., "Haymarket")
+
+Ethnicity (Globe icon) 🌎:
+- African American
+- Black
+- Black African
+- Black American
+- Black Caribbean
+- Central Asian
+- Chinese Caribbean
+- East Asian
+- European
+- Hispanic
+- Jewish
+- Indo-Caribbean
+- Latina
+- Latino
+- Latinx
+- Middle Eastern
+- Native American
+- North African
+- Pacific Islander
+- South Asian
+- Southeast Asian
+- West Asian
+- White
+(Note: Users can select multiple ethnicities)
+
+MORE ABOUT YOU:
+
+Height (Ruler icon) 📏:
+- Freeform height input (e.g., "6' 0"")
+
+Exercise (Dumbbell icon) 💪:
+- Active
+- Sometimes
+- Almost never
+
+Education level (Graduation cap icon) 🎓:
+- High school
+- Trade/tech school
+- In college
+- Undergraduate degree
+- In grad school
+- Graduate degree
+
+Drinking (Wine glass icon) 🍷:
+- Yes, I drink
+- I drink sometimes
+- I rarely drink
+- No, I don't drink
+- I'm sober
+
+Smoking (Cigarette icon) 🚬:
+- Yes, I smoke
+- I smoke sometimes
+- No, I don't smoke
+- I'm trying to quit
+
+Looking for (Magnifying glass icon) 🔍:
+- A long-term relationship
+- Fun, casual dates
+- Marriage
+- Intimacy, without commitment
+- A life partner
+- Ethical non-monogamy
+(Note: Users can choose 1 or 2 options)
+
+Kids (Shopping cart/baby icon) 🛒:
+- Don't want kids
 - Open to kids
 - Want kids
-- Don't want kids
+- Not sure
 
-Family plans (Baby icon):
-- Don't have kids
+Have kids (Baby bottle icon) 🍼:
 - Have kids
+- Don't have kids
 
-Politics (Capitol building icon):
-- Liberal
-- Moderate
-- Conservative
+Star sign (Constellation icon) ⭐:
+- Aries
+- Taurus
+- Gemini
+- Cancer
+- Leo
+- Virgo
+- Libra
+- Scorpio
+- Sagittarius
+- Capricorn
+- Aquarius
+- Pisces
+
+Politics (Capitol building icon) 🏛️:
 - Apolitical
-- Other
+- Moderate
+- Liberal
+- Conservative
 
-Religion (Temple icon):
+Religion (Religious building icon) ⛪:
 - Agnostic
 - Atheist
 - Buddhist
 - Catholic
 - Christian
 - Hindu
+- Jain
 - Jewish
+- Mormon
+- Latter-day Saint
 - Muslim
+- Zoroastrian
+- Sikh
 - Spiritual
 - Other
 
-Location (Map pin icon):
-- City name (e.g., "Madison") 
+PRONOUNS:
+- Freeform text input (e.g., "he/him")
+
+LANGUAGES:
+- Freeform language selection 

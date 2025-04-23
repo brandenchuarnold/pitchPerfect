@@ -1,9 +1,264 @@
-INTERESTS:
+BUMBLE INTERESTS:
 
-- Concerts (Ticket icon)
-- Yoga (Person in yoga pose icon)
-- Coffee (Coffee cup icon)
-- Foodie (Fork and knife icon)
-- Dogs (Dog icon)
+Note: Users can select up to 5 interests and choose 0-1 to be a "standout" interest.
 
-Note: Users can select 0-5 interests and choose 0-1 to be a "standout" interest. 
+CATEGORIES:
+
+SPORTS:
+- Badminton 🏸
+- Baseball ⚾
+- Basketball 🏀
+- Bodybuilding 💪
+- Bouldering 🧗
+- Bowling 🎳
+- Boxing 🥊
+- Cardio 💗
+- Cricket 🏏
+- Crew 🚣
+- Cycling 🚲
+- Football 🏈
+- Functional fitness 🙌
+- Go karting 🏎️
+- Golf ⛳
+- Gym 🏋️
+- Gymnastics 🤸
+- Handball 🤾
+- HIIT 🎯
+- Hiking 🥾
+- Hockey 🏒
+- Horse riding 🏇
+- Kayaking 🛶
+- Lacrosse 🥍
+- Martial arts 🥋
+- Meditation 🧘
+- Motorsports 🏁
+- Motorbiking 🏍️
+- Netball 🏐
+- Padel 🎾
+- Pickleball 🏓
+- Pilates 🧘
+- Ping pong 🏓
+- Roller skating 🛼
+- Rugby 🏉
+- Run clubs 🏃
+- Running 🏃
+- Sailing ⛵
+- Scuba diving 🤿
+- Skateboarding 🛹
+- Skiing ⛷️
+- Snowboarding 🏂
+- Soccer ⚽
+- Softball 🥎
+- Squash 🏸
+- Surfing 🏄
+- Swimming 🏊
+- Tennis 🎾
+- Track 🏃
+- Volleyball 🏐
+- Weightlifting 🏋️
+- Yoga 🧘
+
+SELF-CARE:
+- Aromatherapy 🕯️
+- Astrology 🔮
+- Cold plunging 🧊
+- Crystals 💎
+- Deep chats 💬
+- Journaling ✍️
+- Mindfulness 🧠
+- Nutrition 🥦
+- Retreats 🧘
+- Skin care 💧
+- Sleeping well 💤
+- Slow living 🐌
+- Therapy 💛
+- Time offline 📵
+
+STAYING IN:
+- AI 🤖
+- Baking 🍰
+- Board games 🎲
+- Chess ♟️
+- Cooking 🔍
+- Gardening 🌱
+- House plants 🪴
+- Podcasts 🎙️
+- Programming 💻
+- Reading 📚
+- Video games 🎮
+
+GOING OUT:
+- Bars 🍻
+- Cafe-hopping ☕
+- Clubs 🕺
+- Concerts 🎫
+- Drag shows 👑
+- Festivals 🎭
+- Improv 🎭
+- Karaoke 🎤
+- LGBTQ+ nightlife 🏳️‍🌈
+- Movies 🍿
+- Museums & galleries 🏛️
+- Salsa dancing 💃
+- Stand up 🎙️
+- Theater 🎭
+- Trivia ❓
+- Wine tasting 🍷
+
+FILM AND TV:
+- Action & adventure 📺
+- Animated 📺
+- Anime 📺
+- Bollywood 📺
+- Comedy 📺
+- Cooking shows 📺
+- Crime 📺
+- Documentaries 📺
+- Drama 📺
+- Fantasy 📺
+- Game shows 📺
+- Horror 📺
+- Indie 📺
+- K-drama 📺
+- Mystery 📺
+- Reality shows 📺
+- Rom-com 📺
+- Romance 📺
+- Sci-fi 📺
+- Superhero 📺
+- Thriller 📺
+- True crime 📺
+
+MUSIC:
+- Afro 🎵
+- Arab 🎵
+- Blues 🎵
+- Classical 🎵
+- Country 🎵
+- Desi 🎵
+- EDM 🎵
+- Electronic 🎵
+- Folk & acoustic 🎵
+- Funk 🎵
+- Gothic 🎵
+- Hip hop 🎵
+- House 🎵
+- Indie 🎵
+- Jazz 🎵
+- K-pop 🎵
+- Latin 🎵
+- Metal 🎵
+- Pop 🎵
+- Punk 🎵
+- R&B 🎵
+- Rap 🎵
+- Reggae 🎵
+- Rock 🎵
+- Soul 🎵
+- Techno 🎵
+
+ANIMALS:
+- Birds 🐦
+- Cats 😺
+- Dogs 🐶
+- Fish 🐠
+- Lizards 🦎
+- Rabbits 🐰
+- Snakes 🐍
+- Turtles 🐢
+
+PERSONALITY AND TRAITS:
+- Ambition 🚀
+- Being active 🏆
+- Being family-oriented ❤️
+- Being open-minded 🧠
+- Being romantic 💝
+- Confidence 😎
+- Creativity 🖌️
+- Empathy 💚
+- Intelligence 🎓
+- Positivity ☀️
+- Self-awareness 🤔
+- Sense of adventure 🏔️
+- Sense of humor 😂
+- Social awareness 👁️
+
+TRAVELING:
+- Backpacking 🎒
+- Beaches 🏖️
+- Camping ⛺
+- Exploring new cities 🏙️
+- Fishing trips 🎣
+- Hiking trips 🥾
+- Road trips 🛣️
+- Solo trips 🧳
+- Spa weekends 🧖
+- Staycations 🏡
+- Winter sports ❄️
+
+CREATIVITY:
+- Art 🎨
+- Crafts ✏️
+- Crocheting 🧶
+- Dancing 💃
+- Design ✏️
+- Drawing ✏️
+- Fashion 👚
+- Knitting 🧶
+- Make-up 💄
+- Making videos 📹
+- Memes 🤣
+- Nail art 💅
+- Painting 👨‍🎨
+- Photography 📸
+- Pottery 🏺
+- Singing 🎤
+- Thrifting 🛍️
+- Upcycling 🪑
+- Writing ✍️
+
+FOOD AND DRINK:
+- BBQ 🍖
+- Beer 🍺
+- Biryani 🍚
+- Boba tea 🧋
+- Burgers 🍔
+- Cake 🧁
+- Cocktails 🍹
+- Coffee ☕
+- Foodie 🍽️
+- Gin 🍸
+- Kimchi 🥬
+- Mocktails 🍹
+- Pizza 🍕
+- Plant-based 🥑
+- Smoothies 🍌
+- Sushi 🍣
+- Sweet tooth 🍫
+- Tacos 🌮
+- Takeout 📦
+- Tea 🍵
+- Vegan 🌱
+- Vegetarian 🥦
+- Whisky 🥃
+- Wine 🍷
+
+READING:
+- Action & adventure 📚
+- Biographies 📚
+- Classics 📚
+- Comedy 📚
+- Comic books 📚
+- Crime 📚
+- Fantasy 📚
+- History 📚
+- Horror 📚
+- Manga 📚
+- Mystery 📚
+- Philosophy 📚
+- Poetry 📚
+- Psychology 📚
+- Romance 📚
+- Sci-fi 📚
+- Science 📚
+- Thriller 📚 
