@@ -901,7 +901,80 @@ For each prompt/response pair:
       * Each of the THREE starters should differ in either:
         - The aspect/item being acknowledged (e.g., different visible elements)
         - OR a different shared activity suggestion for the same topic
-      * Aim to create inviting scenarios that feel natural, fun and time-limited"""
+      * Aim to create inviting scenarios that feel natural, fun and time-limited
+      * Uses natural, everyday language - how you'd actually talk to someone
+      * Avoids flowery metaphors or dramatic language
+      * Never uses marketing-style words like "perfect", "amazing", "journey", "adventure"
+      * Shows interest through specificity and shared experiences
+      * Aims for brevity - 8-10 words for part one (acknowledgment), 5-7 words for part two (connection), and 8-10 words for part three (activity suggestion)
+      * Easy to respond to over text
+      * Creates a pleasant shared experience when possible
+
+    CRITICAL: People don't narrate their lives with dramatic language - they just express interest in things they want to do together.
+
+    CRITICAL: Your conversation starters must be rooted in reality and suggest real shared activities based on her interests.
+
+    CRITICAL: Shorter messages are significantly more understandable over text. Keep messages brief, direct, and immediately clear - avoid any unnecessary words.
+
+    Examples of good vs bad conversation starters:
+
+    GOOD:
+    - Prompt: "My Love Language is"
+      Response: "Words of affirmation and cheese"
+      Conversation Starter: "Cute beanie in your hiking photo. Cheese lovers unite for snacking. Wine and cheese at Eno Vino?" 
+      (Simple acknowledgment, connection to her interest, date-appropriate shared activity)
+    - Prompt: "I geek out on"
+      Response: "NBA, specifically golden state warriors" 
+      Conversation Starter: "Great smile in your concert photo. Warriors fans need sports bars. Warriors game at Coopers Tavern?" 
+      (Specific acknowledgment, connection explaining why bar, casual viewing activity)
+    - Prompt: "Two truths and a lie..."
+      Response: "1) I have a scar on my hand from being bitten by a hamster 2) I wrote and directed a short film 
+              3) I won a county-wide math competition in school"
+      Conversation Starter: "Nice kayak in your lake photo. Filmmakers deserve coffee breaks. Tell me about your film at Barriques?" 
+      (Visible object acknowledgment, connection to her filmmaking, casual date activity)
+    - Prompt: "I take pride in"
+      Response: "my ability to make friends with anyone, anywhere. I can strike up a conversation with a wall."
+      Conversation Starter: "Love your colorful scarf. Social skills shine in cafes. Test your conversation skills at Capitol cafes?" 
+      (Specific compliment, connection to her social ability, fun casual activity)
+    - Prompt: "What I order for the table"
+      Response: "Carbs, cheese and wine"
+      Conversation Starter: "Cool sunglasses in your beach photo. Wine pairs with good company. Cheese board at downtown wine bar?" 
+      (Specific visible element, connection to wine interest, specific time-limited activity)
+          - More Good Examples:
+          * Prompt: "My simple pleasures"
+            Response: "Carbs, cheese, and wine"
+            Conversation Starter: "Great earrings in your dinner photo. Carbs and wine need proper venue. Let's enjoy a charcuterie board downtown."
+          * Prompt: "The dorkiest thing about me is"
+            Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
+            Conversation Starter: "Love your smile in profile pic. History buffs need study breaks. Let's quiz each other over coffee at Barriques."  
+          * Prompt: "I geek out on"
+            Response: "Recreating dishes from my favorite restaurants"
+            Conversation Starter: "Cool hiking boots in mountain photo. Food recreation deserves audience. Would love to try your dishes sometime."
+
+    BAD:
+    - Prompt: "A random fact I love is"
+      Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight. And twilight is a fanfic of 
+              My Chemical Romance, and if 9/11 didn't happen, they wouldn't exist. It's weird I know"
+      Conversation Starter: "That's a wild fanfic connection! Pop culture creates unexpected links. What other rabbit holes do you enjoy falling into?" 
+      (Just asks a question instead of suggesting a shared activity)
+    - Prompt: "The quickest way to my heart is"
+      Response: "Talking over ice cream/coffee"
+      Conversation Starter: "That coffee shop looks cozy. Conversations need the right ambiance. What's your go-to coffee order for good talks?" 
+      (Asks about preferences rather than suggesting "Let's meet at that cozy coffee shop in your photo")
+    - Prompt: "My biggest date fail"
+      Response: "Going swimming in Lake Mendota and then cutting my foot on a piece of metal... 
+              the date ended because I had to go to Urgent Care for a tetanus shot 😜"
+      Conversation Starter: "That's a memorable date story. Lake accidents happen to everyone. Do tetanus shots make your top 5 worst dates?" 
+      (Asks a question instead of suggesting "Let's try kayaking on Mendota without the injury")
+    - Prompt: "My best celebrity impression is..."
+      Response: "\"Why hello there,\" in my best Obi-Wan Kenobi voice and my friends hate it."
+      Conversation Starter: "That's a solid Obi-Wan reference. Star Wars fans understand the appeal. Do you have other impressions in your arsenal?" 
+      (Asks for more content instead of suggesting "Let's watch Star Wars and trade our best impressions")
+    - Prompt: "The dorkiest thing about me is"
+      Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
+      BAD Conversation Starter: "Your dedication is impressive. History exams are challenging tasks. How long have you been studying for it?" 
+      (Just asks a question without offering to help)
+      """
 
 # New shared prompt components
 IDENTIFY_MAIN_PERSON = """STEP 2: IDENTIFY THE MAIN PERSON
@@ -1571,8 +1644,8 @@ def send_response_to_story(device, conversation_starter, profile_num):
     device.shell('input keyevent 4')  # KEYCODE_BACK
     time.sleep(2.0)  # Increased from 1.0 to 2.0 seconds
 
-    # PHASE 2: Find and click Send Priority Like button in new layout
-    logger.info("\nPhase 2: Locating Send Priority Like button...")
+    # PHASE 2: Find and click Send Like button in new layout
+    logger.info("\nPhase 2: Locating Send Like button...")
     screenshot_path = capture_screenshot(
         device, f"profile_{profile_num}_response_phase2")
 
@@ -1585,18 +1658,18 @@ def send_response_to_story(device, conversation_starter, profile_num):
     lines = group_boxes_into_lines(boxes)
     paragraphs = group_lines_into_paragraphs(lines)
 
-    # Find "Send Priority Like" button in new layout
+    # Find "Send Like" button in new layout
     send_button = None
     send_ratio = 0.0
     for para in paragraphs:
         is_match, ratio, _ = fuzzy_match_text(
-            "Send Priority Like", para['text'], threshold=0.7)
+            "Send Like", para['text'], threshold=0.7)
         if is_match and ratio > send_ratio:
             send_button = para
             send_ratio = ratio
 
     if not send_button:
-        logger.warning("Could not find Send Priority Like button")
+        logger.warning("Could not find Send Like button")
         # Create visualization without tap target
         create_visual_debug_overlay(
             screenshot_path,
@@ -1627,7 +1700,7 @@ def send_response_to_story(device, conversation_starter, profile_num):
         tap_target=(send_x, send_y)
     )
 
-    # Click Send Priority Like button
+    # Click Send Like button
     tap(device, send_x, send_y)
 
     # Wait 4 seconds for next profile to load

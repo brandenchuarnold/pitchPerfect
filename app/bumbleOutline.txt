@@ -209,3 +209,13 @@ Current Implementation:
      * bumbleMetadata.txt - Profile attribute categories and options
      * bumbleCauses.txt - List of possible causes and communities
      * bumbleInterests.txt - Available interest options 
+
+TODO:
+1. Update the AI system prompt with the new conversation starter guidelines
+   - Implement the expanded examples of good vs. bad conversation starters
+   - Incorporate the updated guidance on natural language and brevity
+   - Add the section on avoiding marketing-style language
+2. Begin Bumble development phase
+   - Test the updated AI prompt with real profiles
+   - Verify "Send Like" button detection is working correctly
+   - Monitor conversation starter quality with new guidelines 
