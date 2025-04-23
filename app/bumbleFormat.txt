@@ -120,3 +120,9 @@ INTERACTION ELEMENTS:
    - Appears at bottom right corner of profile photos
    - Also appears as larger button in center of decision interface
    - Used to "Superlike" a profile, a premium feature that shows special interest
+
+CONTENT CONTINUITY:
+- Any content (photo, prompt, or response) may be split across screenshots
+- Always check adjacent screenshots to reconstruct complete content
+- OCR processing should attempt to merge partial text across screenshots
+- Photo analysis should account for vertically split images

@@ -15,7 +15,7 @@ from helper_functions import (
     get_screen_resolution,
     capture_screenshot,
     extract_text_from_image_with_boxes,
-    generate_joke_from_screenshots,
+    generate_hinge_reply_from_screenshots,
     tap,
     input_text,
     create_visual_debug_overlay,
@@ -82,10 +82,23 @@ def scroll_back_to_top(device):
 
 
 def process_ai_response(screenshots, format_txt_path, prompts_txt_path, captions_txt_path, polls_txt_path, locations_txt_path):
-    """Process the AI response in a separate thread."""
+    """
+    Process screenshots and generate a conversation starter using Claude API.
+
+    Args:
+        screenshots: List of paths to screenshot images
+        format_txt_path: Path to hingeFormat.txt
+        prompts_txt_path: Path to hingePrompts.txt
+        captions_txt_path: Path to hingeCaptions.txt
+        polls_txt_path: Path to hingePolls.txt
+        locations_txt_path: Path to locations.txt
+
+    Returns:
+        dict: AI response containing prompt, response, conversation starter, and screenshot index
+    """
     global ai_response
     try:
-        result = generate_joke_from_screenshots(
+        result = generate_hinge_reply_from_screenshots(
             screenshots,
             format_txt_path,
             prompts_txt_path,
@@ -180,16 +193,15 @@ def scroll_to_screenshot(device, screenshot_index):
 
 
 def match_prompt_against_authoritative(prompt, prompts_txt_path):
-    """Match the AI's prompt against the authoritative prompts in prompts.txt.
+    """
+    Match a prompt from AI response against the authoritative list of prompts.
 
     Args:
-        prompt: The prompt text returned by the AI
-        prompts_txt_path: Path to prompts.txt containing authoritative prompts
+        prompt: The prompt string from AI
+        prompts_txt_path: Path to hingePrompts.txt containing authoritative prompts
 
     Returns:
-        tuple: (matched_prompt, confidence) where:
-            - matched_prompt: The best matching prompt from prompts.txt
-            - confidence: The confidence ratio of the match
+        tuple: (matched_prompt, confidence)
     """
     try:
         with open(prompts_txt_path, 'r') as f:
@@ -249,12 +261,15 @@ def main():
         logger.info(f"Initial target interactions: {target_interactions}")
         logger.info(f"Maximum profiles to process: {max_profiles}")
 
-        # Get absolute paths for resource files
-        app_dir = os.path.dirname(__file__)
-        format_txt_path = os.path.join(app_dir, 'format.txt')
-        prompts_txt_path = os.path.join(app_dir, 'prompts.txt')
-        captions_txt_path = os.path.join(app_dir, 'captions.txt')
-        polls_txt_path = os.path.join(app_dir, 'polls.txt')
+        # Initialize file paths
+        # Get the absolute path to the app directory
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # Default paths for text files
+        format_txt_path = os.path.join(app_dir, 'hingeFormat.txt')
+        prompts_txt_path = os.path.join(app_dir, 'hingePrompts.txt')
+        captions_txt_path = os.path.join(app_dir, 'hingeCaptions.txt')
+        polls_txt_path = os.path.join(app_dir, 'hingePolls.txt')
         locations_txt_path = os.path.join(app_dir, 'locations.txt')
 
         while profile_num <= max_profiles:  # Main profile loop with limit
