@@ -13,6 +13,7 @@ from datetime import datetime
 import logging
 import traceback
 import sys
+import random
 
 load_dotenv()
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
@@ -974,14 +975,52 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
         if requests_logger:
             requests_logger.setLevel(logging.WARNING)
 
-        # Make the actual API call without logging the details
-        response = client.messages.create(
-            model="claude-3-7-sonnet-latest",
-            max_tokens=1000,
-            temperature=1,
-            system=system_prompt,
-            messages=messages
-        )
+        # Implement retry with exponential backoff
+        max_retries = 5
+        retry_count = 0
+        base_delay = 2  # Start with 2 seconds delay
+
+        while retry_count <= max_retries:
+            try:
+                # Make the actual API call
+                response = client.messages.create(
+                    model="claude-3-7-sonnet-latest",
+                    max_tokens=1000,
+                    temperature=1,
+                    system=system_prompt,
+                    messages=messages
+                )
+
+                # If we get here, the API call was successful
+                break
+
+            except Exception as api_error:
+                # Check if this is a retryable error
+                should_retry = False
+                error_message = str(api_error)
+
+                # Check for specific error types that warrant retry
+                if "529" in error_message or "overloaded_error" in error_message:
+                    should_retry = True
+                    logger.warning(f"Claude API overloaded (429). Retrying...")
+                elif "503" in error_message or "502" in error_message:
+                    should_retry = True
+                    logger.warning(f"Claude API server error. Retrying...")
+                elif "429" in error_message or "rate_limit" in error_message:
+                    should_retry = True
+                    logger.warning(
+                        f"Claude API rate limit reached. Retrying...")
+
+                # If no more retries or not a retryable error, raise the exception
+                if retry_count >= max_retries or not should_retry:
+                    raise
+
+                # Calculate delay with exponential backoff and jitter
+                delay = base_delay * (2 ** retry_count) + random.uniform(0, 1)
+                logger.info(
+                    f"Retrying Claude API call in {delay:.1f} seconds (attempt {retry_count+1}/{max_retries})")
+                time.sleep(delay)
+                retry_count += 1
 
         # Restore original log levels
         root_logger.setLevel(original_root_level)
@@ -1030,8 +1069,12 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
 
     except Exception as e:
         logger.error(f"Error calling Claude API: {e}")
+        logger.error("Critical error in API call - stopping application")
         logger.debug("", exc_info=True)  # Log full traceback at debug level
-        return None
+
+        # Exit the application with non-zero status code
+        logger.info("Exiting application due to Claude API error")
+        sys.exit(1)  # Use exit code 1 to indicate an error occurred
 
 
 def find_prompt_response_match(screenshot_path, target_prompt, target_response, profile_num, suffix=""):

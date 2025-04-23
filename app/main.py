@@ -84,16 +84,29 @@ def scroll_back_to_top(device):
 def process_ai_response(screenshots, format_txt_path, prompts_txt_path, captions_txt_path, polls_txt_path, locations_txt_path):
     """Process the AI response in a separate thread."""
     global ai_response
-    result = generate_joke_from_screenshots(
-        screenshots,
-        format_txt_path,
-        prompts_txt_path,
-        captions_txt_path,
-        polls_txt_path,
-        locations_txt_path
-    )
-    with ai_response_lock:
-        ai_response = result
+    try:
+        result = generate_joke_from_screenshots(
+            screenshots,
+            format_txt_path,
+            prompts_txt_path,
+            captions_txt_path,
+            polls_txt_path,
+            locations_txt_path
+        )
+        with ai_response_lock:
+            ai_response = result
+    except SystemExit:
+        # Re-raise SystemExit to propagate to main thread
+        logger.critical(
+            "API error occurred in background thread - propagating exit")
+        sys.exit(1)
+    except Exception as e:
+        logger.error(f"Unhandled exception in AI processing thread: {e}")
+        logger.debug("", exc_info=True)
+        with ai_response_lock:
+            ai_response = None
+        # Also exit the application on unhandled exceptions
+        sys.exit(1)
 
 
 def take_screenshot_and_extract_text(device, filename):
