@@ -14,6 +14,9 @@ Current Implementation:
        - "Try changing your filters so more people match your criteria - or check again later!"
        - "Change filters"
        - "Review skipped profiles"
+       - "You're out of free likes for today"
+       - "You're out of free"
+       - "likes for today"
      * Uses OCR with 0.8 similarity threshold
      * Saves screenshot of end message for verification
      * Creates visual debug overlay showing matched text

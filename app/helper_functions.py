@@ -1804,7 +1804,10 @@ def check_for_end_of_profiles(device, profile_num):
         "You've seen everyone for now",
         "Try changing your filters so more people match your criteria - or check again later!",
         "Change filters",
-        "Review skipped profiles"
+        "Review skipped profiles",
+        "You're out of free likes for today",
+        "You're out of free",
+        "likes for today"
     ]
 
     # Check each paragraph against each message
