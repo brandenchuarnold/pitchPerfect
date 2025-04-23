@@ -1282,8 +1282,7 @@ def save_profile_results(profile_num, screenshots, ai_response):
         desktop_dest_path = os.path.join(desktop_screenshots_dir, filename)
         shutil.copy2(screenshot, desktop_dest_path)
 
-    # Save AI response as JSON with timestamp in both locations
-    response_path = os.path.join(profile_dir, "response.json")
+    # Save AI response as JSON with timestamp, but only to desktop
     desktop_response_path = os.path.join(desktop_profile_dir, "response.json")
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -1291,16 +1290,13 @@ def save_profile_results(profile_num, screenshots, ai_response):
     response_data = ai_response if ai_response is not None else {}
     response_data['timestamp'] = timestamp
 
-    # Save to container results directory
-    with open(response_path, 'w') as f:
-        json.dump(response_data, f, indent=2)
-
-    # Also save to desktop directory
+    # Save only to desktop directory
     with open(desktop_response_path, 'w') as f:
         json.dump(response_data, f, indent=2)
 
-    logger.info(f"Results saved to container path: {profile_dir}")
-    logger.info(f"Results also saved to desktop path: {desktop_profile_dir}")
+    logger.info(f"Screenshots saved to container path: {profile_dir}")
+    logger.info(
+        f"Results and screenshots saved to desktop path: {desktop_profile_dir}")
 
     return profile_dir
 
