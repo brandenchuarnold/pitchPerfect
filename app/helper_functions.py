@@ -887,6 +887,28 @@ Return the chosen prompt, response, your conversation starter, and the screensho
     try:
         # Make the API call to Claude
         logger.info("Making API call to Claude...")
+
+        # Create a sanitized version of messages for logging by replacing base64 data with '[BASE64_DATA]'
+        sanitized_messages = []
+        for msg in messages:
+            sanitized_msg = msg.copy()
+            sanitized_content = []
+            for content_item in msg['content']:
+                if content_item.get('type') == 'image' and 'data' in content_item.get('source', {}):
+                    # Create a copy with truncated base64 data
+                    sanitized_item = content_item.copy()
+                    sanitized_source = sanitized_item['source'].copy()
+                    sanitized_source['data'] = '[BASE64_DATA]'
+                    sanitized_item['source'] = sanitized_source
+                    sanitized_content.append(sanitized_item)
+                else:
+                    sanitized_content.append(content_item)
+            sanitized_msg['content'] = sanitized_content
+            sanitized_messages.append(sanitized_msg)
+
+        # Log the sanitized messages
+        logger.debug(f"Request payload (sanitized): {sanitized_messages}")
+
         response = client.messages.create(
             model="claude-3-7-sonnet-latest",
             max_tokens=1000,
@@ -936,6 +958,108 @@ Return the chosen prompt, response, your conversation starter, and the screensho
         return None
 
 
+def find_prompt_response_match(screenshot_path, target_prompt, target_response, profile_num, suffix=""):
+    """Find prompt or response match in a screenshot.
+
+    Args:
+        screenshot_path: Path to the screenshot image
+        target_prompt: The prompt text to look for
+        target_response: The response text to look for
+        profile_num: Current profile number for debugging
+        suffix: Suffix for debug image filename (e.g. "_up" for scrolled up screenshot)
+
+    Returns:
+        tuple: (best_match, tap_coordinates, visualization_path) where:
+            - best_match: The paragraph object that matched, or None if no match
+            - tap_coordinates: (x, y) coordinates to tap if found, None if not found
+            - visualization_path: Path to the created visualization image
+    """
+    # Extract text and group into paragraphs
+    boxes = extract_text_from_image_with_boxes(screenshot_path)
+    if not boxes:
+        logger.warning(f"No text boxes found in screenshot{suffix}")
+        return None, None, None
+
+    lines = group_boxes_into_lines(boxes)
+    paragraphs = group_lines_into_paragraphs(lines)
+
+    # Try to find the target prompt with high confidence
+    logger.debug(f"\nComparing target prompt against OCR paragraphs{suffix}:")
+    logger.debug(f"Target prompt: '{target_prompt}'")
+    logger.debug("\nOCR paragraphs found:")
+
+    best_prompt_match = None
+    best_prompt_ratio = 0.0
+    best_response_match = None
+    best_response_ratio = 0.0
+
+    for i, para in enumerate(paragraphs):
+        # Check for prompt match
+        is_prompt_match, prompt_ratio, matched_text = fuzzy_match_text(
+            target_prompt, para['text'], threshold=0.8)
+        logger.debug(f"Paragraph {i+1}:")
+        logger.debug(f"  Text: '{para['text']}'")
+        logger.debug(f"  Prompt match ratio: {prompt_ratio:.2f}")
+
+        # Also check for response match with lower threshold
+        is_response_match, response_ratio, _ = fuzzy_match_text(
+            target_response, para['text'], threshold=0.7)
+        logger.debug(f"  Response match ratio: {response_ratio:.2f}")
+        logger.debug("")
+
+        if is_prompt_match and prompt_ratio > best_prompt_ratio:
+            best_prompt_match = para
+            best_prompt_ratio = prompt_ratio
+        elif is_response_match and response_ratio > best_response_ratio:
+            best_response_match = para
+            best_response_ratio = response_ratio
+
+    # Use prompt match if found, otherwise use response match
+    best_match = best_prompt_match if best_prompt_match else best_response_match
+    visualization_path = f"images/profile_{profile_num}_prompt_detection{suffix}_visual.png"
+
+    if best_match:
+        match_type = 'prompt' if best_prompt_match else 'response'
+        match_ratio = max(best_prompt_ratio, best_response_ratio)
+        logger.info(
+            f"Found {match_type} match{suffix} with ratio {match_ratio:.2f}")
+
+        # Calculate tap coordinates (center of the paragraph)
+        boxes_match = best_match['boxes']
+        min_x = min(box['box'][0] for box in boxes_match)
+        max_x = max(box['box'][0] + box['box'][2] for box in boxes_match)
+        min_y = min(box['box'][1] for box in boxes_match)
+        max_y = max(box['box'][1] + box['box'][3] for box in boxes_match)
+
+        tap_x = (min_x + max_x) // 2
+        tap_y = (min_y + max_y) // 2
+
+        # Create visualization with tap target
+        create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=visualization_path,
+            tap_target=(tap_x, tap_y)
+        )
+
+        return best_match, (tap_x, tap_y), visualization_path
+    else:
+        logger.warning(
+            f"No matching prompt or response found in screenshot{suffix}")
+        # Create visualization without tap target
+        create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=visualization_path
+        )
+
+        return None, None, visualization_path
+
+
 def detect_prompt_in_screenshot(device, target_prompt, target_response, screenshot_index, profile_num):
     """Detect and visualize the target prompt or response in a screenshot.
 
@@ -956,118 +1080,72 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
         screenshot_path = capture_screenshot(
             device, f"profile_{profile_num}_prompt_detection")
 
-        # Extract text and group into paragraphs
-        boxes = extract_text_from_image_with_boxes(screenshot_path)
-        if not boxes:
-            logger.warning("No text boxes found in screenshot")
-            return False, None
+        # Check for match in current screenshot
+        best_match, tap_coordinates, _ = find_prompt_response_match(
+            screenshot_path, target_prompt, target_response, profile_num)
 
-        lines = group_boxes_into_lines(boxes)
-        paragraphs = group_lines_into_paragraphs(lines)
-
-        # First try to find the target prompt with high confidence
-        logger.debug("\nComparing target prompt against OCR paragraphs:")
-        logger.debug(f"Target prompt: '{target_prompt}'")
-        logger.debug("\nOCR paragraphs found:")
-
-        best_prompt_match = None
-        best_prompt_ratio = 0.0
-        best_response_match = None
-        best_response_ratio = 0.0
-
-        for i, para in enumerate(paragraphs):
-            # Check for prompt match
-            is_prompt_match, prompt_ratio, matched_text = fuzzy_match_text(
-                target_prompt, para['text'], threshold=0.8)
-            logger.debug(f"Paragraph {i+1}:")
-            logger.debug(f"  Text: '{para['text']}'")
-            logger.debug(f"  Prompt match ratio: {prompt_ratio:.2f}")
-
-            # Also check for response match with lower threshold
-            is_response_match, response_ratio, _ = fuzzy_match_text(
-                target_response, para['text'], threshold=0.7)
-            logger.debug(f"  Response match ratio: {response_ratio:.2f}")
-            logger.debug("")
-
-            if is_prompt_match and prompt_ratio > best_prompt_ratio:
-                best_prompt_match = para
-                best_prompt_ratio = prompt_ratio
-            elif is_response_match and response_ratio > best_response_ratio:
-                best_response_match = para
-                best_response_ratio = response_ratio
-
-        # Use prompt match if found, otherwise use response match
-        best_match = best_prompt_match if best_prompt_match else best_response_match
-        if best_match:
-            match_type = 'prompt' if best_prompt_match else 'response'
-            match_ratio = max(best_prompt_ratio, best_response_ratio)
-            logger.info(
-                f"Found {match_type} match with ratio {match_ratio:.2f}")
-
-            # Calculate tap coordinates (center of the paragraph)
-            boxes = best_match['boxes']
-            min_x = min(box['box'][0] for box in boxes)
-            max_x = max(box['box'][0] + box['box'][2] for box in boxes)
-            min_y = min(box['box'][1] for box in boxes)
-            max_y = max(box['box'][1] + box['box'][3] for box in boxes)
-
-            tap_x = (min_x + max_x) // 2
-            tap_y = (min_y + max_y) // 2
-
-            # Create visualization with tap target
-            create_visual_debug_overlay(
-                screenshot_path,
-                boxes=boxes,
-                lines=lines,
-                paragraphs=paragraphs,
-                output_path=f"images/profile_{profile_num}_prompt_detection_visual.png",
-                tap_target=(tap_x, tap_y)
-            )
-
+        # If found a match, tap it and return
+        if best_match and tap_coordinates:
+            tap_x, tap_y = tap_coordinates
             # Execute double tap at the calculated coordinates
             tap(device, tap_x, tap_y, double_tap=True)
-            # Increased from 1.0 to 2.0 seconds to wait for response interface to open
+            # Wait for response interface to open
             time.sleep(2.0)
+            return True, tap_coordinates
 
-            return True, (tap_x, tap_y)
+        # If no match found, try scrolling up
+        logger.info("\nAttempting to scroll up once to find prompt/response...")
+        swipe(device, "up")  # Scroll up
+        time.sleep(1)  # Wait for scroll to complete
+
+        # Take another screenshot after scrolling up
+        screenshot_path_up = capture_screenshot(
+            device, f"profile_{profile_num}_prompt_detection_up")
+
+        # Check for match in scrolled up screenshot
+        best_match_up, tap_coordinates_up, _ = find_prompt_response_match(
+            screenshot_path_up, target_prompt, target_response, profile_num, suffix="_up")
+
+        # If found a match after scrolling up, tap it and return
+        if best_match_up and tap_coordinates_up:
+            tap_x, tap_y = tap_coordinates_up
+            # Execute double tap at the calculated coordinates
+            tap(device, tap_x, tap_y, double_tap=True)
+            # Wait for response interface to open
+            time.sleep(2.0)
+            return True, tap_coordinates_up
         else:
-            logger.warning(
-                "No matching prompt or response found in screenshot")
-            # Create visualization without tap target
-            create_visual_debug_overlay(
-                screenshot_path,
-                boxes=boxes,
-                lines=lines,
-                paragraphs=paragraphs,
-                output_path=f"images/profile_{profile_num}_prompt_detection_visual.png"
-            )
+            # Scroll back down to original position
+            logger.info("Scrolling back down to original position...")
+            swipe(device, "down")
+            time.sleep(1)
 
-            # Fallback: Scroll to bottom and double-click center
-            logger.info(
-                "\nFallback: Scrolling to bottom and double-clicking center...")
+        # Fallback: Scroll to bottom and double-click center
+        logger.info(
+            "\nFallback: Scrolling to bottom and double-clicking center...")
 
-            # Calculate remaining scrolls (we've already done screenshot_index scrolls)
-            # 6 is max scrolls (7 screenshots total, 0-6)
-            remaining_scrolls = 6 - screenshot_index
+        # Calculate remaining scrolls (we've already done screenshot_index scrolls)
+        # 6 is max scrolls (7 screenshots total, 0-6)
+        remaining_scrolls = 6 - screenshot_index
 
-            # Scroll the remaining distance to bottom
-            for i in range(remaining_scrolls):
-                logger.info(f"Fallback scroll #{i+1}")
-                swipe(device, "down")
-                time.sleep(1)  # Wait for scroll to complete
+        # Scroll the remaining distance to bottom
+        for i in range(remaining_scrolls):
+            logger.info(f"Fallback scroll #{i+1}")
+            swipe(device, "down")
+            time.sleep(1)  # Wait for scroll to complete
 
-            # Get screen dimensions for center tap
-            width, height = get_screen_resolution(device)
-            center_x = width // 2
-            center_y = height // 2
+        # Get screen dimensions for center tap
+        width, height = get_screen_resolution(device)
+        center_x = width // 2
+        center_y = height // 2
 
-            logger.info(
-                f"Double-clicking center of screen at ({center_x}, {center_y})")
-            tap(device, center_x, center_y, double_tap=True)
-            time.sleep(1)  # Wait for response interface to open
+        logger.info(
+            f"Double-clicking center of screen at ({center_x}, {center_y})")
+        tap(device, center_x, center_y, double_tap=True)
+        time.sleep(1)  # Wait for response interface to open
 
-            # Return True since we executed the fallback
-            return True, (center_x, center_y)
+        # Return True since we executed the fallback
+        return True, (center_x, center_y)
 
     except Exception as e:
         logger.error(f"Error in detect_prompt_in_screenshot: {e}")

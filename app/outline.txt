@@ -26,7 +26,7 @@ Current Implementation:
      * Dislikes profile when target reached
    
    - Profile Analysis:
-     * Takes 6 screenshots while scrolling down
+     * Takes 7 screenshots while scrolling down (initial + 6 scrolls)
      * Processes screenshots with AI in separate thread
      * Scrolls back to top while AI processes
      * Waits for AI response
@@ -57,78 +57,108 @@ Current Implementation:
        - results/profile_X/screenshots/ - Contains all screenshots
        - results/profile_X/response.json - Contains AI response and timestamp
      * Duplicates results in desktop accessible location:
-       - /app/desktop/PitchPerfect_Results/profile_X/
+       - /app/desktop/PitchPerfect_Results_{TIMESTAMP}/profile_X/
      * Saves results for every profile, regardless of outcome
      * Includes timestamp with each response
      * Maintains original screenshot files in images/ directory
 
-2. Screenshot Capture:
-   - Takes 6 screenshots total
-   - Uses consistent 68% scroll distance
-   - Captures full profile content
+2. Screenshot Capture and Analysis:
+   - Takes 7 screenshots total (initial + 6 scrolls)
+   - Uses consistent 68% scroll distance for reliability
+   - Captures full profile content in sequential screenshots
    - Saves as profile_{count}_part{i}.png
-   - Includes visualization overlays for debugging
+   - Creates visualization overlays for debugging
+   - Uses OCR with pytesseract to extract text from images
+   - Implements visual debug overlays with boxes, lines, and paragraphs
+   - Groups text into logical lines and paragraphs based on spatial proximity
 
-3. AI Integration:
+3. Prompt Detection Improvements:
+   - Enhanced OCR-based text detection with fuzzy matching
+   - Multi-step prompt location strategy:
+     * Checks initial screenshot for prompt
+     * Scrolls up once to look for prompt if not found initially
+     * Scrolls back to original position if not found after scrolling up
+     * Falls back to center-screen tap if prompt cannot be found
+   - Implements visualization for each detection attempt
+   - Refactored to use modular helper function for prompt matching logic
+   - Sanitizes debug logs to prevent base64 data from cluttering output
+
+4. AI Integration:
    - System Prompt:
-     * Profile structure guide
-     * Analysis requirements
-     * Response generation rules
-     * Trait detection for filtering undesirable profiles
+     * Profile structure guide with 7 screenshots analysis
+     * Detailed trait detection for filtering undesirable profiles
+     * 3-step conversation starter generation guideline
+     * Quality metrics for ranking conversation starters
    
    - Response Processing:
      * Parses JSON from text response by extracting between first { and last }
      * Returns JSON with:
        - prompt: Exact prompt text
        - response: User's response
-       - conversation_starter: Generated response
-       - screenshot_index: Location of prompt
+       - conversation_starter: Generated conversation starter
+       - screenshot_index: Location of prompt (0-6)
      * Handles empty or error responses gracefully
      * Returns empty response for profiles with undesirable traits
    
    - Prompt Matching:
      * Matches against authoritative prompts.txt
      * Requires 0.8 confidence threshold
-     * Uses fuzzy matching for flexibility
+     * Uses fuzzy matching with similarity ratio calculation
+     * Logs all potential matches for debugging
+     * Reports best match with confidence score
 
-4. Prompt Location and Response:
+5. Prompt Location and Response:
    - Location Strategy:
-     * Scrolls to target screenshot
+     * Scrolls to target screenshot indicated by AI
      * Three attempts to find prompt:
        1. On target screenshot
-       2. One screen up
-       3. Back on target screenshot
-     * Falls back to bottom if all attempts fail
+       2. One screen up from target
+       3. Back on target screenshot after scrolling down
+     * Additional scroll-up-and-check in the OCR detection phase
+     * Falls back to bottom-of-profile approach if all attempts fail
    
    - Response Flow:
-     * Finds "Add a comment" box
+     * Finds "Add a comment" box using OCR
      * Clears any existing text with backspace keys
-     * Types response with proper timing
-     * Closes keyboard
-     * Finds "Send Priority Like" button
+     * Types AI-generated conversation starter
+     * Closes keyboard using back key
+     * Finds "Send Priority Like" button using OCR
      * Clicks to send response
+     * Visually documents each step with debugging overlays
 
-5. Error Handling:
+6. Error Handling and Logging:
+   - Comprehensive logging:
+     * Detailed debug logging to file with timestamps
+     * Console output for important events
+     * Visual overlays saved for debugging
+     * Sanitized API payloads to prevent log clutter
+   
+   - Error recovery:
+     * Try-except blocks throughout the codebase
+     * Fallback strategies for most failure points
+     * Graceful degradation when optimal path fails
+     * Detailed error logging with tracebacks at debug level
+   
    - Profile Filtering:
-     * Empty AI responses
-     * Low confidence prompt matches
-     * Failed prompt location
-     * Failed response sending
-     * Profiles with undesirable traits (weight, filters, masculine features)
-   
-   - Recovery Actions:
-     * Dislikes profile on failure
-     * Moves to next profile
-     * Maintains interaction counter
+     * Multiple layers of validation
+     * Consistent handling of rejection cases
+     * Reset interaction counters on rejection
 
-6. Debugging and Visualization:
-   - Screenshot Analysis:
-     * Text box detection
-     * Line and paragraph grouping
-     * Visual overlays for debugging
-   
-   - Logging:
-     * Scroll positions
-     * Match confidence scores
-     * Success/failure states
-     * Interaction counts
+7. Multithreading:
+   - Parallel processing:
+     * Screenshot capture and scrolling in main thread
+     * AI processing in background thread
+     * Thread synchronization with join()
+     * Thread-safe global variable access with locks
+     * Efficient use of waiting time during AI processing
+
+8. Configuration:
+   - Environment variables for device connection
+   - Random targeting for interaction counts
+   - Timestamp-based result directories
+   - Authoritative reference files:
+     * format.txt - Profile structure information
+     * prompts.txt - Available Hinge prompts
+     * captions.txt - Possible photo captions
+     * polls.txt - Available poll options
+     * locations.txt - Madison, WI establishments
