@@ -20,6 +20,64 @@ client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 # Generate a unique timestamp for this run
 RUN_TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
 
+# Custom log filter to truncate long base64 strings
+
+
+class Base64TruncateFilter(logging.Filter):
+    def __init__(self, max_length=200):
+        super().__init__()
+        self.max_length = max_length
+
+    def filter(self, record):
+        if hasattr(record, 'msg') and isinstance(record.msg, str):
+            # Check if this looks like a base64 string or contains one
+            if 'base64' in record.msg.lower() or ';base64,' in record.msg:
+                # Find base64 data and truncate it
+                record.msg = self._truncate_base64(record.msg)
+            elif len(record.msg) > self.max_length * 2:
+                # Also truncate other very long messages
+                record.msg = record.msg[:self.max_length] + \
+                    f"... [truncated, total length: {len(record.msg)}]"
+
+        return True
+
+    def _truncate_base64(self, message):
+        # For strings like "data:image/png;base64,iVBORw0K..." or "data: iVBORw0K..."
+        parts = []
+        current_part = ""
+        in_base64 = False
+        base64_indicators = ['iVBOR', 'data:image', ';base64,']
+
+        for word in message.split():
+            is_base64_part = any(ind in word for ind in base64_indicators)
+
+            if is_base64_part:
+                in_base64 = True
+                if len(word) > self.max_length:
+                    part = word[:self.max_length] + \
+                        f"... [base64 data truncated, length: {len(word)}]"
+                    parts.append(part)
+                    current_part = ""
+                    in_base64 = False
+                    continue
+
+            if in_base64:
+                if len(word) > self.max_length:
+                    parts.append(current_part)
+                    parts.append(
+                        f"[base64 data truncated, length: {len(word)}]")
+                    current_part = ""
+                    in_base64 = False
+                else:
+                    current_part += " " + word
+            else:
+                current_part += " " + word
+
+        if current_part:
+            parts.append(current_part)
+
+        return " ".join(parts).strip()
+
 # Set up logging to file and console
 
 
@@ -58,6 +116,11 @@ def setup_logging():
     # Add the handlers to the logger
     logger.addHandler(desktop_file_handler)
     logger.addHandler(console_handler)
+
+    # Add the base64 truncate filter to both handlers
+    base64_filter = Base64TruncateFilter(max_length=100)
+    desktop_file_handler.addFilter(base64_filter)
+    console_handler.addFilter(base64_filter)
 
     logging.info(f"Logging initialized. Log file: {desktop_log_file}")
 
