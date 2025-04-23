@@ -1,0 +1,110 @@
+BUMBLE PROFILE SCREENSHOT FORMAT
+
+GENERAL LAYOUT:
+- Header Section: Contains Bumble logo, time, and status icons
+- Profile Main Section: Contains all profile content
+- Bottom Navigation: Profile, Discover, People, Liked You, Chats
+
+SCREENSHOT 1 (Initial View):
+1. Profile Identification
+   - Name (Bottom of screen): First name, age (e.g., "Hunter, 30")
+   - Pronouns (if provided): appears as an icon with text (e.g., "she/her")
+   - Star button on bottom right to superlike the profile
+   - Heart button on bottom left to like the profile
+
+2. Main Profile Photo
+   - Takes up majority of the screen
+   - Appears above the name/age information
+   - Share button (upper right) allows sharing the profile
+
+SCREENSHOTS 2+ (Subsequent Views):
+As the user scrolls down, they'll encounter the following sections (always in this exact order):
+
+1. About Me Section
+   - Header "About me"
+   - Free text paragraph written by the user
+
+2. Basic Information/Attributes
+   - Displayed as pills/chips with icons and text
+   - Examples:
+     * Height (ruler icon): "6' 0""
+     * Education (graduation cap): "Undergraduate degree"
+     * Drinking (wine glass): "Sometimes" 
+     * Smoking (no icon): "No"
+     * Gender identity (person icon): "Woman"
+     * Children status (baby carriage): "Open to kids"
+     * Children (baby bottle): "Don't have kids"
+     * Politics (building icon): "Liberal"
+     * Religion (temple icon): "Agnostic"
+
+3. "I'm looking for" Section
+   - Header "I'm looking for"
+   - Contains relationship goals and desired qualities
+   - Displayed as pills/chips with icon and text
+   - Examples:
+     * Search icon: "Fun, casual dates"
+     * Search icon: "A long-term relationship"
+     * Text only: "Empathy"
+     * Text only: "Humor"
+     * Text only: "Kindness"
+
+4. "My interests" Section
+   - Header "My interests"
+   - Displayed as horizontal row of pills/chips with icons and text
+   - May highlight certain interests with "standout" designation
+   - Examples:
+     * "Concerts" with ticket icon
+     * "Yoga" with yoga pose icon
+     * "Coffee" with coffee cup icon
+     * "Foodie" with fork/knife icon
+     * "Dogs" with dog icon
+
+5. Custom Statements
+   - Free-form statements with responses
+   - Examples:
+     * "I know the best spot in town for espresso martinis."
+     * "I get way too excited about seeing dogs out in public."
+     * "What I'd really like to find is someone to go to concerts with."
+   - Heart button below statement to send a compliment
+
+6. "My causes and communities" Section
+   - Header "My causes and communities"
+   - Lists social causes the user supports
+   - Displayed as pills/chips with text only
+   - Examples:
+     * "LGBTQ+ rights"
+     * "Reproductive rights"
+
+7. "My location" Section
+   - Header "My location"
+   - Location pin icon with city name
+   - Example: "Madison"
+
+8. Additional Photos
+   - Multiple photos throughout the profile
+   - Heart button on each photo to send a compliment
+   - Star button on bottom right of profile to superlike
+   - X (dislike) and check mark (like) buttons at bottom
+
+INTERACTION ELEMENTS:
+1. Heart Button (Yellow circle with black heart)
+   - Appears below prompts/responses at a fixed distance below the bottom of the response and always at the same distance from the left of the screen
+   or on bottom-left of photos always a fixed distance above the bottom of the photo and always at the same distance from the left of the screen
+   - Used to "Send a Compliment" or react to specific content
+   - Limited to 2 per week for free users
+
+2. Navigation
+   - Bottom bar with 5 icons: Profile, Discover, People, Liked You, Chats
+   - X button to reject profile
+   - Star button to superlike profile
+   - Check mark to like profile
+
+PROFILE LIMITS:
+- 1-6 photos per profile
+- 0-3 custom statements/prompts (all optional)
+- Basic information fields are optional except name/age
+- Interests are optional (0-5 selections allowed)
+- Causes are optional (0-3)
+
+SCROLLING BEHAVIOR:
+- 8 screenshots needed to capture full profile

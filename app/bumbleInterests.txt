@@ -1,0 +1,9 @@
+INTERESTS:
+
+- Concerts (Ticket icon)
+- Yoga (Person in yoga pose icon)
+- Coffee (Coffee cup icon)
+- Foodie (Fork and knife icon)
+- Dogs (Dog icon)
+
+Note: Users can select 0-5 interests and choose 0-1 to be a "standout" interest. 

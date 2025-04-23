@@ -1,0 +1,211 @@
+Bumble Dating App Automation Bot - Development Outline
+
+Current Implementation:
+
+1. Profile Processing Flow:
+   - Profile Limit:
+     * Maximum of 40 profiles processed
+     * Exits gracefully when limit reached
+     * Early exit if end of profiles detected
+   
+   - Early Stopping:
+     * Checks for any of these messages before processing each profile:
+       - "You've seen everyone for now"
+       - "Try changing your filters so more people match your criteria - or check again later!"
+       - "Change filters"
+       - "Review skipped profiles"
+     * Uses OCR with 0.8 similarity threshold
+     * Saves screenshot of end message for verification
+     * Creates visual debug overlay showing matched text
+     * Exits gracefully with specific end message
+   
+   - Conversation Starter Quota:
+     * Maximum of 2 conversation starters per week
+     * Resets every Sunday at 6pm Eastern Time
+     * Tracks usage in persistent storage
+     * Only processes prompt/response if quota is not reached
+     * Still evaluates desirability regardless of quota
+   
+   - Target Interactions:
+     * Random target between 4-6 successful interactions
+     * Resets after reaching target
+     * Resets when disliking for any reason (undesirable, low confidence, etc.)
+     * Dislikes profile when target reached
+   
+   - Profile Analysis:
+     * Takes 8 screenshots while scrolling down (initial + 7 scrolls)
+     * Processes screenshots with AI in separate thread
+     * Scrolls back to top while AI processes
+     * Waits for AI response
+   
+   - Profile Filtering:
+     * Dislikes if AI returns empty response
+     * Dislikes if profile has no prompts/statements to respond to (when compliment quota available)
+     * Dislikes if prompt match confidence < 0.8
+     * Dislikes if prompt not found after 3 attempts
+     * Resets interaction counter on any dislike
+     * AI automatically filters profiles with these undesirable traits:
+       - Body Type Analysis:
+         · Visible excess weight or body fat
+         · Body width appears wider than typical fit/skinny woman
+         · Visible stomach protrusion in any photo
+         · Face shape is rounder with less defined jawline
+         · Only face/high angle photos (hiding body)
+       - Low Quality Photos:
+         · Majority of photos are blurry/pixelated
+         · Heavy filters or editing in majority of photos
+         · Screenshots or reposts in multiple photos
+       - Male Features:
+         · Adam's apple visible in the throat
+         · Facial hair (mustache or beard)
+         · Flat chest with no boob growth visible
+   
+   - Results Storage:
+     * Saves all profile data in organized directory structure:
+       - results/profile_X/screenshots/ - Contains all screenshots
+       - results/profile_X/response.json - Contains AI response and timestamp
+     * Duplicates results in desktop accessible location:
+       - /app/desktop/PitchPerfect_Results_{TIMESTAMP}/profile_X/
+     * Saves results for every profile, regardless of outcome
+     * Includes timestamp with each response
+     * Maintains original screenshot files in images/ directory
+
+2. Screenshot Capture and Analysis:
+   - Takes 8 screenshots total (initial + 7 scrolls)
+   - Uses consistent 68% scroll distance for reliability
+   - Captures full profile content in sequential screenshots
+   - Saves as profile_{count}_part{i}.png
+   - Creates visualization overlays for debugging
+   - Uses OCR with pytesseract to extract text from images
+   - Implements visual debug overlays with boxes, lines, and paragraphs
+   - Groups text into logical lines and paragraphs based on spatial proximity
+
+3. Prompt Detection Improvements:
+   - Enhanced OCR-based text detection with fuzzy matching
+   - Multi-step prompt location strategy:
+     * Checks initial screenshot for prompt
+     * Scrolls up once to look for prompt if not found initially
+     * Scrolls back to original position if not found after scrolling up
+     * Falls back to center-screen tap if prompt cannot be found
+   - Implements visualization for each detection attempt
+   - Refactored to use modular helper function for prompt matching logic
+   - Sanitizes debug logs to prevent base64 data from cluttering output
+
+4. AI Integration:
+   - Bumble-Specific Processing Flow:
+     * Always evaluates profile desirability regardless of compliment quota
+     * Only generates conversation starters if:
+       1. Profile is desirable
+       2. Compliment quota is available 
+       3. Profile contains at least one prompt/statement to respond to
+     * Uses dedicated function separate from Hinge functionality
+   
+   - System Prompt:
+     * Profile structure guide with 8 screenshots analysis
+     * Detailed trait detection for filtering undesirable profiles
+     * 3-step conversation starter generation guideline (when applicable)
+     * Quality metrics for ranking conversation starters (when applicable)
+     * Awareness of Bumble's optional prompts system
+   
+   - Response Processing:
+     * Returns JSON with different formats based on conditions:
+       - Undesirable profile:
+         · prompt: ""
+         · response: ""
+         · conversation_starter: ""
+         · screenshot_index: -1
+       - Desirable profile, no quota available:
+         · prompt: ""
+         · response: ""
+         · conversation_starter: ""
+         · screenshot_index: 0
+       - Desirable profile, quota available, prompt found:
+         · prompt: Exact prompt text
+         · response: User's response
+         · conversation_starter: Generated conversation starter
+         · screenshot_index: Location of prompt (0-7)
+       - Desirable profile, quota available, no prompt found:
+         · prompt: ""
+         · response: ""
+         · conversation_starter: ""
+         · screenshot_index: 0
+     * Handles error cases gracefully
+   
+   - Prompt Matching:
+     * Matches against authoritative bumblePrompts.txt
+     * Requires 0.8 confidence threshold
+     * Uses fuzzy matching with similarity ratio calculation
+     * Logs all potential matches for debugging
+     * Reports best match with confidence score
+
+5. Prompt Location and Response:
+   - Location Strategy:
+     * Scrolls to target screenshot indicated by AI
+     * Three attempts to find prompt:
+       1. On target screenshot
+       2. One screen up from target
+       3. Back on target screenshot after scrolling down
+     * Additional scroll-up-and-check in the OCR detection phase
+     * Falls back to bottom-of-profile approach if all attempts fail
+   
+   - Response Flow:
+     * Locates the heart button below the prompt/statement
+     * Heart button is aligned with the left edge of the prompt
+     * Fixed Y distance below the end of the prompt text
+     * Taps heart button to open "Send a Compliment" interface
+     * Types AI-generated conversation starter
+     * Closes keyboard using back key
+     * Finds "Send" button using OCR
+     * Clicks to send response
+     * Visually documents each step with debugging overlays
+     * Updates conversation starter quota
+
+6. Quota Management:
+   - Persistent Storage:
+     * Maintains record of conversation starters used
+     * Tracks timestamps of each usage
+     * Stores in JSON format with last reset date
+     * Refreshes quota count every Sunday at 6pm ET
+   
+   - Quota Check:
+     * Performs check before requesting conversation starter from AI
+     * Still allows desirability evaluation even when quota exhausted
+     * Updates usage count after successful send
+     * Provides logging of remaining quota
+
+7. Error Handling and Logging:
+   - Comprehensive logging:
+     * Detailed debug logging to file with timestamps
+     * Console output for important events
+     * Visual overlays saved for debugging
+     * Sanitized API payloads to prevent log clutter
+   
+   - Error recovery:
+     * Try-except blocks throughout the codebase
+     * Fallback strategies for most failure points
+     * Graceful degradation when optimal path fails
+     * Detailed error logging with tracebacks at debug level
+   
+   - Profile Filtering:
+     * Multiple layers of validation
+     * Consistent handling of rejection cases
+     * Reset interaction counters on rejection
+
+8. Multithreading:
+   - Parallel processing:
+     * Screenshot capture and scrolling in main thread
+     * AI processing in background thread
+     * Thread synchronization with join()
+     * Thread-safe global variable access with locks
+     * Efficient use of waiting time during AI processing
+
+9. Configuration:
+   - Environment variables for device connection
+   - Random targeting for interaction counts
+   - Timestamp-based result directories
+   - Authoritative reference files:
+     * bumbleFormat.txt - Profile structure information
+     * bumblePrompts.txt - Available Bumble statements/prompts
+     * bumbleMetadata.txt - Profile attribute categories and options
+     * bumbleCauses.txt - List of possible causes and communities
+     * bumbleInterests.txt - Available interest options 

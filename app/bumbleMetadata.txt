@@ -1,0 +1,58 @@
+BASIC INFORMATION CATEGORIES:
+
+Height (Ruler icon):
+- Height in feet and inches (e.g., "6' 0"")
+
+Education (Graduation cap icon):
+- Undergraduate degree
+- Graduate degree
+- High school
+- Trade/technical school
+- Some college
+
+Drinking (Wine glass icon):
+- Yes
+- Sometimes
+- No
+
+Smoking (No smoking icon):
+- Yes 
+- Sometimes
+- No
+
+Gender (Person icon):
+- Woman
+- Man
+- Nonbinary
+- More gender options...
+
+Children (Baby carriage icon):
+- Open to kids
+- Want kids
+- Don't want kids
+
+Family plans (Baby icon):
+- Don't have kids
+- Have kids
+
+Politics (Capitol building icon):
+- Liberal
+- Moderate
+- Conservative
+- Apolitical
+- Other
+
+Religion (Temple icon):
+- Agnostic
+- Atheist
+- Buddhist
+- Catholic
+- Christian
+- Hindu
+- Jewish
+- Muslim
+- Spiritual
+- Other
+
+Location (Map pin icon):
+- City name (e.g., "Madison") 
