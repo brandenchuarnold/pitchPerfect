@@ -257,7 +257,7 @@ def main():
         profile_num = 1
         successful_interactions = 0
         target_interactions = random.randint(4, 6)
-        max_profiles = 40  # Maximum number of profiles to process
+        max_profiles = 4  # Maximum number of profiles to process
         logger.info(f"Initial target interactions: {target_interactions}")
         logger.info(f"Maximum profiles to process: {max_profiles}")
 
@@ -345,12 +345,9 @@ def main():
                     f"Low confidence prompt match ({confidence:.2f})")
                 logger.warning(f"Original: {ai_response['prompt']}")
                 logger.warning(f"Matched: {matched_prompt}")
-                dislike_profile(device)
-                successful_interactions = 0  # Reset counter when disliking for any reason
-                target_interactions = random.randint(
-                    4, 6)  # Generate new target
-                profile_num += 1
-                continue
+                logger.info(
+                    "Exiting program due to low confidence prompt match")
+                sys.exit(1)
 
             # Scroll to the screenshot containing the prompt
             scroll_to_screenshot(device, ai_response['screenshot_index'])
@@ -398,12 +395,9 @@ def main():
                     if not found:
                         logger.error(
                             "Failed to find prompt after all attempts")
-                        dislike_profile(device)
-                        successful_interactions = 0  # Reset counter when disliking for any reason
-                        target_interactions = random.randint(
-                            4, 6)  # Generate new target
-                        profile_num += 1
-                        continue
+                        logger.info(
+                            "Exiting program due to prompt detection failure")
+                        sys.exit(1)
 
             # Send the response
             success = send_response_to_story(
@@ -411,10 +405,8 @@ def main():
 
             if not success:
                 logger.error("Failed to send response")
-                dislike_profile(device)
-                successful_interactions = 0  # Reset counter when disliking for any reason
-                target_interactions = random.randint(
-                    4, 6)  # Generate new target
+                logger.info("Exiting program due to failure to send response")
+                sys.exit(1)
             else:
                 # Increment successful interactions counter
                 successful_interactions += 1
