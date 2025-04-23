@@ -792,9 +792,12 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
           - Suggest something fun and specific that connects to her interests
           - CRITICAL: When suggesting a specific location in Madison, Wisconsin:
              * First check the locations.txt file to see if the type of establishment exists in Madison
-             * If suggesting a specific named establishment (e.g., "Barriques", "Eno Vino"), ONLY use establishments listed in locations.txt
+             * If suggesting a specific named establishment (e.g., "Barriques", "Eno Vino"), ONLY use establishments listed in locations.txt - READ THE ENTIRE LIST CAREFULLY
              * If the specific type of establishment isn't in locations.txt, just use the generic type (e.g., "a cafe downtown" instead of naming one)
              * NEVER suggest a specific named establishment that isn't in locations.txt
+             * ONLY mention establishments that are EXACTLY as they appear in locations.txt - no similar names or variations
+             * Double-check the spelling and exact name of any establishment you mention
+             * Do not suggest places that have permanently closed - if you're not 100% certain a place is still open, use a generic location instead
              * It's always safe to suggest general areas like "downtown", "near the Capitol", or "by the lake" without naming a specific establishment
           - CRITICAL: The suggested activity MUST be suitable for a date context:
              * Takes between 30-90 minutes (half hour to hour and a half)
@@ -911,14 +914,29 @@ def generate_joke_from_screenshots(screenshots, format_txt_path, prompts_txt_pat
        - Creates positive imagery or stories in her mind
        - Requires minimal mental effort to respond
        - Has the highest-ranked simulated conversation
-       - CRITICAL: If a starter suggests a specific named establishment (e.g., "Barriques", "Eno Vino"), verify it exists in locations.txt
-       - IMMEDIATELY DISQUALIFY any starter that mentions a specific named establishment not found in locations.txt
+       - CRITICAL: Location validation - FOLLOW THESE STEPS CAREFULLY:
+          * Carefully scan your conversation starter for ANY specific venue or business name (e.g., "Brocach", "Barriques", "Eno Vino")
+          * If you find one, check if it appears EXACTLY as written in the locations.txt file
+          * Search through the ENTIRE locations.txt file - check every category
+          * If the exact name is not in locations.txt, IMMEDIATELY DISQUALIFY this starter
+          * Replace it with a starter that either uses a generic venue type (e.g., "coffee shop downtown") or uses a venue from locations.txt
+          * Do NOT use similar spellings or variations - match EXACTLY what's in locations.txt
+          * This validation is MANDATORY - never return a starter with an unverified location
     2. Note which prompt/response pair of the woman's profile matches the chosen starter
     3. Reference prompts.txt and separate the prompt/response pair into the prompt and the response. Take note of the prompt distinctly from the response.
 
     STEP 10: IDENTIFY SCREENSHOT
     1. Note which screenshot (0-6) contains the prompt/response pair text of the woman's profile that matches the chosen starter
     2. If prompt/response pair is cut off or spans multiple screenshots, note which screenshot contains the majority of the prompt/response pair text
+
+    STEP 11: FINAL VALIDATION CHECK
+    Before returning your result, perform one last critical check:
+    1. Review your conversation_starter one more time
+    2. If it mentions ANY specific venue name:
+       - Verify that this EXACT venue name appears in locations.txt
+       - If it doesn't match EXACTLY (including spelling), modify your starter to use a generic venue type instead
+       - This is your LAST chance to avoid mentioning venues not in locations.txt
+    3. Double-check that your selected starter follows all the guidelines and passes all validation checks
 
     Return the chosen prompt, response, your conversation starter, and the screenshot index in this JSON format exactly. Do not return any other text or comments beyond the JSON.
     {{
