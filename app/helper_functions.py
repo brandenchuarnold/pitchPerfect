@@ -849,7 +849,7 @@ For each story (element), determine what it reveals about the main person:
 CONVERSATION_STARTER_GUIDE = """STEP 7: GENERATE CONVERSATION STARTERS
 For each prompt/response pair:
 1. Use characteristics and stories as context
-2. Create exactly THREE unique conversation starters that follow this three-step approach:
+2. Create exactly THREE unique conversation starters that follow this four-step approach:
    a. First, give a direct, simple acknowledgment that shows you've understood something visible from her profile
       - Focus on concrete, observable things:
         * Physical appearance (only if obvious and tasteful)
@@ -873,12 +873,17 @@ For each prompt/response pair:
       - Keep it straightforward and obvious
       - Make it specific to what you see in her profile
       - The compliment should be something you can point to in a photo or prompt response
-   b. Next, provide a brief connection (5-7 words) between her prompt/response and your suggested date activity
+   b. Second, add her name after the acknowledgment
+      - This personalizes the message and shows you paid attention to her profile
+      - For example: "Nice hiking boots, Sarah." or "Great sunset photo, Jessica."
+      - Always include her name directly after the compliment with a comma
+      - Keep it natural and conversational
+   c. Third, provide a brief connection (5-7 words) between her prompt/response and your suggested date activity
       - Explain why you're suggesting the particular activity
       - Reference something specific from her prompt or response
       - Keep it concise but clear why this activity relates to what she shared
       - This creates context for your suggestion and shows you paid attention
-   c. Finally, suggest a shared activity or experience related to the prompt
+   d. Finally, suggest a shared activity or experience related to the prompt
       - Express that you'd like to share in an activity she mentioned
       - Make it clear you want to participate with her, not just discuss the topic
       - Suggest something fun and specific that connects to her interests
@@ -906,7 +911,7 @@ For each prompt/response pair:
       * Avoids flowery metaphors or dramatic language
       * Never uses marketing-style words like "perfect", "amazing", "journey", "adventure"
       * Shows interest through specificity and shared experiences
-      * Aims for brevity - 8-10 words for part one (acknowledgment), 5-7 words for part two (connection), and 8-10 words for part three (activity suggestion)
+      * Aims for brevity - 8-10 words for part one (acknowledgment), her name for part two, 5-7 words for part three (connection), and 8-10 words for part four (activity suggestion)
       * Easy to respond to over text
       * Creates a pleasant shared experience when possible
 
@@ -921,58 +926,58 @@ For each prompt/response pair:
     GOOD:
     - Prompt: "My Love Language is"
       Response: "Words of affirmation and cheese"
-      Conversation Starter: "Cute beanie in your hiking photo. Cheese lovers unite for snacking. Wine and cheese at Eno Vino?" 
-      (Simple acknowledgment, connection to her interest, date-appropriate shared activity)
+      Conversation Starter: "Cute beanie in your hiking photo, Emma. Cheese lovers unite for snacking. Wine and cheese at Eno Vino?" 
+      (Simple acknowledgment, name, connection to her interest, date-appropriate shared activity)
     - Prompt: "I geek out on"
       Response: "NBA, specifically golden state warriors" 
-      Conversation Starter: "Great smile in your concert photo. Warriors fans need sports bars. Warriors game at Coopers Tavern?" 
-      (Specific acknowledgment, connection explaining why bar, casual viewing activity)
+      Conversation Starter: "Great smile in your concert photo, Jessica. Warriors fans need sports bars. Warriors game at Coopers Tavern?" 
+      (Specific acknowledgment, name, connection explaining why bar, casual viewing activity)
     - Prompt: "Two truths and a lie..."
       Response: "1) I have a scar on my hand from being bitten by a hamster 2) I wrote and directed a short film 
               3) I won a county-wide math competition in school"
-      Conversation Starter: "Nice kayak in your lake photo. Filmmakers deserve coffee breaks. Tell me about your film at Barriques?" 
-      (Visible object acknowledgment, connection to her filmmaking, casual date activity)
+      Conversation Starter: "Nice kayak in your lake photo, Sophia. Filmmakers deserve coffee breaks. Tell me about your film at Barriques?" 
+      (Visible object acknowledgment, name, connection to her filmmaking, casual date activity)
     - Prompt: "I take pride in"
       Response: "my ability to make friends with anyone, anywhere. I can strike up a conversation with a wall."
-      Conversation Starter: "Love your colorful scarf. Social skills shine in cafes. Test your conversation skills at Capitol cafes?" 
-      (Specific compliment, connection to her social ability, fun casual activity)
+      Conversation Starter: "Love your colorful scarf, Olivia. Social skills shine in cafes. Test your conversation skills at Capitol cafes?" 
+      (Specific compliment, name, connection to her social ability, fun casual activity)
     - Prompt: "What I order for the table"
       Response: "Carbs, cheese and wine"
-      Conversation Starter: "Cool sunglasses in your beach photo. Wine pairs with good company. Cheese board at downtown wine bar?" 
-      (Specific visible element, connection to wine interest, specific time-limited activity)
+      Conversation Starter: "Cool sunglasses in your beach photo, Mia. Wine pairs with good company. Cheese board at downtown wine bar?" 
+      (Specific visible element, name, connection to wine interest, specific time-limited activity)
           - More Good Examples:
           * Prompt: "My simple pleasures"
             Response: "Carbs, cheese, and wine"
-            Conversation Starter: "Great earrings in your dinner photo. Carbs and wine need proper venue. Let's enjoy a charcuterie board downtown."
+            Conversation Starter: "Great earrings in your dinner photo, Emily. Carbs and wine need proper venue. Let's enjoy a charcuterie board downtown."
           * Prompt: "The dorkiest thing about me is"
             Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
-            Conversation Starter: "Love your smile in profile pic. History buffs need study breaks. Let's quiz each other over coffee at Barriques."  
+            Conversation Starter: "Love your smile in profile pic, Ashley. History buffs need study breaks. Let's quiz each other over coffee at Barriques."  
           * Prompt: "I geek out on"
             Response: "Recreating dishes from my favorite restaurants"
-            Conversation Starter: "Cool hiking boots in mountain photo. Food recreation deserves audience. Would love to try your dishes sometime."
+            Conversation Starter: "Cool hiking boots in mountain photo, Lauren. Food recreation deserves audience. Would love to try your dishes sometime."
 
     BAD:
     - Prompt: "A random fact I love is"
       Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight. And twilight is a fanfic of 
               My Chemical Romance, and if 9/11 didn't happen, they wouldn't exist. It's weird I know"
-      Conversation Starter: "That's a wild fanfic connection! Pop culture creates unexpected links. What other rabbit holes do you enjoy falling into?" 
+      Conversation Starter: "That's a wild fanfic connection, Kate! Pop culture creates unexpected links. What other rabbit holes do you enjoy falling into?" 
       (Just asks a question instead of suggesting a shared activity)
     - Prompt: "The quickest way to my heart is"
       Response: "Talking over ice cream/coffee"
-      Conversation Starter: "That coffee shop looks cozy. Conversations need the right ambiance. What's your go-to coffee order for good talks?" 
+      Conversation Starter: "That coffee shop looks cozy, Madison. Conversations need the right ambiance. What's your go-to coffee order for good talks?" 
       (Asks about preferences rather than suggesting "Let's meet at that cozy coffee shop in your photo")
     - Prompt: "My biggest date fail"
       Response: "Going swimming in Lake Mendota and then cutting my foot on a piece of metal... 
               the date ended because I had to go to Urgent Care for a tetanus shot 😜"
-      Conversation Starter: "That's a memorable date story. Lake accidents happen to everyone. Do tetanus shots make your top 5 worst dates?" 
+      Conversation Starter: "That's a memorable date story, Rachel. Lake accidents happen to everyone. Do tetanus shots make your top 5 worst dates?" 
       (Asks a question instead of suggesting "Let's try kayaking on Mendota without the injury")
     - Prompt: "My best celebrity impression is..."
       Response: "\"Why hello there,\" in my best Obi-Wan Kenobi voice and my friends hate it."
-      Conversation Starter: "That's a solid Obi-Wan reference. Star Wars fans understand the appeal. Do you have other impressions in your arsenal?" 
+      Conversation Starter: "That's a solid Obi-Wan reference, Sarah. Star Wars fans understand the appeal. Do you have other impressions in your arsenal?" 
       (Asks for more content instead of suggesting "Let's watch Star Wars and trade our best impressions")
     - Prompt: "The dorkiest thing about me is"
       Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
-      BAD Conversation Starter: "Your dedication is impressive. History exams are challenging tasks. How long have you been studying for it?" 
+      BAD Conversation Starter: "Your dedication is impressive, Hannah. History exams are challenging tasks. How long have you been studying for it?" 
       (Just asks a question without offering to help)
       """
 
@@ -1572,6 +1577,10 @@ def send_response_to_story(device, conversation_starter, profile_num):
     Returns:
         bool: True if response was sent successfully, False otherwise
     """
+    # Add delay to ensure UI is fully loaded before looking for comment box
+    logger.info("Waiting 1 second for UI to stabilize...")
+    time.sleep(1.0)
+
     # PHASE 1: Find and click comment box
     logger.info("\nPhase 1: Locating comment box...")
     screenshot_path = capture_screenshot(

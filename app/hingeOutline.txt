@@ -90,7 +90,11 @@ Current Implementation:
    - System Prompt:
      * Profile structure guide with 7 screenshots analysis
      * Detailed trait detection for filtering undesirable profiles
-     * 3-step conversation starter generation guideline
+     * 4-step conversation starter generation guideline:
+       1. Direct acknowledgment of something visible in profile
+       2. Adding woman's name after the acknowledgment for personalization
+       3. Brief connection between her response and date activity
+       4. Specific date activity suggestion related to her interests
      * Quality metrics for ranking conversation starters
    
    - Response Processing:
@@ -121,11 +125,12 @@ Current Implementation:
      * Falls back to bottom-of-profile approach if all attempts fail
    
    - Response Flow:
+     * Waits 1 second for UI to stabilize after prompt is opened
      * Finds "Add a comment" box using OCR
      * Clears any existing text with backspace keys
      * Types AI-generated conversation starter
      * Closes keyboard using back key
-     * Finds "Send Priority Like" button using OCR
+     * Finds "Send Like" button using OCR
      * Clicks to send response
      * Visually documents each step with debugging overlays
 

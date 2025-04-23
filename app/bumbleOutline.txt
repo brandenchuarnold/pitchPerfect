@@ -106,7 +106,11 @@ Current Implementation:
    - System Prompt:
      * Profile structure guide with 8 screenshots analysis
      * Detailed trait detection for filtering undesirable profiles
-     * 3-step conversation starter generation guideline (when applicable)
+     * 4-step conversation starter generation guideline (when applicable):
+       1. Direct acknowledgment of something visible in profile
+       2. Adding woman's name after the acknowledgment for personalization
+       3. Brief connection between her response and date activity
+       4. Specific date activity suggestion related to her interests
      * Quality metrics for ranking conversation starters (when applicable)
      * Awareness of Bumble's optional prompts system
    
