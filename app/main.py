@@ -30,6 +30,11 @@ from helper_functions import (
     save_profile_results,
     check_for_end_of_profiles,
     logger,
+    open_hinge,
+    close_hinge,
+    open_bumble,
+    close_bumble,
+    setup_logging,
 )
 
 # Global variable to store AI response
@@ -504,6 +509,18 @@ def main():
     try:
         # Get device IP from environment variable
         device_ip = os.getenv("DEVICE_IP", "192.168.12.32")
+
+        # Select which dating app to use (Hinge, Bumble, or all)
+        dating_app = os.getenv("DATING_APP", "hinge").lower()
+
+        # Set up logging based on the selected app
+        global logger
+        if dating_app != "all":
+            # For single app, set up app-specific logger
+            logger = setup_logging(app_name=dating_app)
+        # For "all" option, keep the default logger for main process
+
+        logger.info(f"Selected dating app: {dating_app}")
         logger.info(f"Connecting to device at IP: {device_ip}")
 
         # Connect to device
@@ -519,6 +536,45 @@ def main():
         # Initialize profile counter for logging/screenshots only
         profile_num = 1
 
+        if dating_app == "all":
+            logger.info("Running automation on all dating apps sequentially")
+
+            # First run on Hinge
+            logger.info("Starting automation on Hinge")
+            run_automation_on_app(device, width, height, "hinge")
+
+            # Then run on Bumble
+            logger.info("Starting automation on Bumble")
+            run_automation_on_app(device, width, height, "bumble")
+
+            logger.info("Completed automation on all dating apps")
+
+        else:
+            # Run on a single app
+            run_automation_on_app(device, width, height, dating_app)
+
+    except KeyboardInterrupt:
+        logger.info("\nExiting gracefully...")
+
+    except Exception as e:
+        logger.error(f"Error in main function: {e}")
+        logger.debug("", exc_info=True)  # Log full traceback at debug level
+        sys.exit(1)
+
+
+def run_automation_on_app(device, width, height, dating_app):
+    """Run the automation on a specific dating app.
+
+    Args:
+        device: The ADB device
+        width: Screen width
+        height: Screen height
+        dating_app: The dating app to run automation on (hinge or bumble)
+    """
+    try:
+        # Initialize profile counter for logging/screenshots only
+        profile_num = 1
+
         # Counters for tracking likes and dislikes
         disliked_profiles = 0  # Track if we've disliked any profiles in the current cycle
         total_likes = 0  # Track total likes
@@ -527,11 +583,10 @@ def main():
         # Get the absolute path to the app directory
         app_dir = os.path.dirname(os.path.abspath(__file__))
 
-        # Select which dating app to use (Hinge or Bumble)
-        dating_app = os.getenv("DATING_APP", "hinge").lower()
-        logger.info(f"Selected dating app: {dating_app}")
-
         if dating_app == "hinge":
+            # Open Hinge app
+            open_hinge(device)
+
             # Default paths for Hinge text files
             format_txt_path = os.path.join(app_dir, 'hingeFormat.txt')
             prompts_txt_path = os.path.join(app_dir, 'hingePrompts.txt')
@@ -547,6 +602,9 @@ def main():
             logger.info(
                 f"Using Hinge like/dislike logic: After {target_likes_before_dislike} likes without a dislike, force one. Continue to {total_likes_target} total likes")
         elif dating_app == "bumble":
+            # Open Bumble app
+            open_bumble(device)
+
             # Default paths for Bumble text files
             format_txt_path = os.path.join(app_dir, 'bumbleFormat.txt')
             prompts_txt_path = os.path.join(app_dir, 'bumblePrompts.txt')
@@ -562,7 +620,7 @@ def main():
                 f"Using Bumble like/dislike logic: After {target_likes_before_dislike} likes without a dislike, force one. Continue to {total_likes_target} total likes")
         else:
             logger.error(f"Unsupported dating app: {dating_app}")
-            sys.exit(1)
+            return
 
         # Continue until we've both reached the target number of likes AND had at least one dislike
         while total_likes < total_likes_target or disliked_profiles == 0:
@@ -602,16 +660,24 @@ def main():
             logger.info(
                 f"Exiting with final stats: {total_likes}/{total_likes_target} likes, {disliked_profiles} dislikes")
 
-        # Clear out the counters for the next run
-        total_likes = 0
-        disliked_profiles = 0
+        # Close the app when finished
+        if dating_app == "hinge":
+            close_hinge(device)
+        elif dating_app == "bumble":
+            close_bumble(device)
 
-    except KeyboardInterrupt:
-        logger.info("\nExiting gracefully...")
     except Exception as e:
-        logger.error(f"Error in main: {e}")
+        logger.error(f"Error in run_automation_on_app for {dating_app}: {e}")
         logger.debug("", exc_info=True)  # Log full traceback at debug level
-        raise
+
+        # Make sure to close the app even if there's an error
+        try:
+            if dating_app == "hinge":
+                close_hinge(device)
+            elif dating_app == "bumble":
+                close_bumble(device)
+        except Exception as close_error:
+            logger.error(f"Error closing app after exception: {close_error}")
 
 
 if __name__ == "__main__":

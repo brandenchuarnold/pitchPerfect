@@ -82,24 +82,44 @@ class Base64TruncateFilter(logging.Filter):
 # Set up logging to file and console
 
 
-def setup_logging():
+def setup_logging(app_name=""):
+    """Set up logging to file and console.
+
+    Args:
+        app_name: Optional app name to create separate log directories
+
+    Returns:
+        Logger object
+    """
     # Create results directory if it doesn't exist
     results_dir = "results"
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
 
     # Create a desktop logs directory
-    desktop_logs_dir = f"/app/desktop/PitchPerfect_Results_{RUN_TIMESTAMP}/logs"
+    # If app_name is provided, include it in the directory name
+    desktop_logs_dir_name = f"PitchPerfect_Results_{RUN_TIMESTAMP}/logs"
+    if app_name:
+        desktop_logs_dir_name = f"PitchPerfect_Results_{app_name.capitalize()}_{RUN_TIMESTAMP}/logs"
+
+    desktop_logs_dir = f"/app/desktop/{desktop_logs_dir_name}"
     if not os.path.exists(desktop_logs_dir):
         os.makedirs(desktop_logs_dir)
 
     # Configure logging to write to both file and console
-    desktop_log_file = os.path.join(
-        desktop_logs_dir, f"pitchperfect_{RUN_TIMESTAMP}.log")
+    log_file_name = f"pitchperfect_{RUN_TIMESTAMP}.log"
+    if app_name:
+        log_file_name = f"pitchperfect_{app_name.lower()}_{RUN_TIMESTAMP}.log"
+
+    desktop_log_file = os.path.join(desktop_logs_dir, log_file_name)
 
     # Configure the root logger
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
+
+    # Remove any existing handlers to prevent duplicates
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
 
     # Create formatter
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
@@ -1720,7 +1740,7 @@ def send_response_to_story(device, conversation_starter, profile_num):
     return True
 
 
-def save_profile_results(profile_num, screenshots, ai_response, add_timestamp=False):
+def save_profile_results(profile_num, screenshots, ai_response, add_timestamp=False, app_name=""):
     """Save profile screenshots and AI response in an organized folder structure.
 
     Args:
@@ -1728,6 +1748,7 @@ def save_profile_results(profile_num, screenshots, ai_response, add_timestamp=Fa
         screenshots: List of screenshot paths
         ai_response: The AI response dictionary (can be None)
         add_timestamp: Whether to add a timestamp to the response (default: False)
+        app_name: Name of the app (hinge, bumble) to include in directory name for separate results
 
     Returns:
         str: Path to the profile's results directory
@@ -1738,7 +1759,12 @@ def save_profile_results(profile_num, screenshots, ai_response, add_timestamp=Fa
         os.makedirs(results_dir)
 
     # Create desktop directory path with timestamp for easy access from host
-    desktop_dir = f"/app/desktop/PitchPerfect_Results_{RUN_TIMESTAMP}"
+    # If app_name is provided, include it in the directory name
+    desktop_dir_name = f"PitchPerfect_Results_{RUN_TIMESTAMP}"
+    if app_name:
+        desktop_dir_name = f"PitchPerfect_Results_{app_name.capitalize()}_{RUN_TIMESTAMP}"
+
+    desktop_dir = f"/app/desktop/{desktop_dir_name}"
     if not os.path.exists(desktop_dir):
         os.makedirs(desktop_dir)
 
