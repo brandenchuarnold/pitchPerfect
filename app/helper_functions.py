@@ -14,6 +14,7 @@ import logging
 import traceback
 import sys
 import random
+import re
 
 load_dotenv()
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
@@ -25,59 +26,55 @@ RUN_TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
 class Base64TruncateFilter(logging.Filter):
+    """Filter to truncate base64 strings in log messages to prevent log file bloat"""
+
     def __init__(self, max_length=200):
-        super().__init__()
         self.max_length = max_length
+        super().__init__()
 
     def filter(self, record):
-        if hasattr(record, 'msg') and isinstance(record.msg, str):
-            # Check if this looks like a base64 string or contains one
-            if 'base64' in record.msg.lower() or ';base64,' in record.msg:
-                # Find base64 data and truncate it
-                record.msg = self._truncate_base64(record.msg)
-            elif len(record.msg) > self.max_length * 2:
-                # Also truncate other very long messages
-                record.msg = record.msg[:self.max_length] + \
-                    f"... [truncated, total length: {len(record.msg)}]"
-
+        if isinstance(record.msg, str):
+            record.msg = self._truncate_base64(record.msg)
+        if record.args:
+            record.args = tuple(
+                self._truncate_base64(arg) if isinstance(arg, str) else arg
+                for arg in record.args
+            )
         return True
 
     def _truncate_base64(self, message):
         # For strings like "data:image/png;base64,iVBORw0K..." or "data: iVBORw0K..."
-        parts = []
-        current_part = ""
-        in_base64 = False
-        base64_indicators = ['iVBOR', 'data:image', ';base64,']
+        if isinstance(message, str):
+            # Base64 data URI pattern
+            base64_pattern = r'(data:.*?base64,)([A-Za-z0-9+/=]{20,})'
+            result = re.sub(
+                base64_pattern,
+                lambda m: f"{m.group(1)}{m.group(2)[:self.max_length]}...[truncated]",
+                message
+            )
 
-        for word in message.split():
-            is_base64_part = any(ind in word for ind in base64_indicators)
+            # Plain base64 pattern (not in a data URI)
+            plain_base64_pattern = r'([A-Za-z0-9+/=]{100,})'
+            result = re.sub(
+                plain_base64_pattern,
+                lambda m: f"{m.group(1)[:self.max_length]}...[truncated]",
+                result
+            )
 
-            if is_base64_part:
-                in_base64 = True
-                if len(word) > self.max_length:
-                    part = word[:self.max_length] + \
-                        f"... [base64 data truncated, length: {len(word)}]"
-                    parts.append(part)
-                    current_part = ""
-                    in_base64 = False
-                    continue
+            return result
+        return message
 
-            if in_base64:
-                if len(word) > self.max_length:
-                    parts.append(current_part)
-                    parts.append(
-                        f"[base64 data truncated, length: {len(word)}]")
-                    current_part = ""
-                    in_base64 = False
-                else:
-                    current_part += " " + word
-            else:
-                current_part += " " + word
 
-        if current_part:
-            parts.append(current_part)
+class PNGStreamFilter(logging.Filter):
+    """Filter to remove noisy PNG stream debug messages"""
 
-        return " ".join(parts).strip()
+    def filter(self, record):
+        if record.levelno == logging.DEBUG:
+            # Filter out messages about PNG chunks
+            if isinstance(record.msg, str) and ("STREAM b'IDAT'" in record.msg or "STREAM b'IHDR'" in record.msg):
+                return False
+        return True
+
 
 # Set up logging to file and console
 
@@ -142,6 +139,18 @@ def setup_logging(app_name=""):
     base64_filter = Base64TruncateFilter(max_length=100)
     desktop_file_handler.addFilter(base64_filter)
     console_handler.addFilter(base64_filter)
+
+    # Add the PNG stream filter to both handlers
+    png_filter = PNGStreamFilter()
+    desktop_file_handler.addFilter(png_filter)
+    console_handler.addFilter(png_filter)
+
+    # Set specific loggers to a higher level
+    # These are likely sources of the noisy PNG-related logs
+    logging.getLogger('PIL').setLevel(logging.WARNING)
+    logging.getLogger('PIL.PngImagePlugin').setLevel(logging.WARNING)
+    logging.getLogger('matplotlib').setLevel(logging.WARNING)
+    logging.getLogger('matplotlib.pyplot').setLevel(logging.WARNING)
 
     logging.info(f"Logging initialized. Log file: {desktop_log_file}")
 
@@ -882,12 +891,13 @@ Analyze ONLY the main person (not other people in photos) for these traits:
 
 1. Body Type Analysis (CRITICAL - Mark as undesirable if ANY of these are true):
    a. Body Shape Indicators:
+      - Body width appears wider than typical fit/skinny woman
       - Visible stomach protrusion that extends beyond the waistline (bulging out)
-      - Face shape is rounder without any jawline definition
-      - Full-body photos show reasonably larger body size than average fit/skinny woman
-      - Arms/legs show reasonablly high fat accumulation compared to wrists/ankles
-      - Very little muscle or bone definition in arms/legs
-      - Every single photo is face/high angle photos (hiding body)
+      - Face shape is rounder with less defined jawline
+      - Full-body photos show larger body size than average fit/skinny woman
+      - Arms/legs show significant fat accumulation compared to wrists/ankles
+      - No visible muscle or bone definition in arms/legs
+      - Only face/high angle photos (hiding body)
 
    b. Specific Measurements (if visible):
       - Waist-to-hip ratio appears greater than 1.0
@@ -905,9 +915,9 @@ Analyze ONLY the main person (not other people in photos) for these traits:
 
 2. Low Quality Photos:
    - Any ONE of these qualifies as low quality photos:
-     * All or all but one of photos are blurry/pixelated
-     * Heavy filters or editing in all or all but one of photos
-     * Multiple photos appear to be screenshots
+     * Majority of photos are blurry/pixelated
+     * Heavy filters or editing in majority of photos
+     * Screenshots or reposts in multiple photos
 
 3. Male Features:
    - Any of these qualifies as male features:
@@ -2249,9 +2259,9 @@ def close_bumble(device):
 def check_for_bumble_advertisement(device, profile_num):
     """Check if there's a Bumble advertisement that requires dismissal.
 
-    Detects advertisements by looking for specific text phrases like
-    "Like what you're seeing?" or "Bumble premium" and dismisses 
-    them with a swipe right gesture.
+    Detects advertisements by looking for specific text phrases and dismisses them:
+    - For regular ads (premium features, etc.), swipes right to dismiss
+    - For specific ads about likes or "second time's a charm", taps the X button
 
     Args:
         device: The ADB device
@@ -2274,8 +2284,8 @@ def check_for_bumble_advertisement(device, profile_num):
         lines = group_boxes_into_lines(boxes)
         paragraphs = group_lines_into_paragraphs(lines)
 
-        # Advertisement indicators to check for
-        ad_indicators = [
+        # Regular advertisement indicators - to be dismissed with swipe right
+        regular_ad_indicators = [
             "Like what you're seeing?",
             "Bumble premium",
             "Premium features",
@@ -2283,19 +2293,25 @@ def check_for_bumble_advertisement(device, profile_num):
             "Upgrade to Bumble Premium"
         ]
 
-        # Check each paragraph against each ad indicator
-        ad_detected = False
-        matched_indicator = ""
+        # X-button advertisement indicators - to be dismissed with tap on X button
+        x_button_ad_indicators = [
+            "You've already liked these bees, why not use compliment to help stand out?",
+            "Second time's a charm"
+        ]
+
+        # Check for X-button advertisements first
+        x_button_ad_detected = False
+        matched_x_button_indicator = ""
 
         for para in paragraphs:
-            for indicator in ad_indicators:
+            for indicator in x_button_ad_indicators:
                 is_match, ratio, _ = fuzzy_match_text(
                     indicator, para['text'], threshold=0.7)
                 if is_match:
-                    ad_detected = True
-                    matched_indicator = indicator
+                    x_button_ad_detected = True
+                    matched_x_button_indicator = indicator
                     logger.info(
-                        f"Detected Bumble advertisement: '{matched_indicator}' with confidence {ratio:.2f}")
+                        f"Detected X-button Bumble advertisement: '{matched_x_button_indicator}' with confidence {ratio:.2f}")
 
                     # Create visualization of the match
                     create_visual_debug_overlay(
@@ -2307,11 +2323,49 @@ def check_for_bumble_advertisement(device, profile_num):
                     )
                     break
 
-            if ad_detected:
+            if x_button_ad_detected:
                 break
 
-        if ad_detected:
-            # Dismiss the advertisement with a swipe right gesture
+        # Check for regular advertisements if no X-button ad detected
+        regular_ad_detected = False
+        matched_regular_indicator = ""
+
+        if not x_button_ad_detected:
+            for para in paragraphs:
+                for indicator in regular_ad_indicators:
+                    is_match, ratio, _ = fuzzy_match_text(
+                        indicator, para['text'], threshold=0.7)
+                    if is_match:
+                        regular_ad_detected = True
+                        matched_regular_indicator = indicator
+                        logger.info(
+                            f"Detected regular Bumble advertisement: '{matched_regular_indicator}' with confidence {ratio:.2f}")
+
+                        # Create visualization of the match
+                        create_visual_debug_overlay(
+                            screenshot_path,
+                            boxes=boxes,
+                            lines=lines,
+                            paragraphs=paragraphs,
+                            output_path=f"images/profile_{profile_num}_ad_detected_visual.png"
+                        )
+                        break
+
+                if regular_ad_detected:
+                    break
+
+        # Handle X-button advertisements by tapping the X button at (80, 300)
+        if x_button_ad_detected:
+            logger.info(
+                f"Dismissing Bumble advertisement by tapping X button at (80, 300)")
+            tap(device, 80, 300)
+
+            # Wait for the next profile to load
+            time.sleep(4)
+            return True
+
+        # Handle regular advertisements with a swipe right gesture
+        elif regular_ad_detected:
             logger.info(f"Dismissing Bumble advertisement by swiping right")
             width, height = get_screen_resolution(device)
 
