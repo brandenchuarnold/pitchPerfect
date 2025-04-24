@@ -30,23 +30,23 @@ Current Implementation:
      * Still evaluates desirability regardless of quota
    
    - Target Interactions:
-     * Random target between 4-6 successful interactions
-     * Resets after reaching target
-     * Resets when disliking for any reason (undesirable, low confidence, etc.)
-     * Dislikes profile when target reached
+     * Likes 6-9 consecutive profiles (random target) regardless of undesirable profiles encountered
+     * After reaching this target, checks if we've disliked any profile during this run:
+       - If we have already disliked at least one profile, continue liking until 9 total likes
+       - If we haven't disliked any profile yet, dislike the next profile (even if desirable)
+     * Continues until a total of 9 profiles have been liked
+     * This guarantees 9 likes and at least 1 dislike per run, with randomized dislike timing
+     * Profiles determined undesirable by AI are always disliked regardless of target count
    
    - Profile Analysis:
-     * Takes 8 screenshots while scrolling down (initial + 7 scrolls)
+     * Takes 9 screenshots while scrolling down (initial + 8 scrolls)
      * Processes screenshots with AI in separate thread
      * Scrolls back to top while AI processes
      * Waits for AI response
    
    - Profile Filtering:
      * Dislikes if AI returns empty response
-     * Dislikes if profile has no prompts/statements to respond to (when compliment quota available)
-     * Dislikes if prompt match confidence < 0.8
-     * Dislikes if prompt not found after 3 attempts
-     * Resets interaction counter on any dislike
+     * Dislikes if screenshot_index = -1 (undesirable profile)
      * AI automatically filters profiles with these undesirable traits:
        - Body Type Analysis:
          · Visible excess weight or body fat
@@ -74,7 +74,7 @@ Current Implementation:
      * Maintains original screenshot files in images/ directory
 
 2. Screenshot Capture and Analysis:
-   - Takes 8 screenshots total (initial + 7 scrolls)
+   - Takes 9 screenshots total (initial + 8 scrolls)
    - Uses consistent 68% scroll distance for reliability
    - Captures full profile content in sequential screenshots
    - Saves as profile_{count}_part{i}.png
@@ -96,23 +96,17 @@ Current Implementation:
 
 4. AI Integration:
    - Bumble-Specific Processing Flow:
-     * Always evaluates profile desirability regardless of compliment quota
-     * Only generates conversation starters if:
-       1. Profile is desirable
-       2. Compliment quota is available 
-       3. Profile contains at least one prompt/statement to respond to
+     * Evaluates profile desirability based on screenshots
+     * Returns JSON response with screenshot_index indicating desirability
+     * screenshot_index = -1 for undesirable profiles, ≥ 0 for desirable profiles
+     * Does not generate conversation starters in current implementation
      * Uses dedicated function separate from Hinge functionality
    
    - System Prompt:
-     * Profile structure guide with 8 screenshots analysis
+     * Profile structure guide with 9 screenshots analysis
      * Detailed trait detection for filtering undesirable profiles
-     * 4-step conversation starter generation guideline (when applicable):
-       1. Direct acknowledgment of something visible in profile
-       2. Adding woman's name after the acknowledgment for personalization
-       3. Brief connection between her response and date activity
-       4. Specific date activity suggestion related to her interests
-     * Quality metrics for ranking conversation starters (when applicable)
-     * Awareness of Bumble's optional prompts system
+     * Focused solely on determining profile desirability
+     * Will be expanded in future to include conversation starter generation
    
    - Response Processing:
      * Returns JSON with different formats based on conditions:
@@ -137,48 +131,33 @@ Current Implementation:
          · conversation_starter: ""
          · screenshot_index: 0
      * Handles error cases gracefully
-   
-   - Prompt Matching:
-     * Matches against authoritative bumblePrompts.txt
-     * Requires 0.8 confidence threshold
-     * Uses fuzzy matching with similarity ratio calculation
-     * Logs all potential matches for debugging
-     * Reports best match with confidence score
 
-5. Prompt Location and Response:
-   - Location Strategy:
-     * Scrolls to target screenshot indicated by AI
-     * Three attempts to find prompt:
-       1. On target screenshot
-       2. One screen up from target
-       3. Back on target screenshot after scrolling down
-     * Additional scroll-up-and-check in the OCR detection phase
-     * Falls back to bottom-of-profile approach if all attempts fail
-   
-   - Response Flow:
-     * Locates the heart button below the prompt/statement
-     * Heart button is aligned with the left edge of the prompt
-     * Fixed Y distance below the end of the prompt text
-     * Taps heart button to open "Send a Compliment" interface
-     * Types AI-generated conversation starter
-     * Closes keyboard using back key
-     * Finds "Send" button using OCR
-     * Clicks to send response
+5. Profile Response Flow:
+   - Process:
+     * Takes 9 screenshots while scrolling through profile
+     * Sends screenshots to AI for desirability assessment
+     * AI returns JSON with screenshot_index indicating desirability:
+       - screenshot_index = -1: Profile is undesirable
+       - screenshot_index ≥ 0: Profile is desirable
+     * Decision Logic:
+       - Always dislike if screenshot_index is -1 (undesirable)
+       - For desirable profiles (screenshot_index ≥ 0):
+         · Like profiles until reaching randomly chosen target (6-9 likes)
+         · After target reached, check if we've disliked any profile in current run
+         · If no dislike has occurred yet, dislike this profile (even if desirable)
+         · If we've already disliked at least one profile, continue liking
+       - Continue process until exactly 9 profiles have been liked total
      * Visually documents each step with debugging overlays
-     * Updates conversation starter quota
+     * Tracks statistics for reporting
 
-6. Quota Management:
-   - Persistent Storage:
-     * Maintains record of conversation starters used
-     * Tracks timestamps of each usage
-     * Stores in JSON format with last reset date
-     * Refreshes quota count every Sunday at 6pm ET
-   
-   - Quota Check:
-     * Performs check before requesting conversation starter from AI
-     * Still allows desirability evaluation even when quota exhausted
-     * Updates usage count after successful send
-     * Provides logging of remaining quota
+6. Quota Management (Reserved for Future Implementation):
+   - Currently not implemented as we're not sending compliments
+   - Will be used when compliments feature is enabled in the future
+   - Planned Implementation:
+     * Maximum of 2 conversation starters per week
+     * Will reset every Sunday at 6pm Eastern Time
+     * Will track usage in persistent storage
+     * Will only process prompt/response if quota is not reached
 
 7. Error Handling and Logging:
    - Comprehensive logging:
@@ -196,7 +175,7 @@ Current Implementation:
    - Profile Filtering:
      * Multiple layers of validation
      * Consistent handling of rejection cases
-     * Reset interaction counters on rejection
+     * Track all like/dislike actions for reporting
 
 8. Multithreading:
    - Parallel processing:
@@ -226,3 +205,33 @@ TODO:
    - Test the updated AI prompt with real profiles
    - Verify "Send Like" button detection is working correctly
    - Monitor conversation starter quality with new guidelines 
+
+FUTURE WORK:
+1. Prompt Matching Implementation:
+   - Matches against authoritative bumblePrompts.txt
+   - Requires 0.8 confidence threshold
+   - Uses fuzzy matching with similarity ratio calculation
+   - Logs all potential matches for debugging
+   - Reports best match with confidence score
+
+2. Prompt Location and Response Implementation:
+   - Location Strategy:
+     * Scrolls to target screenshot indicated by AI
+     * Three attempts to find prompt:
+       1. On target screenshot
+       2. One screen up from target
+       3. Back on target screenshot after scrolling down
+     * Additional scroll-up-and-check in the OCR detection phase
+     * Falls back to bottom-of-profile approach if all attempts fail
+   
+   - Response Flow:
+     * Locates the heart button below the prompt/statement
+     * Heart button is aligned with the left edge of the prompt
+     * Fixed Y distance below the end of the prompt text
+     * Taps heart button to open "Send a Compliment" interface
+     * Types AI-generated conversation starter
+     * Closes keyboard using back key
+     * Finds "Send" button using OCR
+     * Clicks to send response
+     * Visually documents each step with debugging overlays
+     * Updates conversation starter quota 
