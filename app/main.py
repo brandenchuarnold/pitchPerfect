@@ -35,6 +35,7 @@ from helper_functions import (
     open_bumble,
     close_bumble,
     setup_logging,
+    check_for_bumble_advertisement,
 )
 
 # Global variable to store AI response
@@ -398,6 +399,13 @@ def process_bumble_profile(device, width, height, profile_num, target_likes_befo
     # Reset AI response
     global ai_response
     ai_response = None
+
+    # Check for advertisements before processing the profile
+    ad_detected = check_for_bumble_advertisement(device, profile_num)
+    if ad_detected:
+        logger.info("Bumble advertisement detected and dismissed")
+        # Wait a moment for the next profile to load properly after dismissing
+        time.sleep(4.0)
 
     # Scroll through profile and capture screenshots
     screenshots = scroll_profile_and_capture(

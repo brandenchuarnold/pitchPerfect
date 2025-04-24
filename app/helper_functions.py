@@ -1960,3 +1960,92 @@ def close_bumble(device):
         None
     """
     close_app(device, "com.bumble.app", "Bumble")
+
+
+def check_for_bumble_advertisement(device, profile_num):
+    """Check if there's a Bumble advertisement that requires dismissal.
+
+    Detects advertisements by looking for specific text phrases like
+    "Like what you're seeing?" or "Bumble premium" and dismisses 
+    them with a swipe right gesture.
+
+    Args:
+        device: The ADB device
+        profile_num: Current profile number for debugging
+
+    Returns:
+        bool: True if advertisement was detected and dismissed, False otherwise
+    """
+    try:
+        # Take a screenshot to check for the advertisement
+        screenshot_path = capture_screenshot(
+            device, f"profile_{profile_num}_ad_check")
+
+        # Extract text and group into paragraphs
+        boxes = extract_text_from_image_with_boxes(screenshot_path)
+        if not boxes:
+            return False
+
+        lines = group_boxes_into_lines(boxes)
+        paragraphs = group_lines_into_paragraphs(lines)
+
+        # Advertisement indicators to check for
+        ad_indicators = [
+            "Like what you're seeing?",
+            "Bumble premium",
+            "Premium features",
+            "Upgrade now",
+            "Upgrade to Bumble Premium"
+        ]
+
+        # Check each paragraph against each ad indicator
+        ad_detected = False
+        matched_indicator = ""
+
+        for para in paragraphs:
+            for indicator in ad_indicators:
+                is_match, ratio, _ = fuzzy_match_text(
+                    indicator, para['text'], threshold=0.8)
+                if is_match:
+                    ad_detected = True
+                    matched_indicator = indicator
+                    logger.info(
+                        f"Detected Bumble advertisement: '{matched_indicator}' with confidence {ratio:.2f}")
+
+                    # Create visualization of the match
+                    create_visual_debug_overlay(
+                        screenshot_path,
+                        boxes=boxes,
+                        lines=lines,
+                        paragraphs=paragraphs,
+                        output_path=f"images/profile_{profile_num}_ad_detected_visual.png"
+                    )
+                    break
+
+            if ad_detected:
+                break
+
+        if ad_detected:
+            # Dismiss the advertisement with a swipe right gesture
+            logger.info(f"Dismissing Bumble advertisement by swiping right")
+            width, height = get_screen_resolution(device)
+
+            # Horizontal swipe from left to right (unlike the vertical swipe in the swipe function)
+            swipe_start_x = int(width * 0.2)  # Start at 20% of screen width
+            swipe_end_x = int(width * 0.8)    # End at 80% of screen width
+            swipe_y = int(height * 0.5)       # Middle of screen height
+
+            # Execute the right swipe
+            device.shell(
+                f"input swipe {swipe_start_x} {swipe_y} {swipe_end_x} {swipe_y} 300")
+
+            # Give time for the ad to be dismissed
+            time.sleep(2)
+            return True
+
+        return False
+
+    except Exception as e:
+        logger.error(f"Error checking for Bumble advertisement: {e}")
+        logger.debug("", exc_info=True)
+        return False
