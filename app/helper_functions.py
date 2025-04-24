@@ -306,12 +306,38 @@ def get_screen_resolution(device):
         return 1080, 1920  # Default fallback resolution
 
 
-def extract_text_from_image_with_boxes(image_path):
-    """Extract text and bounding boxes from an image using OCR"""
+def extract_text_from_image_with_boxes(image_path, app_type=None):
+    """Extract text and bounding boxes from an image using OCR
+
+    Args:
+        image_path: Path to the screenshot image
+        app_type: Optional app type ('hinge' or 'bumble') to optimize OCR settings
+
+    Returns:
+        List of text boxes with 'text' and 'box' fields
+    """
     try:
         image = Image.open(image_path)
+
+        # Set OCR configuration based on app type
+        config = ''
+        if app_type == 'hinge':
+            # Optimize for Hinge-specific fonts (based on provided screenshots)
+            # --oem 1: Use LSTM OCR Engine
+            # -l eng: Use English language
+            # --dpi 429: DPI of Google Pixel 6a
+            config = '--oem 1 -l eng --dpi 429'
+        elif app_type == 'bumble':
+            # Optimize for Bumble-specific fonts and UI elements
+            # --oem 1: Use LSTM OCR Engine
+            # -l eng: Use English language
+            # --dpi 429: DPI of Google Pixel 6a
+            # Other parameters adjusted for Bumble's font and contrast
+            config = '--oem 1 -l eng --dpi 429'
+
+        # Run OCR with appropriate config
         ocr_data = pytesseract.image_to_data(
-            image, output_type=pytesseract.Output.DICT)
+            image, output_type=pytesseract.Output.DICT, config=config)
 
         boxes = []
         for i in range(len(ocr_data['text'])):
@@ -459,13 +485,13 @@ def group_lines_into_paragraphs(lines, paragraph_spacing=20):
     return paragraphs
 
 
-def fuzzy_match_text(target_text, text_to_match, threshold=0.8):
+def fuzzy_match_text(target_text, text_to_match, threshold=0.7):
     """Perform fuzzy matching between two text strings.
 
     Args:
         target_text: The text we're looking for
         text_to_match: The text we're comparing against
-        threshold: Minimum similarity ratio to consider a match (0.0 to 1.0)
+        threshold: Minimum similarity ratio to consider a match (0.0 to 1.0), default is 0.7
 
     Returns:
         tuple: (is_match, similarity_ratio, matched_text)
@@ -1378,7 +1404,7 @@ def generate_hinge_reply_from_screenshots(screenshots, format_txt_path, prompts_
     }
 
 
-def find_prompt_response_match(screenshot_path, target_prompt, target_response, profile_num, suffix=""):
+def find_prompt_response_match(screenshot_path, target_prompt, target_response, profile_num, suffix="", dating_app='hinge'):
     """Find prompt or response match in a screenshot.
 
     Args:
@@ -1387,6 +1413,7 @@ def find_prompt_response_match(screenshot_path, target_prompt, target_response, 
         target_response: The response text to look for
         profile_num: Current profile number for debugging
         suffix: Suffix for debug image filename (e.g. "_up" for scrolled up screenshot)
+        dating_app: The dating app type ('hinge' or 'bumble') to optimize OCR settings
 
     Returns:
         tuple: (best_match, tap_coordinates, visualization_path) where:
@@ -1395,7 +1422,8 @@ def find_prompt_response_match(screenshot_path, target_prompt, target_response, 
             - visualization_path: Path to the created visualization image
     """
     # Extract text and group into paragraphs
-    boxes = extract_text_from_image_with_boxes(screenshot_path)
+    boxes = extract_text_from_image_with_boxes(
+        screenshot_path, app_type=dating_app)
     if not boxes:
         logger.warning(f"No text boxes found in screenshot{suffix}")
         return None, None, None
@@ -1416,7 +1444,7 @@ def find_prompt_response_match(screenshot_path, target_prompt, target_response, 
     for i, para in enumerate(paragraphs):
         # Check for prompt match
         is_prompt_match, prompt_ratio, matched_text = fuzzy_match_text(
-            target_prompt, para['text'], threshold=0.8)
+            target_prompt, para['text'], threshold=0.7)
         logger.debug(f"Paragraph {i+1}:")
         logger.debug(f"  Text: '{para['text']}'")
         logger.debug(f"  Prompt match ratio: {prompt_ratio:.2f}")
@@ -1480,7 +1508,7 @@ def find_prompt_response_match(screenshot_path, target_prompt, target_response, 
         return None, None, visualization_path
 
 
-def detect_prompt_in_screenshot(device, target_prompt, target_response, screenshot_index, profile_num):
+def detect_prompt_in_screenshot(device, target_prompt, target_response, screenshot_index, profile_num, dating_app='hinge'):
     """Detect and visualize the target prompt or response in a screenshot.
 
     Args:
@@ -1489,6 +1517,7 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
         target_response: The response text we're looking for
         screenshot_index: Index of the screenshot to analyze
         profile_num: Current profile number
+        dating_app: The dating app type ('hinge' or 'bumble') to optimize OCR settings
 
     Returns:
         tuple: (found, tap_coordinates) where:
@@ -1502,7 +1531,7 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
 
         # Check for match in current screenshot
         best_match, tap_coordinates, _ = find_prompt_response_match(
-            screenshot_path, target_prompt, target_response, profile_num)
+            screenshot_path, target_prompt, target_response, profile_num, dating_app=dating_app)
 
         # If found a match, tap it and return
         if best_match and tap_coordinates:
@@ -1524,7 +1553,7 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
 
         # Check for match in scrolled up screenshot
         best_match_up, tap_coordinates_up, _ = find_prompt_response_match(
-            screenshot_path_up, target_prompt, target_response, profile_num, suffix="_up")
+            screenshot_path_up, target_prompt, target_response, profile_num, suffix="_up", dating_app=dating_app)
 
         # If found a match after scrolling up, tap it and return
         if best_match_up and tap_coordinates_up:
@@ -1545,8 +1574,13 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
             "\nFallback: Scrolling to bottom and double-clicking center...")
 
         # Calculate remaining scrolls (we've already done screenshot_index scrolls)
-        # 6 is max scrolls (7 screenshots total, 0-6)
-        remaining_scrolls = 6 - screenshot_index
+        # For Hinge: 6 is max scrolls (7 screenshots total, 0-6)
+        # For Bumble: 8 is max scrolls (9 screenshots total, 0-8)
+        max_scrolls = 6
+        if dating_app == 'bumble':
+            max_scrolls = 8
+
+        remaining_scrolls = max_scrolls - screenshot_index
 
         # Scroll the remaining distance to bottom
         for i in range(remaining_scrolls):
@@ -1588,13 +1622,14 @@ def dislike_profile(device):
     time.sleep(4)
 
 
-def send_response_to_story(device, conversation_starter, profile_num):
+def send_response_to_story(device, conversation_starter, profile_num, dating_app='hinge'):
     """Handle the flow of responding to an opened story.
 
     Args:
         device: The ADB device
         conversation_starter: The text to send as a response
         profile_num: Current profile number for debugging visualization
+        dating_app: Optional app type ('hinge' or 'bumble') to optimize OCR settings
 
     Returns:
         bool: True if response was sent successfully, False otherwise
@@ -1608,8 +1643,9 @@ def send_response_to_story(device, conversation_starter, profile_num):
     screenshot_path = capture_screenshot(
         device, f"profile_{profile_num}_response_phase1")
 
-    # Extract text and boxes
-    boxes = extract_text_from_image_with_boxes(screenshot_path)
+    # Extract text and boxes with app-specific OCR settings
+    boxes = extract_text_from_image_with_boxes(
+        screenshot_path, app_type=dating_app)
     if not boxes:
         logger.warning("No text boxes found in initial screenshot")
         return False
@@ -1680,8 +1716,9 @@ def send_response_to_story(device, conversation_starter, profile_num):
     screenshot_path = capture_screenshot(
         device, f"profile_{profile_num}_response_phase2")
 
-    # Extract text and boxes again for new layout
-    boxes = extract_text_from_image_with_boxes(screenshot_path)
+    # Extract text and boxes again for new layout with app-specific OCR settings
+    boxes = extract_text_from_image_with_boxes(
+        screenshot_path, app_type=dating_app)
     if not boxes:
         logger.warning("No text boxes found in post-input screenshot")
         return False
@@ -1818,12 +1855,13 @@ def save_profile_results(profile_num, screenshots, ai_response, add_timestamp=Fa
     return profile_dir
 
 
-def check_for_end_of_profiles(device, profile_num):
+def check_for_end_of_profiles(device, profile_num, dating_app=None):
     """Check if we've reached the end of available profiles.
 
     Args:
         device: The ADB device
         profile_num: Current profile number for debugging
+        dating_app: Optional app type ('hinge' or 'bumble') to optimize OCR settings
 
     Returns:
         tuple: (bool, str) - (True if end reached, message that was matched)
@@ -1832,8 +1870,9 @@ def check_for_end_of_profiles(device, profile_num):
     screenshot_path = capture_screenshot(
         device, f"profile_{profile_num}_end_check")
 
-    # Extract text and group into paragraphs
-    boxes = extract_text_from_image_with_boxes(screenshot_path)
+    # Extract text and group into paragraphs with app-specific OCR settings
+    boxes = extract_text_from_image_with_boxes(
+        screenshot_path, app_type=dating_app)
     if not boxes:
         return False, ""
 
@@ -1855,7 +1894,7 @@ def check_for_end_of_profiles(device, profile_num):
     for para in paragraphs:
         for message in end_messages:
             is_match, ratio, _ = fuzzy_match_text(
-                message, para['text'], threshold=0.8)
+                message, para['text'], threshold=0.7)
             if is_match:
                 logger.info(
                     f"Found end message: '{message}' with confidence {ratio:.2f}")
@@ -1982,7 +2021,8 @@ def check_for_bumble_advertisement(device, profile_num):
             device, f"profile_{profile_num}_ad_check")
 
         # Extract text and group into paragraphs
-        boxes = extract_text_from_image_with_boxes(screenshot_path)
+        boxes = extract_text_from_image_with_boxes(
+            screenshot_path, app_type='bumble')
         if not boxes:
             return False
 
@@ -2005,7 +2045,7 @@ def check_for_bumble_advertisement(device, profile_num):
         for para in paragraphs:
             for indicator in ad_indicators:
                 is_match, ratio, _ = fuzzy_match_text(
-                    indicator, para['text'], threshold=0.8)
+                    indicator, para['text'], threshold=0.7)
                 if is_match:
                     ad_detected = True
                     matched_indicator = indicator

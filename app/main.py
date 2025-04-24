@@ -43,7 +43,7 @@ ai_response = None
 ai_response_lock = threading.Lock()
 
 
-def scroll_profile_and_capture(device, width, height, profile_num, num_screenshots=7):
+def scroll_profile_and_capture(device, width, height, profile_num, num_screenshots=7, dating_app=None):
     """Scroll through profile and capture screenshots.
 
     Args:
@@ -52,6 +52,7 @@ def scroll_profile_and_capture(device, width, height, profile_num, num_screensho
         height: Screen height
         profile_num: Current profile number
         num_screenshots: Number of screenshots to capture (7 for Hinge, 9 for Bumble)
+        dating_app: Optional app type ('hinge' or 'bumble') to optimize OCR settings
 
     Returns:
         list: Paths to captured screenshots
@@ -65,6 +66,11 @@ def scroll_profile_and_capture(device, width, height, profile_num, num_screensho
             device, f"profile_{profile_num}_part1")
         screenshots.append(screenshot_path)
 
+        # Process initial screenshot with app-specific OCR
+        if dating_app:
+            process_screenshot_with_visualization(
+                screenshot_path, profile_num, 0, dating_app=dating_app)
+
         # Take remaining screenshots
         for i in range(1, num_screenshots):
             logger.info(f"Scroll down #{i}")
@@ -76,6 +82,11 @@ def scroll_profile_and_capture(device, width, height, profile_num, num_screensho
                 device, f"profile_{profile_num}_part{i+1}")
             screenshots.append(screenshot_path)
 
+            # Process screenshot with app-specific OCR
+            if dating_app:
+                process_screenshot_with_visualization(
+                    screenshot_path, profile_num, i, dating_app=dating_app)
+
         logger.info(
             f"Captured {len(screenshots)} screenshots for profile #{profile_num}")
         return screenshots
@@ -85,17 +96,22 @@ def scroll_profile_and_capture(device, width, height, profile_num, num_screensho
         return []
 
 
-def scroll_back_to_top(device, num_scrolls=6):
+def scroll_back_to_top(device, num_scrolls=6, dating_app=None):
     """Scroll back to the top of the profile.
 
     Args:
         device: The ADB device
-        num_scrolls: Number of scrolls to perform (6 for Hinge with 7 screenshots, 8 for Bumble with 9 screenshots)
+        num_scrolls: Number of scrolls to perform (default 6 for Hinge with 7 screenshots)
+        dating_app: Optional app type to adjust scroll count (if 'bumble', uses 8 scrolls by default)
 
     Returns:
         bool: True if successful, False otherwise
     """
     try:
+        # Adjust number of scrolls based on dating app if not explicitly specified
+        if dating_app == 'bumble' and num_scrolls == 6:
+            num_scrolls = 8  # Bumble typically uses 9 screenshots, so 8 scrolls to return to top
+
         for i in range(1, num_scrolls+1):
             logger.info(f"Scroll up #{i}")
             # Scroll up
@@ -148,10 +164,11 @@ def process_ai_response(screenshots, format_txt_path, prompts_txt_path, captions
         sys.exit(1)
 
 
-def take_screenshot_and_extract_text(device, filename):
+def take_screenshot_and_extract_text(device, filename, dating_app=None):
     """Take a screenshot and extract text from it."""
     screenshot_path = capture_screenshot(device, filename)
-    boxes = extract_text_from_image_with_boxes(screenshot_path)
+    boxes = extract_text_from_image_with_boxes(
+        screenshot_path, app_type=dating_app)
     if not boxes:
         return None, None, None, None
 
@@ -170,19 +187,20 @@ def take_screenshot_and_extract_text(device, filename):
     return boxes, lines, paragraphs, screenshot_path
 
 
-def process_screenshot_with_visualization(image_path, profile_num, screenshot_num):
+def process_screenshot_with_visualization(image_path, profile_num, screenshot_num, dating_app=None):
     """Process a screenshot and create visualization overlay.
 
     Args:
         image_path: Path to the screenshot to process
         profile_num: Current profile number
         screenshot_num: Current screenshot number
+        dating_app: Optional app type ('hinge' or 'bumble') to optimize OCR settings
 
     Returns:
         tuple: (paragraphs, visualization_path)
     """
     # Extract text boxes
-    boxes = extract_text_from_image_with_boxes(image_path)
+    boxes = extract_text_from_image_with_boxes(image_path, app_type=dating_app)
     if not boxes:
         logger.warning("No text boxes found in screenshot")
         return None, None
@@ -268,9 +286,12 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
     global ai_response
     ai_response = None
 
+    # Use 'hinge' as the dating app parameter
+    dating_app = 'hinge'
+
     # Scroll through profile and capture screenshots
     screenshots = scroll_profile_and_capture(
-        device, width, height, profile_num)
+        device, width, height, profile_num, dating_app=dating_app)
 
     # Check if we need to force dislike based on the counter logic
     # If we've reached our target likes and haven't disliked any, dislike this one
@@ -301,7 +322,7 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
 
     # Scroll back to top while AI is processing
     logger.info("Scrolling back to top while AI processes")
-    scroll_back_to_top(device)
+    scroll_back_to_top(device, dating_app=dating_app)
 
     # Wait for AI response
     logger.info("Waiting for AI processing to complete")
@@ -309,7 +330,8 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
     logger.info("AI processing complete")
 
     # Save profile results with AI response
-    results_dir = save_profile_results(profile_num, screenshots, ai_response)
+    results_dir = save_profile_results(
+        profile_num, screenshots, ai_response, app_name=dating_app)
     logger.info(f"Saved profile results to: {results_dir}")
 
     # Check if profile is undesirable (empty response)
@@ -339,7 +361,8 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
         matched_prompt,
         ai_response['response'],
         ai_response['screenshot_index'],
-        profile_num
+        profile_num,
+        dating_app=dating_app
     )
 
     if not found:
@@ -354,7 +377,8 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
             matched_prompt,
             ai_response['response'],
             ai_response['screenshot_index'],
-            profile_num
+            profile_num,
+            dating_app=dating_app
         )
 
         if not found:
@@ -370,7 +394,8 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
                 matched_prompt,
                 ai_response['response'],
                 ai_response['screenshot_index'],
-                profile_num
+                profile_num,
+                dating_app=dating_app
             )
 
             if not found:
@@ -380,7 +405,7 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
 
     # Send the response
     success = send_response_to_story(
-        device, ai_response['conversation_starter'], profile_num)
+        device, ai_response['conversation_starter'], profile_num, dating_app=dating_app)
 
     if not success:
         logger.error("Failed to send response")
@@ -400,6 +425,9 @@ def process_bumble_profile(device, width, height, profile_num, target_likes_befo
     global ai_response
     ai_response = None
 
+    # Use 'bumble' as the dating app parameter
+    dating_app = 'bumble'
+
     # Check for advertisements before processing the profile
     ad_detected = check_for_bumble_advertisement(device, profile_num)
     if ad_detected:
@@ -407,9 +435,9 @@ def process_bumble_profile(device, width, height, profile_num, target_likes_befo
         # Wait a moment for the next profile to load properly after dismissing
         time.sleep(4.0)
 
-    # Scroll through profile and capture screenshots
+    # Scroll through profile and capture screenshots with Bumble-specific OCR settings
     screenshots = scroll_profile_and_capture(
-        device, width, height, profile_num, num_screenshots=9)
+        device, width, height, profile_num, num_screenshots=9, dating_app=dating_app)
 
     # Check if we need to force dislike based on the counter logic
     # If we've reached our target likes and haven't disliked any, dislike this one
@@ -449,7 +477,8 @@ def process_bumble_profile(device, width, height, profile_num, target_likes_befo
     logger.info("AI processing complete")
 
     # Save profile results with AI response
-    results_dir = save_profile_results(profile_num, screenshots, ai_response)
+    results_dir = save_profile_results(
+        profile_num, screenshots, ai_response, app_name=dating_app)
     logger.info(f"Saved profile results to: {results_dir}")
 
     # Check if profile is undesirable based on AI response
@@ -470,7 +499,8 @@ def process_bumble_profile(device, width, height, profile_num, target_likes_befo
         ai_response['response'] = ""
         ai_response['conversation_starter'] = ""
         # Update the saved results with the modified response
-        save_profile_results(profile_num, screenshots, ai_response)
+        save_profile_results(profile_num, screenshots,
+                             ai_response, app_name=dating_app)
 
     # Tap like button (coordinates for Bumble)
     tap(device, 900, 1600, with_additional_swipe=False)
@@ -638,7 +668,7 @@ def run_automation_on_app(device, width, height, dating_app):
 
             # Check if we've reached the end of available profiles
             end_reached, end_message = check_for_end_of_profiles(
-                device, profile_num)
+                device, profile_num, dating_app=dating_app)
             if end_reached:
                 logger.info(
                     f"Reached end of available profiles: '{end_message}'. Exiting...")
