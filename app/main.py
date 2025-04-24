@@ -15,6 +15,7 @@ from helper_functions import (
     get_screen_resolution,
     capture_screenshot,
     extract_text_from_image_with_boxes,
+    generate_bumble_reply_from_screenshots,
     generate_hinge_reply_from_screenshots,
     tap,
     input_text,
@@ -36,8 +37,19 @@ ai_response = None
 ai_response_lock = threading.Lock()
 
 
-def scroll_profile_and_capture(device, width, height, profile_num):
-    """Scroll through profile and capture screenshots."""
+def scroll_profile_and_capture(device, width, height, profile_num, num_screenshots=7):
+    """Scroll through profile and capture screenshots.
+
+    Args:
+        device: The ADB device
+        width: Screen width
+        height: Screen height
+        profile_num: Current profile number
+        num_screenshots: Number of screenshots to capture (7 for Hinge, 9 for Bumble)
+
+    Returns:
+        list: Paths to captured screenshots
+    """
     try:
         screenshots = []
 
@@ -47,8 +59,8 @@ def scroll_profile_and_capture(device, width, height, profile_num):
             device, f"profile_{profile_num}_part1")
         screenshots.append(screenshot_path)
 
-        # Take 6 more screenshots (7 total)
-        for i in range(1, 7):
+        # Take remaining screenshots
+        for i in range(1, num_screenshots):
             logger.info(f"Scroll down #{i}")
             # Scroll down
             swipe(device, "down")
@@ -67,10 +79,18 @@ def scroll_profile_and_capture(device, width, height, profile_num):
         return []
 
 
-def scroll_back_to_top(device):
-    """Scroll back to the top of the profile."""
+def scroll_back_to_top(device, num_scrolls=6):
+    """Scroll back to the top of the profile.
+
+    Args:
+        device: The ADB device
+        num_scrolls: Number of scrolls to perform (6 for Hinge with 7 screenshots, 8 for Bumble with 9 screenshots)
+
+    Returns:
+        bool: True if successful, False otherwise
+    """
     try:
-        for i in range(1, 7):
+        for i in range(1, num_scrolls+1):
             logger.info(f"Scroll up #{i}")
             # Scroll up
             swipe(device, "up")
@@ -236,8 +256,251 @@ def match_prompt_against_authoritative(prompt, prompts_txt_path):
         return None, 0.0
 
 
+def process_hinge_profile(device, width, height, profile_num, target_likes_before_dislike, disliked_profiles, total_likes, total_likes_target, format_txt_path, prompts_txt_path, captions_txt_path, polls_txt_path, locations_txt_path):
+    """Process a Hinge profile with scrolling, capturing screenshots, and AI evaluation."""
+    # Reset AI response
+    global ai_response
+    ai_response = None
+
+    # Scroll through profile and capture screenshots
+    screenshots = scroll_profile_and_capture(
+        device, width, height, profile_num)
+
+    # Check if we need to force dislike based on the counter logic
+    # If we've reached our target likes and haven't disliked any, dislike this one
+    force_dislike = False
+    if total_likes >= target_likes_before_dislike and disliked_profiles == 0:
+        force_dislike = True
+        logger.info(
+            f"Reached {total_likes} likes without any dislikes. Forcing dislike.")
+
+    if force_dislike:
+        # Save profile results without AI evaluation
+        results_dir = save_profile_results(profile_num, screenshots, None)
+        logger.info(f"Saved profile results to: {results_dir}")
+
+        logger.info("Disliking profile based on counter logic")
+        dislike_profile(device)
+        disliked_profiles += 1
+        return disliked_profiles, total_likes, False
+
+    # Start AI processing in a separate thread
+    logger.info("Starting AI processing in separate thread")
+    ai_thread = threading.Thread(
+        target=process_ai_response,
+        args=(screenshots, format_txt_path, prompts_txt_path,
+              captions_txt_path, polls_txt_path, locations_txt_path)
+    )
+    ai_thread.start()
+
+    # Scroll back to top while AI is processing
+    logger.info("Scrolling back to top while AI processes")
+    scroll_back_to_top(device)
+
+    # Wait for AI response
+    logger.info("Waiting for AI processing to complete")
+    ai_thread.join()
+    logger.info("AI processing complete")
+
+    # Save profile results with AI response
+    results_dir = save_profile_results(profile_num, screenshots, ai_response)
+    logger.info(f"Saved profile results to: {results_dir}")
+
+    # Check if profile is undesirable (empty response)
+    if not ai_response or not ai_response.get('prompt') or not ai_response.get('response') or not ai_response.get('conversation_starter') or ai_response.get('screenshot_index') == -1:
+        logger.info("Profile marked as undesirable - disliking")
+        dislike_profile(device)
+        disliked_profiles += 1
+        return disliked_profiles, total_likes, False
+
+    # Match prompt against authoritative list
+    matched_prompt, confidence = match_prompt_against_authoritative(
+        ai_response['prompt'], prompts_txt_path)
+
+    if not matched_prompt or confidence < 0.8:
+        logger.warning(f"Low confidence prompt match ({confidence:.2f})")
+        logger.warning(f"Original: {ai_response['prompt']}")
+        logger.warning(f"Matched: {matched_prompt}")
+        logger.info("Exiting program due to low confidence prompt match")
+        sys.exit(1)
+
+    # Scroll to the screenshot containing the prompt
+    scroll_to_screenshot(device, ai_response['screenshot_index'])
+
+    # Try to find and tap the prompt
+    found, tap_coords = detect_prompt_in_screenshot(
+        device,
+        matched_prompt,
+        ai_response['response'],
+        ai_response['screenshot_index'],
+        profile_num
+    )
+
+    if not found:
+        logger.warning(
+            "Failed to find prompt on target screenshot - trying one screen up...")
+        # Scroll up one screen and try again
+        swipe(device, "up")
+        time.sleep(1)  # Wait for scroll to complete
+
+        found, tap_coords = detect_prompt_in_screenshot(
+            device,
+            matched_prompt,
+            ai_response['response'],
+            ai_response['screenshot_index'],
+            profile_num
+        )
+
+        if not found:
+            logger.warning(
+                "Failed to find prompt on screen above - returning to target screenshot...")
+            # Scroll back down to target screenshot
+            swipe(device, "down")
+            time.sleep(1)  # Wait for scroll to complete
+
+            # Try one more time on target screenshot
+            found, tap_coords = detect_prompt_in_screenshot(
+                device,
+                matched_prompt,
+                ai_response['response'],
+                ai_response['screenshot_index'],
+                profile_num
+            )
+
+            if not found:
+                logger.error("Failed to find prompt after all attempts")
+                logger.info("Exiting program due to prompt detection failure")
+                sys.exit(1)
+
+    # Send the response
+    success = send_response_to_story(
+        device, ai_response['conversation_starter'], profile_num)
+
+    if not success:
+        logger.error("Failed to send response")
+        logger.info("Exiting program due to failure to send response")
+        sys.exit(1)
+    else:
+        # Increment likes counter
+        total_likes += 1
+        logger.info(f"Total likes: {total_likes}/{total_likes_target}")
+
+    return disliked_profiles, total_likes, True
+
+
+def process_bumble_profile(device, width, height, profile_num, target_likes_before_dislike, disliked_profiles, total_likes, total_likes_target, format_txt_path, prompts_txt_path, interests_txt_path, metadata_txt_path):
+    """Process a Bumble profile with scrolling, capturing screenshots, and AI evaluation."""
+    # Reset AI response
+    global ai_response
+    ai_response = None
+
+    # Scroll through profile and capture screenshots
+    screenshots = scroll_profile_and_capture(
+        device, width, height, profile_num, num_screenshots=9)
+
+    # Check if we need to force dislike based on the counter logic
+    # If we've reached our target likes and haven't disliked any, dislike this one
+    force_dislike = False
+    if total_likes >= target_likes_before_dislike and disliked_profiles == 0:
+        force_dislike = True
+        logger.info(
+            f"Reached {total_likes} likes without any dislikes. Forcing dislike.")
+
+    if force_dislike:
+        # Save profile results without AI evaluation
+        results_dir = save_profile_results(profile_num, screenshots, None)
+        logger.info(f"Saved profile results to: {results_dir}")
+
+        logger.info("Disliking profile based on counter logic")
+        # Tap dislike button (coordinates for Bumble)
+        tap(device, 150, 1600, with_additional_swipe=False)
+        disliked_profiles += 1
+        time.sleep(4)  # Wait for next profile to load
+        return disliked_profiles, total_likes, False
+
+    # Start AI processing in a separate thread
+    logger.info("Starting AI processing in separate thread")
+    ai_thread = threading.Thread(
+        target=process_bumble_ai_response,
+        args=(screenshots, format_txt_path, prompts_txt_path,
+              interests_txt_path, metadata_txt_path)
+    )
+    ai_thread.start()
+
+    # Unlike Hinge, we stay at the bottom of the profile while AI processes
+    logger.info("Waiting at the bottom of profile while AI processes")
+
+    # Wait for AI response
+    logger.info("Waiting for AI processing to complete")
+    ai_thread.join()
+    logger.info("AI processing complete")
+
+    # Save profile results with AI response
+    results_dir = save_profile_results(profile_num, screenshots, ai_response)
+    logger.info(f"Saved profile results to: {results_dir}")
+
+    # Check if profile is undesirable based on AI response
+    if not ai_response or ai_response.get('screenshot_index', -1) < 0:
+        logger.info("Profile marked as undesirable - disliking")
+        # Tap dislike button (coordinates for Bumble)
+        tap(device, 150, 1600, with_additional_swipe=False)
+        disliked_profiles += 1
+        time.sleep(4)  # Wait for next profile to load
+        return disliked_profiles, total_likes, False
+
+    # Profile is desirable - like it
+    logger.info("Profile marked as desirable - liking")
+
+    # Clear the fields for desirable profiles (Bumble doesn't need these)
+    if ai_response:
+        ai_response['prompt'] = ""
+        ai_response['response'] = ""
+        ai_response['conversation_starter'] = ""
+        # Update the saved results with the modified response
+        save_profile_results(profile_num, screenshots, ai_response)
+
+    # Tap like button (coordinates for Bumble)
+    tap(device, 900, 1600, with_additional_swipe=False)
+    time.sleep(4)  # Wait for next profile to load
+
+    # Increment likes counter
+    total_likes += 1
+    logger.info(f"Total likes: {total_likes}/{total_likes_target}")
+
+    return disliked_profiles, total_likes, True
+
+
+def process_bumble_ai_response(screenshots, format_txt_path, prompts_txt_path, interests_txt_path, metadata_txt_path):
+    """Process screenshots from Bumble and generate an AI response."""
+    global ai_response
+    try:
+        result = generate_bumble_reply_from_screenshots(
+            screenshots,
+            format_txt_path,
+            prompts_txt_path,
+            interests_txt_path,
+            metadata_txt_path,
+            compliments_available=False
+        )
+        with ai_response_lock:
+            ai_response = result
+    except SystemExit:
+        # Re-raise SystemExit to propagate to main thread
+        logger.critical(
+            "API error occurred in background thread - propagating exit")
+        sys.exit(1)
+    except Exception as e:
+        logger.error(
+            f"Unhandled exception in Bumble AI processing thread: {e}")
+        logger.debug("", exc_info=True)
+        with ai_response_lock:
+            ai_response = None
+        # Also exit the application on unhandled exceptions
+        sys.exit(1)
+
+
 def main():
-    """Main function to run the Hinge automation."""
+    """Main function to run the dating app automation."""
     try:
         # Get device IP from environment variable
         device_ip = os.getenv("DEVICE_IP", "192.168.12.32")
@@ -253,27 +516,59 @@ def main():
         width, height = get_screen_resolution(device)
         logger.info(f"Screen resolution: {width}x{height}")
 
-        # Initialize profile counter, successful interaction counter, and target interactions
+        # Initialize profile counter for logging/screenshots only
         profile_num = 1
-        successful_interactions = 0
-        target_interactions = random.randint(4, 6)
-        max_profiles = 4  # Maximum number of profiles to process
-        logger.info(f"Initial target interactions: {target_interactions}")
-        logger.info(f"Maximum profiles to process: {max_profiles}")
+
+        # Counters for tracking likes and dislikes
+        disliked_profiles = 0  # Track if we've disliked any profiles in the current cycle
+        total_likes = 0  # Track total likes
 
         # Initialize file paths
         # Get the absolute path to the app directory
         app_dir = os.path.dirname(os.path.abspath(__file__))
 
-        # Default paths for text files
-        format_txt_path = os.path.join(app_dir, 'hingeFormat.txt')
-        prompts_txt_path = os.path.join(app_dir, 'hingePrompts.txt')
-        captions_txt_path = os.path.join(app_dir, 'hingeCaptions.txt')
-        polls_txt_path = os.path.join(app_dir, 'hingePolls.txt')
-        locations_txt_path = os.path.join(app_dir, 'locations.txt')
+        # Select which dating app to use (Hinge or Bumble)
+        dating_app = os.getenv("DATING_APP", "hinge").lower()
+        logger.info(f"Selected dating app: {dating_app}")
 
-        while profile_num <= max_profiles:  # Main profile loop with limit
+        if dating_app == "hinge":
+            # Default paths for Hinge text files
+            format_txt_path = os.path.join(app_dir, 'hingeFormat.txt')
+            prompts_txt_path = os.path.join(app_dir, 'hingePrompts.txt')
+            captions_txt_path = os.path.join(app_dir, 'hingeCaptions.txt')
+            polls_txt_path = os.path.join(app_dir, 'hingePolls.txt')
+            locations_txt_path = os.path.join(app_dir, 'locations.txt')
+
+            # Set a single random target for number of likes before forcing a dislike
+            target_likes_before_dislike = random.randint(
+                4, 7)  # Random number between 4-7
+            total_likes_target = 8
+
+            logger.info(
+                f"Using Hinge like/dislike logic: After {target_likes_before_dislike} likes without a dislike, force one. Continue to {total_likes_target} total likes")
+        elif dating_app == "bumble":
+            # Default paths for Bumble text files
+            format_txt_path = os.path.join(app_dir, 'bumbleFormat.txt')
+            prompts_txt_path = os.path.join(app_dir, 'bumblePrompts.txt')
+            interests_txt_path = os.path.join(app_dir, 'bumbleInterests.txt')
+            metadata_txt_path = os.path.join(app_dir, 'bumbleMetadata.txt')
+
+            # Set a single random target for number of likes before forcing a dislike
+            target_likes_before_dislike = random.randint(
+                6, 9)  # Random number between 6-9
+            total_likes_target = 9
+
+            logger.info(
+                f"Using Bumble like/dislike logic: After {target_likes_before_dislike} likes without a dislike, force one. Continue to {total_likes_target} total likes")
+        else:
+            logger.error(f"Unsupported dating app: {dating_app}")
+            sys.exit(1)
+
+        # Continue until we've both reached the target number of likes AND had at least one dislike
+        while total_likes < total_likes_target or disliked_profiles == 0:
             logger.info(f"\nProcessing profile #{profile_num}")
+            logger.info(
+                f"Progress: {total_likes}/{total_likes_target} likes, {disliked_profiles} dislikes")
 
             # Check if we've reached the end of available profiles
             end_reached, end_message = check_for_end_of_profiles(
@@ -283,140 +578,33 @@ def main():
                     f"Reached end of available profiles: '{end_message}'. Exiting...")
                 break
 
-            # Check if we've reached our target interactions
-            if successful_interactions >= target_interactions:
-                logger.info(
-                    f"Reached target of {target_interactions} successful interactions")
-                dislike_profile(device)
-                successful_interactions = 0  # Reset counter
-                target_interactions = random.randint(
-                    4, 6)  # Generate new target
-                logger.info(f"New target interactions: {target_interactions}")
-                profile_num += 1
-                continue
-
-            # Reset AI response
-            global ai_response
-            ai_response = None
-
-            # Scroll through profile and capture screenshots
-            screenshots = scroll_profile_and_capture(
-                device, width, height, profile_num)
-
-            # Start AI processing in a separate thread
-            logger.info("Starting AI processing in separate thread")
-            ai_thread = threading.Thread(
-                target=process_ai_response,
-                args=(screenshots, format_txt_path, prompts_txt_path,
-                      captions_txt_path, polls_txt_path, locations_txt_path)
-            )
-            ai_thread.start()
-
-            # Scroll back to top while AI is processing
-            logger.info("Scrolling back to top while AI processes")
-            scroll_back_to_top(device)
-
-            # Wait for AI response
-            logger.info("Waiting for AI processing to complete")
-            ai_thread.join()
-            logger.info("AI processing complete")
-
-            # Save profile results regardless of outcome
-            results_dir = save_profile_results(
-                profile_num, screenshots, ai_response)
-            logger.info(f"Saved profile results to: {results_dir}")
-
-            # Check if profile is undesirable (empty response)
-            if not ai_response or not ai_response.get('prompt') or not ai_response.get('response') or not ai_response.get('conversation_starter') or ai_response.get('screenshot_index') == -1:
-                logger.info("Profile marked as undesirable - disliking")
-                dislike_profile(device)
-                successful_interactions = 0  # Reset counter when disliking for any reason
-                target_interactions = random.randint(
-                    4, 6)  # Generate new target
-                profile_num += 1
-                continue
-
-            # Match prompt against authoritative list
-            matched_prompt, confidence = match_prompt_against_authoritative(
-                ai_response['prompt'], prompts_txt_path)
-
-            if not matched_prompt or confidence < 0.8:
-                logger.warning(
-                    f"Low confidence prompt match ({confidence:.2f})")
-                logger.warning(f"Original: {ai_response['prompt']}")
-                logger.warning(f"Matched: {matched_prompt}")
-                logger.info(
-                    "Exiting program due to low confidence prompt match")
-                sys.exit(1)
-
-            # Scroll to the screenshot containing the prompt
-            scroll_to_screenshot(device, ai_response['screenshot_index'])
-
-            # Try to find and tap the prompt
-            found, tap_coords = detect_prompt_in_screenshot(
-                device,
-                matched_prompt,
-                ai_response['response'],
-                ai_response['screenshot_index'],
-                profile_num
-            )
-
-            if not found:
-                logger.warning(
-                    "Failed to find prompt on target screenshot - trying one screen up...")
-                # Scroll up one screen and try again
-                swipe(device, "up")
-                time.sleep(1)  # Wait for scroll to complete
-
-                found, tap_coords = detect_prompt_in_screenshot(
-                    device,
-                    matched_prompt,
-                    ai_response['response'],
-                    ai_response['screenshot_index'],
-                    profile_num
+            # Process profile based on selected dating app
+            if dating_app == "hinge":
+                disliked_profiles, total_likes, success = process_hinge_profile(
+                    device, width, height, profile_num, target_likes_before_dislike,
+                    disliked_profiles, total_likes, total_likes_target, format_txt_path, prompts_txt_path,
+                    captions_txt_path, polls_txt_path, locations_txt_path
                 )
-
-                if not found:
-                    logger.warning(
-                        "Failed to find prompt on screen above - returning to target screenshot...")
-                    # Scroll back down to target screenshot
-                    swipe(device, "down")
-                    time.sleep(1)  # Wait for scroll to complete
-
-                    # Try one more time on target screenshot
-                    found, tap_coords = detect_prompt_in_screenshot(
-                        device,
-                        matched_prompt,
-                        ai_response['response'],
-                        ai_response['screenshot_index'],
-                        profile_num
-                    )
-
-                    if not found:
-                        logger.error(
-                            "Failed to find prompt after all attempts")
-                        logger.info(
-                            "Exiting program due to prompt detection failure")
-                        sys.exit(1)
-
-            # Send the response
-            success = send_response_to_story(
-                device, ai_response['conversation_starter'], profile_num)
-
-            if not success:
-                logger.error("Failed to send response")
-                logger.info("Exiting program due to failure to send response")
-                sys.exit(1)
-            else:
-                # Increment successful interactions counter
-                successful_interactions += 1
-                logger.info(
-                    f"Successful interactions: {successful_interactions}/{target_interactions}")
+            elif dating_app == "bumble":
+                disliked_profiles, total_likes, success = process_bumble_profile(
+                    device, width, height, profile_num, target_likes_before_dislike,
+                    disliked_profiles, total_likes, total_likes_target, format_txt_path, prompts_txt_path,
+                    interests_txt_path, metadata_txt_path
+                )
 
             profile_num += 1
 
-        logger.info(
-            f"\nReached maximum profile limit of {max_profiles}. Exiting...")
+        # Log completion status
+        if total_likes >= total_likes_target and disliked_profiles > 0:
+            logger.info(
+                f"\nSuccess! Completed with {total_likes}/{total_likes_target} likes and {disliked_profiles} dislikes.")
+        else:
+            logger.info(
+                f"Exiting with final stats: {total_likes}/{total_likes_target} likes, {disliked_profiles} dislikes")
+
+        # Clear out the counters for the next run
+        total_likes = 0
+        disliked_profiles = 0
 
     except KeyboardInterrupt:
         logger.info("\nExiting gracefully...")

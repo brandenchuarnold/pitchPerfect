@@ -23,14 +23,16 @@ Current Implementation:
      * Exits gracefully with specific end message
    
    - Target Interactions:
-     * Random target between 4-6 successful interactions
-     * Resets after reaching target
-     * Resets when disliking for any reason (undesirable, low confidence, etc.)
-     * Dislikes profile when target reached
+     * Like profiles while disliking undesirables based on AI evaluation
+     * If 4-7 consecutive likes occur without any dislikes, force dislike on the next profile
+     * Continue liking until reaching a total of 8 likes
+     * After reaching 8 likes, reset all counters (consecutive likes, total likes, dislikes)
+     * For forced dislikes, still capture and save screenshots without AI evaluation
    
    - Profile Analysis:
      * Takes 7 screenshots while scrolling down (initial + 6 scrolls)
-     * Processes screenshots with AI in separate thread
+     * For forced dislikes, still captures screenshots and saves to desktop
+     * For normal profiles, processes screenshots with AI in separate thread
      * Scrolls back to top while AI processes
      * Waits for AI response
    
@@ -43,7 +45,7 @@ Current Implementation:
        - Body Type Analysis:
          · Visible excess weight or body fat
          · Body width appears wider than typical fit/skinny woman
-         · Visible stomach protrusion in any photo
+         · Visible stomach protrusion that extends beyond the waistline (bulging out)
          · Face shape is rounder with less defined jawline
          · Only face/high angle photos (hiding body)
        - Low Quality Photos:

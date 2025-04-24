@@ -193,11 +193,20 @@ def capture_screenshot(device, filename):
         return None
 
 
-def tap(device, x, y, double_tap=False):
-    """Execute a tap or double tap at the given coordinates"""
+def tap(device, x, y, double_tap=False, with_additional_swipe=True):
+    """Execute a tap at the specified coordinates.
+
+    Args:
+        device: The ADB device
+        x: X coordinate to tap
+        y: Y coordinate to tap
+        double_tap: Whether to execute a double tap (default: False)
+        with_additional_swipe: Whether to perform additional swipe to ensure tap registers (default: True)
+
+    Returns:
+        bool: True if successful, False otherwise
+    """
     try:
-        logger.info(
-            f"Executing {'double tap' if double_tap else 'tap'} at coordinates: {x}, {y}")
         if double_tap:
             # First tap
             device.shell(f"input tap {x} {y}")
@@ -208,8 +217,9 @@ def tap(device, x, y, double_tap=False):
         else:
             device.shell(f"input tap {x} {y}")
             time.sleep(0.3)
-            # Additional swipe to ensure tap registers
-            device.shell(f"input swipe {x} {y} {x} {y} 100")
+            # Additional swipe to ensure tap registers (optional)
+            if with_additional_swipe:
+                device.shell(f"input swipe {x} {y} {x} {y} 100")
         return True
     except Exception as e:
         logger.error(f"Error executing tap at ({x}, {y}): {e}")
@@ -774,7 +784,7 @@ Analyze ONLY the main person (not other people in photos) for these traits:
 1. Body Type Analysis (CRITICAL - Mark as undesirable if ANY of these are true):
    a. Body Shape Indicators:
       - Body width appears wider than typical fit/skinny woman
-      - Visible stomach protrusion in any photo
+      - Visible stomach protrusion that extends beyond the waistline (bulging out)
       - Face shape is rounder with less defined jawline
       - Full-body photos show larger body size than average fit/skinny woman
       - Arms/legs show significant fat accumulation compared to wrists/ankles
@@ -782,17 +792,17 @@ Analyze ONLY the main person (not other people in photos) for these traits:
       - Only face/high angle photos (hiding body)
 
    b. Specific Measurements (if visible):
-      - Waist-to-hip ratio appears greater than 0.8
-      - Arms appear wider than wrists by more than 2x
-      - Legs appear wider than ankles by more than 2x
+      - Waist-to-hip ratio appears greater than 1.1
+      - Arms appear wider than wrists by more than 2.2x
+      - Legs appear wider than ankles by more than 2.2x
       - Face width appears greater than 1.5x face height
 
    c. Photo Analysis Guidelines:
       - If ANY full-body photo shows these traits, mark as undesirable
       - If only face photos, assume undesirable unless face shows very defined jawline
-      - If photos are at angles that hide body shape, assume undesirable
+      - If all photos are at angles that hide body shape, assume undesirable
       - If wearing baggy clothes in all photos, assume undesirable
-      - If any photo shows clear stomach protrusion, mark as undesirable
+      - If any photo shows clear stomach protrusion that extends beyond the waistline (bulging out), mark as undesirable
       - If arms/legs show no muscle definition, mark as undesirable
 
 2. Low Quality Photos:
@@ -807,7 +817,7 @@ Analyze ONLY the main person (not other people in photos) for these traits:
      * Facial hair (mustache or beard)
      * Flat chest with no boob growth visible
 
-If ANY of these trait categories are met, return an empty response:
+If ANY of these trait categories are met, return the below response exactly, where prompt, response, and conversation_starter are empty strings, and screenshot_index is -1:
 {
     "prompt": "",
     "response": "",
@@ -1061,20 +1071,12 @@ Before returning your result, perform one last critical check:
 3. Double-check that your selected starter follows all the guidelines and passes all validation checks"""
 
 # New shared prompt component for desirability-only path
-ENDING_DESIREABILITY_ONLY = """If the woman is desirable (doesn't meet any undesirable traits in Step 4), return:
+ENDING_DESIREABILITY_ONLY = """If the woman is desirable (doesn't meet any undesirable traits in Step 4), return the following JSON exactly, where prompt, response, and conversation_starter are empty strings, and screenshot_index is 0:
 {
     "prompt": "",
     "response": "",
     "conversation_starter": "",
     "screenshot_index": 0
-}
-
-If she is undesirable (meets any undesirable traits in Step 4), return:
-{
-    "prompt": "",
-    "response": "",
-    "conversation_starter": "",
-    "screenshot_index": -1
 }"""
 
 
@@ -1560,8 +1562,8 @@ def dislike_profile(device):
     Returns:
         None
     """
-    # Dislike button is always at x=125, y=2075
-    tap(device, 125, 2075)
+    # Dislike button is always at x=150, y=1600
+    tap(device, 150, 1600, with_additional_swipe=False)
     # Wait 4 seconds for next profile to load
     time.sleep(4)
 
@@ -1718,13 +1720,14 @@ def send_response_to_story(device, conversation_starter, profile_num):
     return True
 
 
-def save_profile_results(profile_num, screenshots, ai_response):
+def save_profile_results(profile_num, screenshots, ai_response, add_timestamp=False):
     """Save profile screenshots and AI response in an organized folder structure.
 
     Args:
         profile_num: The profile number
         screenshots: List of screenshot paths
         ai_response: The AI response dictionary (can be None)
+        add_timestamp: Whether to add a timestamp to the response (default: False)
 
     Returns:
         str: Path to the profile's results directory
@@ -1767,13 +1770,16 @@ def save_profile_results(profile_num, screenshots, ai_response):
         desktop_dest_path = os.path.join(desktop_screenshots_dir, filename)
         shutil.copy2(screenshot, desktop_dest_path)
 
-    # Save AI response as JSON with timestamp, but only to desktop
+    # Save AI response as JSON, but only to desktop
     desktop_response_path = os.path.join(desktop_profile_dir, "response.json")
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    # Handle None response by creating an empty response with timestamp
-    response_data = ai_response if ai_response is not None else {}
-    response_data['timestamp'] = timestamp
+    # Copy the AI response to avoid modifying the original
+    response_data = ai_response.copy() if ai_response is not None else {}
+
+    # Add timestamp if requested
+    if add_timestamp:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        response_data['timestamp'] = timestamp
 
     # Save only to desktop directory
     with open(desktop_response_path, 'w') as f:
@@ -1838,3 +1844,93 @@ def check_for_end_of_profiles(device, profile_num):
                 return True, message
 
     return False, ""
+
+
+def launch_app(device, package_name, app_name):
+    """Launch an app using its package name.
+
+    Args:
+        device: The ADB device
+        package_name: The package name of the app
+        app_name: The human-readable name of the app for logging
+
+    Returns:
+        None
+    """
+    try:
+        logger.info(f"Launching {app_name} app")
+        device.shell(f"monkey -p {package_name} 1")
+        time.sleep(5)  # Wait for app to launch
+        logger.info(f"{app_name} app launched successfully")
+    except Exception as e:
+        logger.error(f"Error launching {app_name} app: {e}")
+        logger.debug("", exc_info=True)  # Log full traceback at debug level
+
+
+def close_app(device, package_name, app_name):
+    """Close an app using its package name.
+
+    Args:
+        device: The ADB device
+        package_name: The package name of the app
+        app_name: The human-readable name of the app for logging
+
+    Returns:
+        None
+    """
+    try:
+        logger.info(f"Closing {app_name} app")
+        device.shell(f"am force-stop {package_name}")
+        time.sleep(5)  # Wait for app to fully close
+        logger.info(f"{app_name} app closed successfully")
+    except Exception as e:
+        logger.error(f"Error closing {app_name} app: {e}")
+        logger.debug("", exc_info=True)  # Log full traceback at debug level
+
+
+def open_hinge(device):
+    """Open the Hinge dating app.
+
+    Args:
+        device: The ADB device
+
+    Returns:
+        None
+    """
+    launch_app(device, "co.hinge.app", "Hinge")
+
+
+def open_bumble(device):
+    """Open the Bumble dating app.
+
+    Args:
+        device: The ADB device
+
+    Returns:
+        None
+    """
+    launch_app(device, "com.bumble.app", "Bumble")
+
+
+def close_hinge(device):
+    """Close the Hinge dating app.
+
+    Args:
+        device: The ADB device
+
+    Returns:
+        None
+    """
+    close_app(device, "co.hinge.app", "Hinge")
+
+
+def close_bumble(device):
+    """Close the Bumble dating app.
+
+    Args:
+        device: The ADB device
+
+    Returns:
+        None
+    """
+    close_app(device, "com.bumble.app", "Bumble")
