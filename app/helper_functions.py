@@ -882,13 +882,12 @@ Analyze ONLY the main person (not other people in photos) for these traits:
 
 1. Body Type Analysis (CRITICAL - Mark as undesirable if ANY of these are true):
    a. Body Shape Indicators:
-      - Body width appears wider than typical fit/skinny woman
       - Visible stomach protrusion that extends beyond the waistline (bulging out)
-      - Face shape is rounder with less defined jawline
-      - Full-body photos show larger body size than average fit/skinny woman
-      - Arms/legs show significant fat accumulation compared to wrists/ankles
-      - No visible muscle or bone definition in arms/legs
-      - Only face/high angle photos (hiding body)
+      - Face shape is rounder without any jawline definition
+      - Full-body photos show reasonably larger body size than average fit/skinny woman
+      - Arms/legs show reasonablly high fat accumulation compared to wrists/ankles
+      - Very little muscle or bone definition in arms/legs
+      - Every single photo is face/high angle photos (hiding body)
 
    b. Specific Measurements (if visible):
       - Waist-to-hip ratio appears greater than 1.0
@@ -906,9 +905,9 @@ Analyze ONLY the main person (not other people in photos) for these traits:
 
 2. Low Quality Photos:
    - Any ONE of these qualifies as low quality photos:
-     * Majority of photos are blurry/pixelated
-     * Heavy filters or editing in majority of photos
-     * Screenshots or reposts in multiple photos
+     * All or all but one of photos are blurry/pixelated
+     * Heavy filters or editing in all or all but one of photos
+     * Multiple photos appear to be screenshots
 
 3. Male Features:
    - Any of these qualifies as male features:
@@ -2131,7 +2130,9 @@ def check_for_end_of_profiles(device, profile_num, dating_app=None):
         "Review skipped profiles",
         "You're out of free likes for today",
         "You're out of free",
-        "likes for today"
+        "likes for today",
+        "What a match!",
+        "Now you have 24 hours to start chatting."
     ]
 
     # Check each paragraph against each message
