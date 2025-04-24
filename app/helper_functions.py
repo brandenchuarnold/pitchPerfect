@@ -812,7 +812,7 @@ Analyze ONLY the main person (not other people in photos) for these traits:
       - Only face/high angle photos (hiding body)
 
    b. Specific Measurements (if visible):
-      - Waist-to-hip ratio appears greater than 1.1
+      - Waist-to-hip ratio appears greater than 1.0
       - Arms appear wider than wrists by more than 2.2x
       - Legs appear wider than ankles by more than 2.2x
       - Face width appears greater than 1.5x face height
