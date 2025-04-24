@@ -2414,17 +2414,17 @@ def check_for_bumble_advertisement(device, profile_num):
             time.sleep(4)
             return True
 
-        # Handle regular advertisements with a swipe right gesture
+        # Handle regular advertisements with a swipe left gesture (changed from right)
         elif regular_ad_detected:
-            logger.info(f"Dismissing Bumble advertisement by swiping right")
+            logger.info(f"Dismissing Bumble advertisement by swiping left")
             width, height = get_screen_resolution(device)
 
-            # Horizontal swipe from left to right (unlike the vertical swipe in the swipe function)
-            swipe_start_x = int(width * 0.2)  # Start at 20% of screen width
-            swipe_end_x = int(width * 0.8)    # End at 80% of screen width
+            # Horizontal swipe from right to left (changed from left to right)
+            swipe_start_x = int(width * 0.8)  # Start at 80% of screen width
+            swipe_end_x = int(width * 0.2)    # End at 20% of screen width
             swipe_y = int(height * 0.5)       # Middle of screen height
 
-            # Execute the right swipe
+            # Execute the left swipe
             device.shell(
                 f"input swipe {swipe_start_x} {swipe_y} {swipe_end_x} {swipe_y} 300")
 
@@ -2542,3 +2542,237 @@ def generate_tinder_reply_from_screenshots(screenshots, format_txt_path):
         "conversation_starter": result.get("conversation_starter", ""),
         "screenshot_index": result.get("screenshot_index", 0)
     }
+
+
+def check_for_super_like_popup(device, profile_num, dating_app=None):
+    """Check if a 'Send Super Like' popup appeared after liking a profile.
+
+    Args:
+        device: The ADB device
+        profile_num: Current profile number for debugging
+        dating_app: Optional app type for OCR settings
+
+    Returns:
+        bool: True if popup was detected and dismissed, False otherwise
+    """
+    try:
+        # Wait 1.0 second for popup to appear
+        logger.info("Waiting 1.0 second for possible Super Like popup")
+        time.sleep(1.0)
+
+        # Take a screenshot to check for the popup
+        screenshot_path = capture_screenshot(
+            device, f"profile_{profile_num}_super_like_check")
+
+        # Extract text using OCR
+        boxes = extract_text_from_image_with_boxes(
+            screenshot_path, app_type=dating_app)
+        if not boxes:
+            logger.info("No text found in screenshot, no popup detected")
+            return False
+
+        lines = group_boxes_into_lines(boxes)
+        paragraphs = group_lines_into_paragraphs(lines)
+
+        # Create visualization for debugging
+        create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=f"images/profile_{profile_num}_super_like_check_visual.png"
+        )
+
+        # Check for "Send Super Like" text in paragraphs
+        super_like_detected = False
+        no_thanks_button = None
+
+        # Search for "Send Super Like" and "No thanks" text
+        for para in paragraphs:
+            # Check for "Send Super Like" text
+            is_match_super, ratio_super, _ = fuzzy_match_text(
+                "Send Super Like", para['text'], threshold=0.7)
+            if is_match_super:
+                logger.info(
+                    f"Detected 'Send Super Like' popup with ratio {ratio_super:.2f}")
+                super_like_detected = True
+
+            # Check for "No thanks" button
+            is_match_no, ratio_no, _ = fuzzy_match_text(
+                "No thanks", para['text'], threshold=0.7)
+            if is_match_no:
+                logger.info(
+                    f"Found 'No thanks' button with ratio {ratio_no:.2f}")
+                no_thanks_button = para
+
+        # If Super Like popup detected and No thanks button found, click it
+        if super_like_detected and no_thanks_button:
+            logger.info(
+                "Super Like popup detected, clicking 'No thanks' button")
+
+            # Calculate tap coordinates for the No thanks button
+            boxes_no = no_thanks_button['boxes']
+            min_x = min(box['box'][0] for box in boxes_no)
+            max_x = max(box['box'][0] + box['box'][2] for box in boxes_no)
+            min_y = min(box['box'][1] for box in boxes_no)
+            max_y = max(box['box'][1] + box['box'][3] for box in boxes_no)
+
+            no_thanks_x = (min_x + max_x) // 2
+            no_thanks_y = (min_y + max_y) // 2
+
+            # Create visualization with tap target
+            create_visual_debug_overlay(
+                screenshot_path,
+                boxes=boxes,
+                lines=lines,
+                paragraphs=paragraphs,
+                output_path=f"images/profile_{profile_num}_super_like_dismiss_visual.png",
+                tap_target=(no_thanks_x, no_thanks_y)
+            )
+
+            # Tap the No thanks button
+            tap(device, no_thanks_x, no_thanks_y)
+            time.sleep(1.0)  # Wait for popup to dismiss
+            return True
+
+        # Alternative approach: if we detect Super Like but not the button,
+        # try a generic bottom-left tap which is typically where "No thanks" is
+        if super_like_detected and not no_thanks_button:
+            logger.info(
+                "Super Like popup detected but 'No thanks' button not found, trying generic location")
+            # Tap at a common location for "No thanks" (bottom-left area)
+            tap(device, 300, 1600)
+            time.sleep(1.0)
+            return True
+
+        logger.info("No Super Like popup detected")
+        return False
+
+    except Exception as e:
+        logger.error(f"Error checking for Super Like popup: {e}")
+        logger.debug("", exc_info=True)
+        return False
+
+
+def check_for_tinder_advertisement(device, profile_num):
+    """Check if there's a Tinder advertisement about profile boosting that requires dismissal.
+
+    Detects specific advertisements and dismisses them appropriately:
+    - 'Your new pic is everything' ad: dismissed by swiping left
+    - 'Be Seen' boosts ad: dismissed by tapping X button at top left
+
+    Args:
+        device: The ADB device
+        profile_num: Current profile number for debugging
+
+    Returns:
+        bool: True if advertisement was detected and dismissed, False otherwise
+    """
+    try:
+        # Take a screenshot to check for the advertisement
+        screenshot_path = capture_screenshot(
+            device, f"profile_{profile_num}_tinder_ad_check")
+
+        # Extract text and group into paragraphs
+        boxes = extract_text_from_image_with_boxes(
+            screenshot_path, app_type='tinder')
+        if not boxes:
+            return False
+
+        lines = group_boxes_into_lines(boxes)
+        paragraphs = group_lines_into_paragraphs(lines)
+
+        # Create visualization for debugging
+        create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=f"images/profile_{profile_num}_tinder_ad_check_visual.png"
+        )
+
+        # X-button advertisement indicators - to be dismissed with tap on X button
+        x_button_ad_indicators = [
+            "Be Seen",
+            "Be a top profile in your area for 30 minutes to get more matches",
+            "Be a top profile in your area for 30 minutes"
+            "Get more matches"
+        ]
+
+        # Regular advertisement indicators - to be dismissed with swipe left
+        regular_ad_indicators = [
+            "Your new pic is everything",
+            "Make sure your next crush date or boo sees it",
+            "Make sure your next crush, date or boo sees it - Boost your profile to increase your chances of meeting them.",
+            "BOOST ME"
+        ]
+
+        # First check for X-button advertisements
+        x_button_ad_detected = False
+        matched_x_button_indicator = ""
+
+        for para in paragraphs:
+            for indicator in x_button_ad_indicators:
+                is_match, ratio, _ = fuzzy_match_text(
+                    indicator, para['text'], threshold=0.7)
+                if is_match:
+                    logger.info(
+                        f"Detected Tinder X-button ad indicator '{indicator}' with ratio {ratio:.2f}")
+                    x_button_ad_detected = True
+                    matched_x_button_indicator = indicator
+                    break
+            if x_button_ad_detected:
+                break
+
+        # Check for regular advertisements if no X-button ad detected
+        regular_ad_detected = False
+        matched_regular_indicator = ""
+
+        if not x_button_ad_detected:
+            for para in paragraphs:
+                for indicator in regular_ad_indicators:
+                    is_match, ratio, _ = fuzzy_match_text(
+                        indicator, para['text'], threshold=0.7)
+                    if is_match:
+                        logger.info(
+                            f"Detected Tinder regular ad indicator '{indicator}' with ratio {ratio:.2f}")
+                        regular_ad_detected = True
+                        matched_regular_indicator = indicator
+                        break
+                if regular_ad_detected:
+                    break
+
+        # Handle X-button advertisements by tapping the X button at (75, 190)
+        if x_button_ad_detected:
+            logger.info(
+                f"Dismissing Tinder 'Be Seen' advertisement by tapping X button at (75, 190)")
+            tap(device, 75, 190)
+
+            # Wait for the ad to be dismissed
+            time.sleep(2.0)
+            return True
+
+        # Handle regular advertisements with a swipe left
+        elif regular_ad_detected:
+            logger.info(
+                "Tinder 'Boost' advertisement detected - swiping left to dismiss")
+            # Swipe left to dismiss advertisement
+            # Start from mid-right of screen and swipe to mid-left
+            width, height = get_screen_resolution(device)
+            start_x = int(width * 0.8)
+            end_x = int(width * 0.2)
+            mid_y = int(height * 0.5)
+
+            # Execute the swipe
+            device.shell(f"input swipe {start_x} {mid_y} {end_x} {mid_y} 300")
+
+            # Wait for the ad to be dismissed
+            time.sleep(2.0)
+            return True
+
+        return False
+
+    except Exception as e:
+        logger.error(f"Error checking for Tinder advertisement: {e}")
+        logger.debug("", exc_info=True)
+        return False

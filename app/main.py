@@ -39,6 +39,8 @@ from helper_functions import (
     close_tinder,
     setup_logging,
     check_for_bumble_advertisement,
+    check_for_super_like_popup,
+    check_for_tinder_advertisement,
 )
 
 # Global variable to store AI response
@@ -507,6 +509,7 @@ def process_bumble_profile(device, width, height, profile_num, target_likes_befo
 
     # Tap like button (coordinates for Bumble)
     tap(device, 900, 1600, with_additional_swipe=False)
+
     time.sleep(4)  # Wait for next profile to load
 
     # Increment likes counter
@@ -558,6 +561,13 @@ def process_tinder_profile(device, width, height, profile_num, target_likes_befo
         dating_app = "tinder"
         logger.info(f"Processing Tinder profile #{profile_num}")
 
+        # Check for advertisements before processing the profile
+        ad_detected = check_for_tinder_advertisement(device, profile_num)
+        if ad_detected:
+            logger.info("Tinder advertisement detected and dismissed")
+            # Wait a moment for the next profile to load properly after dismissing
+            time.sleep(2.0)
+
         # Check if we need to force a dislike based on our heuristic
         force_dislike = False
         if disliked_profiles == 0 and total_likes >= target_likes_before_dislike:
@@ -597,6 +607,9 @@ def process_tinder_profile(device, width, height, profile_num, target_likes_befo
             logger.info("Forcing dislike on this profile")
             tap(device, 330, 2050, with_additional_swipe=False)
             time.sleep(4)  # Wait for next profile to load
+
+            # Check for advertisements after profile loads
+            check_for_tinder_advertisement(device, profile_num)
 
             return disliked_profiles, total_likes, False
 
@@ -658,6 +671,10 @@ def process_tinder_profile(device, width, height, profile_num, target_likes_befo
             tap(device, 330, 2050, with_additional_swipe=False)
             disliked_profiles += 1
             time.sleep(4)  # Wait for next profile to load
+
+            # Check for advertisements after profile loads
+            check_for_tinder_advertisement(device, profile_num)
+
             return disliked_profiles, total_likes, False
 
         # Profile is desirable - like it
@@ -665,7 +682,14 @@ def process_tinder_profile(device, width, height, profile_num, target_likes_befo
 
         # Tap like button at coordinates 750x2050
         tap(device, 750, 2050, with_additional_swipe=False)
+
+        # Check for "Send Super Like" popup and dismiss if found
+        check_for_super_like_popup(device, profile_num, dating_app=dating_app)
+
         time.sleep(4)  # Wait for next profile to load
+
+        # Check for advertisements after profile loads
+        check_for_tinder_advertisement(device, profile_num)
 
         # Increment likes counter
         total_likes += 1
