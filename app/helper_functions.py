@@ -958,7 +958,11 @@ For each story (element), determine what it reveals about the main person:
 CONVERSATION_STARTER_GUIDE = """STEP 7: GENERATE CONVERSATION STARTERS
 For each prompt/response pair:
 1. Use characteristics and stories as context
-2. Create exactly THREE unique conversation starters that follow this four-step approach:
+2. Confirm that the prompt of the prompt/response pair is NOT a poll prompt:
+    a. CRITICAL: Immediately check if the prompt appears in hingePolls.txt
+    b. If the prompt is found in hingePolls.txt, it is a poll prompt and must be DISQUALIFIED for conversation starters
+    c. Only generate conversation starters for the three actual prompt/response pairs where the prompt is NOT in hingePolls.txt
+3. Create exactly THREE unique conversation starters that follow this four-step approach:
    a. First, give a direct, simple acknowledgment that shows you've understood something visible from her profile
       - Focus on concrete, observable things:
         * Physical appearance (only if obvious and tasteful)
@@ -1153,6 +1157,13 @@ SELECT_BEST_STARTER = """STEP 9: SELECT BEST STARTER
       * Replace it with a starter that either uses a generic venue type (e.g., "coffee shop downtown") or uses a venue from locations.txt
       * Do NOT use similar spellings or variations - match EXACTLY what's in locations.txt
       * This validation is MANDATORY - never return a starter with an unverified location
+   - CRITICAL: POLL VALIDATION CHECK - FOLLOW THESE STEPS CAREFULLY:
+      * Review the prompt you selected for your best conversation starter
+      * Check if this prompt appears in hingePolls.txt
+      * If it does, this is a poll prompt and MUST NOT be used for conversation starters
+      * If you selected a poll prompt, immediately disqualify it and select a different one from the three valid prompt/response pairs
+      * A valid prompt must NOT be in hingePolls.txt
+      * There are always exactly three non-poll prompts in every profile - ensure you've selected one of these
 2. Note which prompt/response pair of the woman's profile matches the chosen starter
 3. Reference prompts.txt and separate the prompt/response pair into the prompt and the response. Take note of the prompt distinctly from the response."""
 
@@ -1398,12 +1409,36 @@ def generate_hinge_reply_from_screenshots(screenshots, format_txt_path, prompts_
        - CRITICAL: Verify these are actual prompts from prompts.txt and not captions
        - A prompt will NEVER have a photo or image as the response
        - If you see a response that describes a photo (e.g., "[Photo showing person posing with friend]"), this is a caption, not a prompt
+       - CRITICAL: Check if each prompt appears in hingePolls.txt - if it does, it's a poll prompt, NOT a standard prompt
+       - Poll prompts have a distinctive visual identifier: each of the three response options has a black heart with a white center
+       - Poll responses are hypothetical scenarios created by the woman and reflect her creativity, not actual experiences
+       - NEVER select poll prompts (found in hingePolls.txt) for conversation starters
     c. Profile Basics (1 total)
        - All bullet-points she provided to describe herself
        - These are her self-reported characteristics
-    d. Voice Prompt and/or Poll Prompt (0-2 total)
-       - Voice prompt: Cannot understand the recording, only see the prompt
-       - Poll prompt: Can read her provided options for engagement
+    d. Voice Prompt (0-1 total)
+       - Cannot understand the recording, only see the prompt
+       - Always appears as the first prompt when present
+       - Content of voice note is NOT accessible and should NOT be used for analysis
+       - Prompt text itself can still be used for personality analysis
+       - Voice notes are NOT valid targets for joke responses
+    e. Poll Prompt (0-1 total)
+       - A distinct type of prompt found in hingePolls.txt
+       - Shows a question with exactly three creative response options provided by the woman
+       - Each option has a black heart with white center (key visual identifier)
+       - CRITICAL: Must NEVER be used for conversation starters - only for personality analysis
+       - IMPORTANT: Poll responses are hypothetical scenarios the woman created and say nothing about what she has actually done
+       - They only reflect a moment in which she was creative, not actual experiences
+       - Always check prompts against hingePolls.txt to identify polls
+    f. Special Case - "Two truths and a lie":
+       - This prompt appears in TWO possible formats:
+         1. Standard poll format: Three distinct options, each with a black heart with white center
+         2. Paragraph format: All three options in a single paragraph without heart icons
+       - CRITICAL: Regardless of format, "Two truths and a lie" is ALWAYS treated as a poll prompt
+       - It must NEVER be selected for conversation starter generation
+       - When in paragraph format, the profile will only have two other prompt/response pairs available
+       - Even when it doesn't have the visual poll identifiers, it IS still a poll prompt
+       - Always check specifically for this prompt text in addition to checking hingePolls.txt
 
     {UNDESIRABLE_TRAITS_CHECK}
 
@@ -1420,7 +1455,7 @@ def generate_hinge_reply_from_screenshots(screenshots, format_txt_path, prompts_
     {IDENTIFY_SCREENSHOT}
 
     {FINAL_VALIDATION_CHECK}
-
+    
     Return the chosen prompt, response, your conversation starter, and the screenshot index in this JSON format exactly. Do not return any other text or comments beyond the JSON.
     {{
         "prompt": "The exact prompt text the woman chose",
@@ -1599,49 +1634,162 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
             - tap_coordinates: (x,y) coordinates to tap if found, None if not found
     """
     try:
+        # Check if we're dealing with "Two truths and a lie" special case
+        is_two_truths = False
+        response_versions = []
+
+        if target_prompt and "two truths and a lie" in target_prompt.lower():
+            logger.info("Special case: Detected 'Two truths and a lie' prompt")
+            is_two_truths = True
+
+            # Add the original response as first version
+            response_versions.append(target_response)
+
+            # Try to split by newlines (2-4 newlines)
+            newline_splits = target_response.split('\n')
+            if len(newline_splits) >= 3 and len(newline_splits) <= 5:
+                # Filter out empty strings
+                newline_splits = [s for s in newline_splits if s.strip()]
+                if len(newline_splits) >= 3:
+                    logger.info(
+                        f"Found {len(newline_splits)} statements split by newlines")
+                    # Take up to first 3 non-empty splits
+                    response_versions.extend(newline_splits[:3])
+
+            # If newline splitting didn't work, try splitting by periods
+            if len(response_versions) < 3:
+                period_splits = []
+                # Split by period followed by space
+                for split in target_response.split('. '):
+                    if split.endswith('.'):
+                        period_splits.append(split)
+                    else:
+                        period_splits.append(split + '.')
+
+                # If we got 2-4 statements, add them
+                if 2 <= len(period_splits) <= 4:
+                    logger.info(
+                        f"Found {len(period_splits)} statements split by periods")
+                    # Take up to first 3 splits
+                    response_versions.extend(period_splits[:3])
+
+            logger.info(
+                f"Created {len(response_versions)} response versions for matching")
+            for i, v in enumerate(response_versions):
+                logger.debug(f"Response version {i+1}: '{v[:50]}...'")
+
         # Take a fresh screenshot at this position
         screenshot_path = capture_screenshot(
             device, f"profile_{profile_num}_prompt_detection")
 
-        # Check for match in current screenshot
-        best_match, tap_coordinates, _ = find_prompt_response_match(
-            screenshot_path, target_prompt, target_response, profile_num, dating_app=dating_app)
+        # For two truths and a lie, try all response versions
+        if is_two_truths and response_versions:
+            # First try with all response versions
+            for response_version in response_versions:
+                best_match, tap_coordinates, _ = find_prompt_response_match(
+                    screenshot_path, None, response_version, profile_num, dating_app=dating_app)
 
-        # If found a match, tap it and return
-        if best_match and tap_coordinates:
-            tap_x, tap_y = tap_coordinates
-            # Execute double tap at the calculated coordinates
-            tap(device, tap_x, tap_y, double_tap=True)
-            # Wait for response interface to open
-            time.sleep(2.0)
-            return True, tap_coordinates
+                if best_match and tap_coordinates:
+                    logger.info(
+                        f"Found match with response version: '{response_version[:30]}...'")
+                    tap_x, tap_y = tap_coordinates
+                    tap(device, tap_x, tap_y, double_tap=True)
+                    time.sleep(2.0)
+                    return True, tap_coordinates
+        else:
+            # Standard flow - check for match with original prompt/response
+            best_match, tap_coordinates, _ = find_prompt_response_match(
+                screenshot_path, target_prompt, target_response, profile_num, dating_app=dating_app)
+
+            if best_match and tap_coordinates:
+                tap_x, tap_y = tap_coordinates
+                tap(device, tap_x, tap_y, double_tap=True)
+                time.sleep(2.0)
+                return True, tap_coordinates
 
         # If no match found, try scrolling up
         logger.info("\nAttempting to scroll up once to find prompt/response...")
         swipe(device, "up")  # Scroll up
-        time.sleep(1)  # Wait for scroll to complete
+        time.sleep(0.5)  # Wait for scroll to complete
 
         # Take another screenshot after scrolling up
         screenshot_path_up = capture_screenshot(
             device, f"profile_{profile_num}_prompt_detection_up")
 
-        # Check for match in scrolled up screenshot
-        best_match_up, tap_coordinates_up, _ = find_prompt_response_match(
-            screenshot_path_up, target_prompt, target_response, profile_num, suffix="_up", dating_app=dating_app)
+        # For two truths and a lie, try all response versions after scrolling up
+        if is_two_truths and response_versions:
+            # Try with all response versions
+            for response_version in response_versions:
+                best_match_up, tap_coordinates_up, _ = find_prompt_response_match(
+                    screenshot_path_up, None, response_version, profile_num, suffix="_up", dating_app=dating_app)
 
-        # If found a match after scrolling up, tap it and return
-        if best_match_up and tap_coordinates_up:
-            tap_x, tap_y = tap_coordinates_up
-            # Execute double tap at the calculated coordinates
-            tap(device, tap_x, tap_y, double_tap=True)
-            # Wait for response interface to open
-            time.sleep(2.0)
-            return True, tap_coordinates_up
+                if best_match_up and tap_coordinates_up:
+                    logger.info(
+                        f"Found match after scrolling up with response version: '{response_version[:30]}...'")
+                    tap_x, tap_y = tap_coordinates_up
+                    tap(device, tap_x, tap_y, double_tap=True)
+                    time.sleep(2.0)
+                    return True, tap_coordinates_up
         else:
+            # Standard flow - check for match with original prompt/response
+            best_match_up, tap_coordinates_up, _ = find_prompt_response_match(
+                screenshot_path_up, target_prompt, target_response, profile_num, suffix="_up", dating_app=dating_app)
+
+            if best_match_up and tap_coordinates_up:
+                tap_x, tap_y = tap_coordinates_up
+                tap(device, tap_x, tap_y, double_tap=True)
+                time.sleep(2.0)
+                return True, tap_coordinates_up
+
+        # Scroll back down to original position
+        logger.info("Scrolling back down to original position...")
+        swipe(device, "down")
+        time.sleep(0.5)
+
+        # For two truths and a lie, try matching with the prompt if no response matches found
+        if is_two_truths:
+            # Take a fresh screenshot after scrolling back
+            screenshot_path = capture_screenshot(
+                device, f"profile_{profile_num}_prompt_detection_prompt")
+
+            # Try matching with the prompt text
+            best_match_prompt, tap_coordinates_prompt, _ = find_prompt_response_match(
+                screenshot_path, target_prompt, None, profile_num, suffix="_prompt", dating_app=dating_app)
+
+            if best_match_prompt and tap_coordinates_prompt:
+                logger.info(
+                    f"Found match with prompt text: '{target_prompt[:30]}...'")
+                tap_x, tap_y = tap_coordinates_prompt
+                tap(device, tap_x, tap_y, double_tap=True)
+                time.sleep(2.0)
+                return True, tap_coordinates_prompt
+
+            # Try scrolling up one last time to match the prompt
+            logger.info(
+                "\nAttempting to scroll up one last time to find prompt text...")
+            swipe(device, "up")  # Scroll up
+            time.sleep(0.5)  # Wait for scroll to complete
+
+            # Take another screenshot after scrolling up
+            screenshot_path_up_final = capture_screenshot(
+                device, f"profile_{profile_num}_prompt_detection_up_final")
+
+            best_match_up_final, tap_coordinates_up_final, _ = find_prompt_response_match(
+                screenshot_path_up_final, target_prompt, None, profile_num, suffix="_up_final", dating_app=dating_app)
+
+            if best_match_up_final and tap_coordinates_up_final:
+                logger.info(
+                    f"Found match after final scroll up with prompt text: '{target_prompt[:30]}...'")
+                tap_x, tap_y = tap_coordinates_up_final
+                tap(device, tap_x, tap_y, double_tap=True)
+                time.sleep(2.0)
+                return True, tap_coordinates_up_final
+
             # Scroll back down to original position
-            logger.info("Scrolling back down to original position...")
+            logger.info(
+                "Scrolling back down to original position for fallback...")
             swipe(device, "down")
-            time.sleep(1)
+            time.sleep(0.5)
 
         # Fallback: Scroll to bottom and double-click center
         logger.info(
@@ -1660,7 +1808,7 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
         for i in range(remaining_scrolls):
             logger.info(f"Fallback scroll #{i+1}")
             swipe(device, "down")
-            time.sleep(1)  # Wait for scroll to complete
+            time.sleep(0.5)  # Wait for scroll to complete
 
         # Get screen dimensions for center tap
         width, height = get_screen_resolution(device)
@@ -1897,6 +2045,12 @@ def save_profile_results(profile_num, screenshots, ai_response, add_timestamp=Fa
     if not os.path.exists(desktop_screenshots_dir):
         os.makedirs(desktop_screenshots_dir)
 
+    # Create analysis subdirectory ONLY in desktop location for OCR visualizations
+    desktop_analysis_dir = os.path.join(desktop_profile_dir, "analysis")
+
+    if not os.path.exists(desktop_analysis_dir):
+        os.makedirs(desktop_analysis_dir)
+
     # Copy screenshots to both profile directories
     for screenshot in screenshots:
         filename = os.path.basename(screenshot)
@@ -1906,6 +2060,20 @@ def save_profile_results(profile_num, screenshots, ai_response, add_timestamp=Fa
         # Also save to desktop directory
         desktop_dest_path = os.path.join(desktop_screenshots_dir, filename)
         shutil.copy2(screenshot, desktop_dest_path)
+
+    # Find and copy visualization files to DESKTOP analysis directory only
+    images_dir = "images"
+    if os.path.exists(images_dir):
+        for filename in os.listdir(images_dir):
+            # Check if this is a visualization file for the current profile
+            if f"profile_{profile_num}" in filename and "_visual" in filename:
+                source_path = os.path.join(images_dir, filename)
+                # Save only to desktop analysis directory
+                desktop_dest_path = os.path.join(
+                    desktop_analysis_dir, filename)
+                shutil.copy2(source_path, desktop_dest_path)
+                logger.debug(
+                    f"Copied visualization file: {filename} to desktop analysis folder")
 
     # Save AI response as JSON, but only to desktop
     desktop_response_path = os.path.join(desktop_profile_dir, "response.json")
@@ -1923,6 +2091,8 @@ def save_profile_results(profile_num, screenshots, ai_response, add_timestamp=Fa
         json.dump(response_data, f, indent=2)
 
     logger.info(f"Screenshots saved to container path: {profile_dir}")
+    logger.info(
+        f"Analysis visualizations saved to desktop: {desktop_analysis_dir}")
     logger.info(
         f"Results and screenshots saved to desktop path: {desktop_profile_dir}")
 

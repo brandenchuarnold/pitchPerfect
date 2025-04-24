@@ -57,6 +57,15 @@ Current Implementation:
          · Facial hair (mustache or beard)
          · Flat chest with no boob growth visible
    
+   - Special Case Handling:
+     * "Two truths and a lie" prompt detection:
+       - Always treated as a poll prompt regardless of format
+       - Appears in two possible formats:
+         · Standard poll format (three distinct options each with black heart with white center)
+         · Paragraph format (all three options in a single paragraph without heart icons)
+       - Never used for conversation starters
+       - When in paragraph format, only two other prompt/response pairs will be available for conversation starters
+   
    - Results Storage:
      * Saves all profile data in organized directory structure:
        - results/profile_X/screenshots/ - Contains all screenshots

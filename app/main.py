@@ -231,7 +231,7 @@ def scroll_to_screenshot(device, screenshot_index):
     for i in range(screenshot_index):
         logger.info(f"Scroll down #{i+1}")
         swipe(device, "down")
-        time.sleep(1)  # Wait for scroll to complete
+        time.sleep(0.5)  # Wait for scroll to complete
 
     return True
 

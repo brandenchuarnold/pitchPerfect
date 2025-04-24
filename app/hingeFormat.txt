@@ -290,20 +290,45 @@ CONTENT ELEMENTS:
    Profile Requirements:
    - A profile may contain zero or one polls
    - Each poll consists of:
-     * A question from polls.txt
+     * A question from hingePolls.txt
      * Exactly three options created by the woman
    - The options are free-form responses reflecting her perspective
-   - Polls are NOT valid targets for joke responses
-   - Used only for personality analysis
+   - Polls are NEVER valid targets for joke responses
+   - IMPORTANT: Polls must NEVER be selected for conversation starter generation
+   - Used only for personality analysis with the caveat that these "responses" are specifically 
+     hypothetical scenarios the woman has created and say nothing about what she has actually done
+   - They only reflect a moment in which she was creative
 
    Visual Format:
    - White background box contains question and three options
    - Prompt appears above the three options
    - Options are presented as selectable choices
    - Each option is a separate clickable element
+   - After every one of the three options there is a black heart with a white center
+   - This black heart with white center is a key visual identifier of poll responses
    - May be cut off at screenshot boundary:
      * Partial polls continue in adjacent screenshot
      * Must reconstruct complete text from both screenshots
+
+   Special Case - "Two truths and a lie":
+   - The "Two truths and a lie" prompt appears in two possible formats:
+     * Standard poll format: Three distinct options, each with a black heart with white center (as described above)
+     * Paragraph format: All three options in a single paragraph with no heart icons
+   - Regardless of format, "Two truths and a lie" is ALWAYS treated as a poll prompt
+   - It must NEVER be selected for conversation starter generation
+   - When "Two truths and a lie" appears in paragraph format, the profile will only have two other prompt/response pairs
+     available for conversation starters (instead of the usual three)
+   - In the paragraph format case, the three statements will be presented as a single continuous text block
+
+   Identification and Handling:
+   - Always check if a prompt appears in hingePolls.txt
+   - If the prompt matches any entry in hingePolls.txt, it is a poll prompt
+   - Poll prompts must be immediately disqualified for conversation starter generation
+   - When generating conversation starters, ensure you find the three actual prompt/response pairs
+     where the prompt is NOT listed in hingePolls.txt
+   - In validation steps, check again if any prompts for generated starters are in hingePolls.txt
+     and immediately disqualify those starters
+   - Special attention should be given to "Two truths and a lie" prompt regardless of its visual format
 
 4. ADVERTISEMENTS AND PROMOTIONS (Not relevant for joke generation):
    A. Prompt Poll Advertisement
