@@ -7,7 +7,16 @@ SCREENSHOT 1 (First Screenshot):
    - Does not contain any profile-specific information
    - Should be ignored for profile analysis and joke generation
 
-2. Profile Identification (Top Element)
+2. Most Compatible Section (Optional)
+   - May appear below header and above profile identification
+   - Contains text such as "Most Compatible"
+   - May include text like "We think you and NAME (the woman's name) should meet" 
+   - May contain "Learn more" text or button
+   - This is a promotional/algorithm feature and should be IGNORED
+   - Not related to the woman's personality or preferences
+   - Should not be used for analysis or conversation starter generation
+
+3. Profile Identification (Top Element)
    - Name (Left-aligned) - Used for joke generation
    - Optional purple checkmark button (white checkmark in purple star) after name
      * Only appears after name if present
@@ -20,7 +29,7 @@ SCREENSHOT 1 (First Screenshot):
      * they/them/theirs
    - Navigation buttons on right (Not relevant for joke generation)
 
-3. Initial Content
+4. Initial Content
    - Always contains at least one photo (described in CONTENT ELEMENTS)
    - May contain one prompt with response (described in CONTENT ELEMENTS)
    - May contain partial content that continues in Screenshot 2

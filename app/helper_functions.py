@@ -1494,6 +1494,10 @@ def find_prompt_response_match(screenshot_path, target_prompt, target_response, 
     best_response_match = None
     best_response_ratio = 0.0
 
+    # Prepare lowercase versions for substring matching
+    target_prompt_lower = target_prompt.lower() if target_prompt else ""
+    target_response_lower = target_response.lower() if target_response else ""
+
     for i, para in enumerate(paragraphs):
         # Check for prompt match
         is_prompt_match, prompt_ratio, matched_text = fuzzy_match_text(
@@ -1502,10 +1506,27 @@ def find_prompt_response_match(screenshot_path, target_prompt, target_response, 
         logger.debug(f"  Text: '{para['text']}'")
         logger.debug(f"  Prompt match ratio: {prompt_ratio:.2f}")
 
+        # Check if target is substring of paragraph (case-insensitive)
+        para_text_lower = para['text'].lower()
+        if target_prompt_lower in para_text_lower:
+            logger.debug(f"  Found prompt as substring!")
+            is_prompt_match = True
+            # Give it a ratio higher than threshold but not perfect
+            prompt_ratio = 0.85
+
         # Also check for response match with lower threshold
         is_response_match, response_ratio, _ = fuzzy_match_text(
             target_response, para['text'], threshold=0.7)
         logger.debug(f"  Response match ratio: {response_ratio:.2f}")
+
+        # Check if target is substring of paragraph (case-insensitive)
+        para_text_lower = para['text'].lower()
+        if target_response_lower in para_text_lower:
+            logger.debug(f"  Found response as substring!")
+            is_response_match = True
+            # Give it a ratio higher than threshold but not perfect
+            response_ratio = 0.85
+
         logger.debug("")
 
         if is_prompt_match and prompt_ratio > best_prompt_ratio:
