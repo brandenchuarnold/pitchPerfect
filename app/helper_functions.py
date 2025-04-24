@@ -359,12 +359,13 @@ def extract_text_from_image_with_boxes(image_path, app_type=None):
         return None
 
 
-def group_boxes_into_lines(boxes, y_threshold=15):
+def group_boxes_into_lines(boxes, y_threshold=15, max_horizontal_gap=300):
     """Group text boxes into lines based on vertical alignment.
 
     Args:
         boxes: List of text boxes with 'text' and 'box' fields
         y_threshold: Maximum vertical distance for boxes to be on same line
+        max_horizontal_gap: Maximum horizontal distance between boxes to be considered same line
 
     Returns:
         List of lines, where each line is a list of boxes
@@ -400,8 +401,36 @@ def group_boxes_into_lines(boxes, y_threshold=15):
             vertical_overlap = (
                 min(box_bottom, current_bottom) - max(box_top, current_top))
 
-            if vertical_overlap > 0 or abs(box_y - current_y) <= y_threshold:
-                # Box is aligned with current line
+            # Check horizontal distance to closest box in current line
+            if current_line:
+                # Find the closest box horizontally
+                box_left = box['box'][0]
+                box_right = box['box'][0] + box['box'][2]
+
+                min_distance = float('inf')
+                for existing_box in current_line:
+                    existing_left = existing_box['box'][0]
+                    existing_right = existing_box['box'][0] + \
+                        existing_box['box'][2]
+
+                    # Check for horizontal overlap
+                    if box_right >= existing_left and box_left <= existing_right:
+                        # Boxes overlap horizontally
+                        min_distance = 0
+                        break
+
+                    # Distance between boxes
+                    distance = min(abs(box_left - existing_right),
+                                   abs(existing_left - box_right))
+                    min_distance = min(min_distance, distance)
+
+                # Check if horizontal distance is within limits
+                horizontal_ok = min_distance <= max_horizontal_gap
+            else:
+                horizontal_ok = True
+
+            if (vertical_overlap > 0 or abs(box_y - current_y) <= y_threshold) and horizontal_ok:
+                # Box is aligned with current line and within horizontal distance
                 current_line.append(box)
                 # Update current line bounds
                 current_y = min(current_y, box_y)
@@ -425,8 +454,8 @@ def group_boxes_into_lines(boxes, y_threshold=15):
     return lines
 
 
-def group_lines_into_paragraphs(lines, paragraph_spacing=20):
-    """Group lines into paragraphs based on vertical spacing.
+def group_lines_into_paragraphs(lines, paragraph_spacing=30):
+    """Group lines into paragraphs based on vertical spacing and horizontal overlap.
 
     Args:
         lines: List of lines, where each line is a list of boxes
@@ -448,33 +477,57 @@ def group_lines_into_paragraphs(lines, paragraph_spacing=20):
         'lines': []
     }
     last_line_bottom = None
+    last_line_left = None
+    last_line_right = None
 
     for line in lines:
         # Get vertical bounds of this line
         line_top = min(box['box'][1] for box in line)
         line_bottom = max(box['box'][1] + box['box'][3] for box in line)
 
+        # Get horizontal bounds of this line
+        line_left = min(box['box'][0] for box in line)
+        line_right = max(box['box'][0] + box['box'][2] for box in line)
+
         if last_line_bottom is None:
             # First line
             current_para['lines'].append(line)
             current_para['boxes'].extend(line)
-        elif line_top - last_line_bottom <= paragraph_spacing:
-            # Line is close enough to previous line - same paragraph
-            current_para['lines'].append(line)
-            current_para['boxes'].extend(line)
+            last_line_bottom = line_bottom
+            last_line_left = line_left
+            last_line_right = line_right
         else:
-            # Line is far from previous line - start new paragraph
-            if current_para['boxes']:
-                current_para['text'] = ' '.join(
-                    box['text'] for box in current_para['boxes'])
-                paragraphs.append(current_para)
-                current_para = {
-                    'text': '',
-                    'boxes': line.copy(),
-                    'lines': [line]
-                }
+            # Check vertical spacing
+            vertical_ok = (line_top - last_line_bottom <= paragraph_spacing)
 
-        last_line_bottom = line_bottom
+            # Check horizontal overlap
+            horizontal_overlap = (
+                min(line_right, last_line_right) -
+                max(line_left, last_line_left)
+            )
+            horizontal_ok = (horizontal_overlap > 0)
+
+            if vertical_ok and horizontal_ok:
+                # Line is close enough to previous line and has horizontal overlap - same paragraph
+                current_para['lines'].append(line)
+                current_para['boxes'].extend(line)
+                last_line_bottom = line_bottom
+                last_line_left = min(last_line_left, line_left)
+                last_line_right = max(last_line_right, line_right)
+            else:
+                # Line is far from previous line or has no horizontal overlap - start new paragraph
+                if current_para['boxes']:
+                    current_para['text'] = ' '.join(
+                        box['text'] for box in current_para['boxes'])
+                    paragraphs.append(current_para)
+                    current_para = {
+                        'text': '',
+                        'boxes': line.copy(),
+                        'lines': [line]
+                    }
+                last_line_bottom = line_bottom
+                last_line_left = line_left
+                last_line_right = line_right
 
     # Add the last paragraph
     if current_para['boxes']:
