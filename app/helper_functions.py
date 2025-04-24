@@ -329,20 +329,7 @@ def extract_text_from_image_with_boxes(image_path, app_type=None):
         image = Image.open(image_path)
 
         # Set OCR configuration based on app type
-        config = ''
-        if app_type == 'hinge':
-            # Optimize for Hinge-specific fonts (based on provided screenshots)
-            # --oem 1: Use LSTM OCR Engine
-            # -l eng: Use English language
-            # --dpi 429: DPI of Google Pixel 6a
-            config = '--oem 1 -l eng --dpi 429'
-        elif app_type == 'bumble':
-            # Optimize for Bumble-specific fonts and UI elements
-            # --oem 1: Use LSTM OCR Engine
-            # -l eng: Use English language
-            # --dpi 429: DPI of Google Pixel 6a
-            # Other parameters adjusted for Bumble's font and contrast
-            config = '--oem 1 -l eng --dpi 429'
+        config = '--oem 1 -l eng --dpi 429'
 
         # Run OCR with appropriate config
         ocr_data = pytesseract.image_to_data(
@@ -1240,8 +1227,8 @@ def generate_bumble_reply_from_screenshots(screenshots, format_txt_path, prompts
     system_prompt = f"""{DATING_APP_INTRO}
 
     PROFILE STRUCTURE:
-    You will analyze 7 screenshots of a Bumble profile. Each profile may contain the following elements (following the exact order described in bumbleFormat.txt):
-    1. Photos (1-6 total)
+    You will analyze 8 screenshots of a Bumble profile. Each profile may contain the following elements (following the exact order described in bumbleFormat.txt):
+    1. Photos (0-7 total)
     2. About Me section (optional)
     3. Basic Information attributes (optional)
     4. "I'm looking for" section (optional)
@@ -1250,7 +1237,20 @@ def generate_bumble_reply_from_screenshots(screenshots, format_txt_path, prompts
     7. "My causes and communities" section (optional, 0-3 selections)
     8. Location information
     
-    Each of these elements tells you something about the woman. Your goal is to analyze her profile comprehensively to generate a natural, engaging first message.
+    Each of these elements tells you something about the woman. Your goal is to analyze her profile comprehensively to see if she is desireable/undesireable.
+
+    REFERENCE FILES CONTENT:
+    format.txt:
+    {context_files['format']}
+
+    prompts.txt:
+    {context_files['prompts']}
+
+    interests.txt:
+    {context_files['interests']}
+
+    metadata.txt:
+    {context_files['metadata']}
 
     STEP 1: READ AND UNDERSTAND THE CONTEXT
     1. Read format.txt to understand the profile layout
@@ -1395,6 +1395,22 @@ def generate_hinge_reply_from_screenshots(screenshots, format_txt_path, prompts_
     5. Optionally one poll prompt
 
     Each of these elements is a "story" about the woman - something she has chosen to share about herself. There will always be at least 10 stories (6 photos + 3 prompts + 1 basics) and up to 12 stories if she includes a voice prompt and poll prompt.
+
+    REFERENCE FILES CONTENT:
+    format.txt:
+    {context_files['format']}
+
+    prompts.txt:
+    {context_files['prompts']}
+
+    captions.txt:
+    {context_files['captions']}
+
+    polls.txt:
+    {context_files['polls']}
+
+    locations.txt:
+    {context_files['locations']}
 
     STEP 1: READ AND UNDERSTAND THE CONTEXT
     1. Read format.txt to understand the profile layout
@@ -2114,7 +2130,7 @@ def check_for_end_of_profiles(device, profile_num, dating_app=None):
     Args:
         device: The ADB device
         profile_num: Current profile number for debugging
-        dating_app: Optional app type ('hinge' or 'bumble') to optimize OCR settings
+        dating_app: Optional app type ('hinge', 'bumble', or 'tinder') to optimize OCR settings
 
     Returns:
         tuple: (bool, str) - (True if end reached, message that was matched)
@@ -2142,7 +2158,17 @@ def check_for_end_of_profiles(device, profile_num, dating_app=None):
         "You're out of free",
         "likes for today",
         "What a match!",
-        "Now you have 24 hours to start chatting."
+        "Now you have 24 hours to start chatting.",
+        # Tinder-specific end messages
+        "There's no one around you",
+        "There's no one new around you",
+        "Check back later",
+        "Something went wrong",
+        "It seems we're having technical difficulties",
+        "You've reached the end",
+        "No one new around you",
+        "Upgrade to Tinder Plus",
+        "Get Tinder Plus"
     ]
 
     # Check each paragraph against each message
@@ -2232,6 +2258,18 @@ def open_bumble(device):
     launch_app(device, "com.bumble.app", "Bumble")
 
 
+def open_tinder(device):
+    """Open the Tinder dating app.
+
+    Args:
+        device: The ADB device
+
+    Returns:
+        None
+    """
+    launch_app(device, "com.tinder", "Tinder")
+
+
 def close_hinge(device):
     """Close the Hinge dating app.
 
@@ -2254,6 +2292,18 @@ def close_bumble(device):
         None
     """
     close_app(device, "com.bumble.app", "Bumble")
+
+
+def close_tinder(device):
+    """Close the Tinder dating app.
+
+    Args:
+        device: The ADB device
+
+    Returns:
+        None
+    """
+    close_app(device, "com.tinder", "Tinder")
 
 
 def check_for_bumble_advertisement(device, profile_num):
@@ -2388,3 +2438,107 @@ def check_for_bumble_advertisement(device, profile_num):
         logger.error(f"Error checking for Bumble advertisement: {e}")
         logger.debug("", exc_info=True)
         return False
+
+
+def generate_tinder_reply_from_screenshots(screenshots, format_txt_path):
+    """
+    Generate a contextually appropriate analysis for a Tinder profile based on screenshots.
+
+    Args:
+        screenshots: List of paths to screenshot images in order
+        format_txt_path: Path to tinderFormat.txt describing profile structure
+
+    Returns:
+        dict: Contains the prompt-response pair, generated response, and screenshot index:
+        {
+            "prompt": str,      # The exact prompt text being responded to
+            "response": str,    # The user's response to the prompt
+            "conversation_starter": str,  # The generated conversation starter
+            "screenshot_index": int,  # 0-based index of screenshot containing prompt/response
+        }
+    """
+    # Read the content of our context files
+    context_files = read_context_files({
+        'format': format_txt_path
+    })
+
+    if not context_files:
+        return None
+
+    # Convert screenshots to base64 for API transmission
+    screenshot_data = prepare_screenshots_for_api(screenshots)
+    if not screenshot_data:
+        return None
+
+    system_prompt = f"""{DATING_APP_INTRO}
+    You are analyzing a set of 9 screenshots of a Tinder dating profile which can contain:
+    - Profile photos
+    - Name and age
+    - Location information
+    - Bio text
+    - Interests/passions
+    - Other optional profile information
+    
+    Each of these elements tells you something about the woman. Your goal is to analyze her profile comprehensively to see if she is desirable or undesirable.
+
+    REFERENCE FILES CONTENT:
+    format.txt:
+    {context_files['format']}
+
+    STEP 1: READ AND UNDERSTAND THE CONTEXT
+    Read format.txt to understand the profile layout
+
+    {IDENTIFY_MAIN_PERSON}
+
+    STEP 3: ORGANIZE ELEMENTS INTO BUCKETS
+    For each screenshot, group elements into these buckets:
+    a. Photos
+       - Is the main person in this photo?
+       - What is she doing? With whom?
+       - What does this reveal about her?
+    b. About Me text
+       - What does she explicitly state about herself?
+       
+    c. Attributes (basic info)
+       - What factual information does she share?
+       - How do these fit together to create a lifestyle?
+    d. Looking For
+       - What relationship type is she seeking?
+       - What qualities matter to her?
+    e. Interests
+       - What activities does she enjoy?
+       - Are there themes among interests?
+    f. Prompt/Response pairs
+       - Which prompts did she choose?
+       - What do her responses reveal?
+
+    {UNDESIRABLE_TRAITS_CHECK}
+    
+    {ENDING_DESIREABILITY_ONLY}"""
+
+    # User message - just the specific task
+    user_message = """Please analyze these Tinder profile screenshots and return the requested data as instructed."""
+
+    # Make the API call to Claude
+    logger.info("Making API call to Claude...")
+
+    response = call_claude_api(
+        system_prompt=system_prompt,
+        user_message=user_message,
+        screenshots_data=screenshot_data
+    )
+
+    if not response:
+        return None
+
+    # Parse the response
+    result = parse_claude_json_response(response)
+    if not result:
+        return None
+
+    return {
+        "prompt": result.get("prompt", ""),
+        "response": result.get("response", ""),
+        "conversation_starter": result.get("conversation_starter", ""),
+        "screenshot_index": result.get("screenshot_index", 0)
+    }

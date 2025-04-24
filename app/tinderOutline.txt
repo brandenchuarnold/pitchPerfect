@@ -1,0 +1,96 @@
+Tinder Dating App Automation Bot - Development Outline
+
+Current Implementation:
+
+1. Profile Processing Flow:
+   - Early Stopping:
+     * Uses the same end message detection as other apps
+     * Uses OCR with 0.8 similarity threshold
+     * Saves screenshot of end message for verification
+     * Creates visual debug overlay showing matched text
+     * Exits gracefully with specific end message
+   
+   - Target Interactions:
+     * Like profiles while disliking undesirables based on AI evaluation
+     * If 6-9 consecutive likes occur without any dislikes, force dislike on the next profile
+     * Continue liking until reaching a total of 9 likes
+     * After reaching 9 likes, reset all counters (consecutive likes, total likes, dislikes)
+     * For forced dislikes, still capture and save screenshots without AI evaluation
+   
+   - Profile Analysis:
+     * Takes 9 screenshots while scrolling through photos
+     * For forced dislikes, still captures screenshots and saves to desktop
+     * For normal profiles, processes screenshots with AI in separate thread
+     * Stays at the last screenshot of the profile while AI processes
+     * Waits for AI response
+   
+   - Profile Filtering:
+     * Dislikes if AI returns empty response
+     * Dislikes if desirability assessment is "undesirable"
+        - Dislike button coordinates (X): 220x1350
+        - Like button coordinates (heart): 500x1350
+     * AI automatically filters profiles with undesirable traits
+   
+   - Results Storage:
+     * Saves all profile data in desktop accessible location:
+       - /app/desktop/PitchPerfect_Results_Tinder_{TIMESTAMP}/profile_X/
+       - Each profile folder contains screenshots and response.json with AI response and timestamp
+     * Saves results for every profile, regardless of outcome
+     * Includes timestamp with each response
+     * Maintains temporarily needed files in images/ directory but doesn't preserve them in workspace
+
+2. Screenshot Capture and Analysis:
+   - Takes up to 9 screenshots total (one per photo)
+   - Captures using right-to-left swipe on photo for next photo
+   - Uses consistent swipe gesture to navigate between photos
+   - Monitors for UI indicators to detect last photo
+   - Saves as profile_{count}_part{i}.png
+   - Creates visualization overlays for debugging
+   - Uses OCR with pytesseract to extract text from images
+   - Implements visual debug overlays with boxes, lines, and paragraphs
+   - Groups text into logical lines and paragraphs based on spatial proximity
+
+3. AI Integration:
+   - System Prompt:
+     * Profile structure guide with 9 screenshots analysis
+     * Detailed trait detection for filtering undesirable profiles
+     * Returns JSON with desirable/undesirable classification
+   
+   - Response Processing:
+     * Parses JSON from text response by extracting between first { and last }
+     * Returns JSON with desire_analysis
+     * Handles empty or error responses gracefully
+     * Returns empty response for profiles with undesirable traits
+
+4. Error Handling and Logging:
+   - Comprehensive logging:
+     * Detailed debug logging to file with timestamps
+     * Console output for important events
+     * Visual overlays saved for debugging
+     * Sanitized API payloads to prevent log clutter
+   
+   - Error recovery:
+     * Try-except blocks throughout the codebase
+     * Fallback strategies for most failure points
+     * Graceful degradation when optimal path fails
+     * Detailed error logging with tracebacks at debug level
+
+5. Multithreading:
+   - Parallel processing:
+     * Screenshot capture and swiping in main thread
+     * AI processing in background thread
+     * Thread synchronization with join()
+     * Thread-safe global variable access with locks
+
+6. Configuration:
+   - Environment variables for device connection
+   - Timestamp-based result directories
+   - Authoritative reference files:
+     * tinderFormat.txt - Profile structure information
+
+TODO:
+1. Add advertisement recognition
+   - Implement detection for Tinder ads and promotions
+   - Create handlers for "Upgrade to Tinder Gold/Plus" popups
+   - Develop recognition for "Out of Likes" notification
+   - Handle "Match" notifications that may appear

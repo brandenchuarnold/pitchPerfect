@@ -1,0 +1,87 @@
+TINDER PROFILE FORMAT STRUCTURE
+
+1. GENERAL INTERFACE ELEMENTS (Not relevant for profile analysis)
+   - Header bar with Tinder logo and navigation controls
+   - Bottom navigation menu with five icons
+   - Action buttons at bottom center (rewind, dislike, like, super like, boost)
+   - Timestamp and device status information at top of screen
+
+2. MAIN PROFILE CONTENT
+   A. Profile Photos
+      - Large, full-screen images that occupy most of the screen
+      - Swipe through multiple photos (up to 9)
+      - May include individual photos or group photos
+      - "Up" arrow in bottom right to navigate back to top photo
+      - Variations in lighting, angles, and settings
+
+   B. Core Profile Information (Always present)
+      - Name and age (e.g., "Autumn 26") in large white text at bottom left
+      - Location information (e.g., "Lives in Madison", "1 mile away")
+      - Photo count indicators at top of screen (small dots/lines)
+
+   C. Optional Profile Sections (May appear in different photos)
+      - Each section typically appears on a separate photo/screen
+      - Sections are shown overlaid on profile photos
+      - White text on semi-transparent black background for readability
+
+      i. Location Information
+         - "Nearby" tag or specific distance (e.g., "1 mile away")
+         - City name (e.g., "Lives in Madison")
+         
+      ii. Looking For
+         - "Looking for" label followed by relationship preference
+         - May include options like "Long-term partner", "Something casual", etc.
+         - Sometimes accompanied by icon/emoji
+      
+      iii. Interests
+         - "Interests" label
+         - 2-5 interest tags in pill/chip format
+         - Common interests: "Bar Hopping", "Coffee", "Movies", "Street Food", etc.
+         - Displayed in gray rounded rectangles
+      
+      iv. Basics & Lifestyle
+         - "Basics & Lifestyle" label
+         - Multiple attribute tags in pill/chip format
+         - May include zodiac sign (e.g., "Cancer"), pets (e.g., "Cat")
+         - Social habits (e.g., "Socially on weekends", "Social smoker")
+         - Other personal attributes (e.g., "In a spectrum")
+         - Displayed in gray rounded rectangles
+      
+      v. Spotify Anthem
+         - "Spotify Anthem" label
+         - Song title and artist name
+         - Album art thumbnail (small square image)
+         - "Play on Spotify" button in green
+      
+      vi. Bio/About Me
+         - Free text area for self-description
+         - No specific label, shown directly on photo
+         - May be multi-paragraph or short text
+      
+      vii. Job/Education
+         - Occupation, company, or workplace info
+         - Education background
+         - Displayed with corresponding icons
+         - "Works at" or specific job title format
+
+3. INTERPRETATION GUIDELINES
+   - Profile elements reveal different aspects of the person's personality and lifestyle
+   - Photos provide physical appearance and activity preferences
+   - Written sections provide explicit preferences and self-identification
+   - Interests and lifestyle tags offer quick insights into compatibility
+   - Location and age are factual attributes for practical considerations
+   - Each element should be analyzed both individually and as part of the whole profile
+
+4. ANALYSIS OBJECTIVES
+   Based on all elements, determine if the profile is desirable or undesirable
+
+5. RESPONSE FORMAT
+   For compatibility with other dating apps, always use this format:
+   {
+     "prompt": "",             // Leave empty for Tinder
+     "response": "",           // Leave empty for Tinder
+     "conversation_starter": "",  // Leave empty for Tinder
+     "screenshot_index": 0     // Use 0 for desirable profiles, -1 for undesirable profiles
+   }
+
+Note: Unlike other dating apps where we generate conversation starters, for Tinder we only assess desirability. Use the screenshot_index field to indicate your assessment (-1 = undesirable, 0 = desirable). 

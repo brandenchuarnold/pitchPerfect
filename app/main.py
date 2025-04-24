@@ -17,6 +17,7 @@ from helper_functions import (
     extract_text_from_image_with_boxes,
     generate_bumble_reply_from_screenshots,
     generate_hinge_reply_from_screenshots,
+    generate_tinder_reply_from_screenshots,
     tap,
     input_text,
     create_visual_debug_overlay,
@@ -34,6 +35,8 @@ from helper_functions import (
     close_hinge,
     open_bumble,
     close_bumble,
+    open_tinder,
+    close_tinder,
     setup_logging,
     check_for_bumble_advertisement,
 )
@@ -542,13 +545,180 @@ def process_bumble_ai_response(screenshots, format_txt_path, prompts_txt_path, i
         sys.exit(1)
 
 
+def process_tinder_profile(device, width, height, profile_num, target_likes_before_dislike, disliked_profiles, total_likes, total_likes_target, format_txt_path):
+    """Process a Tinder profile with tapping through photos and AI evaluation.
+
+    For Tinder, we take the initial screenshot, then tap to view more photos instead of scrolling.
+    We tap at coordinates 975x1300 eight times with a 0.75 second pause between each tap.
+    This gives us nine screenshots total. Then we send to prompt generator for desireable/undesireable analysis only.
+    Based on the response, we click at 330x2050 if undesireable or 750x2050 if desireable.
+    """
+    try:
+        global ai_response
+        dating_app = "tinder"
+        logger.info(f"Processing Tinder profile #{profile_num}")
+
+        # Check if we need to force a dislike based on our heuristic
+        force_dislike = False
+        if disliked_profiles == 0 and total_likes >= target_likes_before_dislike:
+            logger.info(
+                f"Forcing a dislike after {total_likes} consecutive likes")
+            force_dislike = True
+            disliked_profiles += 1
+
+            # Still capture screenshots for records, but skip AI processing
+            # Take initial screenshot
+            logger.info("Capturing initial screenshot")
+            initial_screenshot = capture_screenshot(
+                device, f"profile_{profile_num}_part1")
+            screenshots = [initial_screenshot]
+
+            # Tap 8 times to get through photos (9 total with initial)
+            for i in range(1, 9):
+                # Tap to see next photo at coordinates 975x1300
+                logger.info(f"Tapping for photo #{i+1}")
+                tap(device, 975, 1300, with_additional_swipe=False)
+                time.sleep(0.75)  # Pause between taps
+
+                # Capture screenshot
+                screenshot_path = capture_screenshot(
+                    device, f"profile_{profile_num}_part{i+1}")
+                screenshots.append(screenshot_path)
+
+            # No AI analysis for forced dislikes
+            ai_response = None
+
+            # Save profile results without AI response
+            results_dir = save_profile_results(
+                profile_num, screenshots, ai_response, app_name=dating_app)
+            logger.info(f"Saved profile results to: {results_dir}")
+
+            # Dislike this profile
+            logger.info("Forcing dislike on this profile")
+            tap(device, 330, 2050, with_additional_swipe=False)
+            time.sleep(4)  # Wait for next profile to load
+
+            return disliked_profiles, total_likes, False
+
+        # Normal profile processing (not forced dislike)
+        # Take initial screenshot
+        logger.info("Capturing initial screenshot")
+        initial_screenshot = capture_screenshot(
+            device, f"profile_{profile_num}_part1")
+        screenshots = [initial_screenshot]
+
+        # Tap 8 times to get through photos (9 total with initial)
+        for i in range(1, 9):
+            # Tap to see next photo at coordinates 975x1300
+            logger.info(f"Tapping for photo #{i+1}")
+            tap(device, 975, 1300, with_additional_swipe=False)
+            time.sleep(0.75)  # Pause between taps
+
+            # Capture screenshot
+            screenshot_path = capture_screenshot(
+                device, f"profile_{profile_num}_part{i+1}")
+            screenshots.append(screenshot_path)
+
+        # Start AI processing in a separate thread
+        ai_response = None
+
+        # Define the thread for AI processing
+        ai_thread = threading.Thread(
+            target=process_tinder_ai_response,
+            args=(screenshots, format_txt_path)
+        )
+        ai_thread.start()
+
+        # Wait at current position while AI processes
+        logger.info("Waiting at the last photo while AI processes")
+
+        # Wait for AI response
+        logger.info("Waiting for AI processing to complete")
+        ai_thread.join()
+        logger.info("AI processing complete")
+
+        # Save profile results with AI response
+        results_dir = save_profile_results(
+            profile_num, screenshots, ai_response, app_name=dating_app)
+        logger.info(f"Saved profile results to: {results_dir}")
+
+        # Check if profile is undesirable based on AI response
+        is_undesirable = False
+        if not ai_response:
+            logger.info("No AI response received - treating as undesirable")
+            is_undesirable = True
+        elif ai_response.get('screenshot_index', -1) == -1:
+            logger.info(
+                "Profile marked as undesirable by AI (screenshot_index = -1)")
+            is_undesirable = True
+
+        if is_undesirable:
+            # Tap dislike button at coordinates 330x2050
+            logger.info("Disliking profile")
+            tap(device, 330, 2050, with_additional_swipe=False)
+            disliked_profiles += 1
+            time.sleep(4)  # Wait for next profile to load
+            return disliked_profiles, total_likes, False
+
+        # Profile is desirable - like it
+        logger.info("Profile marked as desirable - liking")
+
+        # Tap like button at coordinates 750x2050
+        tap(device, 750, 2050, with_additional_swipe=False)
+        time.sleep(4)  # Wait for next profile to load
+
+        # Increment likes counter
+        total_likes += 1
+        logger.info(f"Total likes: {total_likes}/{total_likes_target}")
+
+        return disliked_profiles, total_likes, True
+
+    except Exception as e:
+        logger.error(f"Error in process_tinder_profile: {e}")
+        logger.debug("", exc_info=True)  # Log full traceback at debug level
+        return disliked_profiles, total_likes, False
+
+
+def process_tinder_ai_response(screenshots, format_txt_path):
+    """Process screenshots from Tinder and generate an AI response for desirability analysis.
+
+    Args:
+        screenshots: List of screenshot paths
+        format_txt_path: Path to the format text file
+
+    Returns:
+        None (updates global ai_response)
+    """
+    global ai_response
+    try:
+        result = generate_tinder_reply_from_screenshots(
+            screenshots,
+            format_txt_path
+        )
+        with ai_response_lock:
+            ai_response = result
+    except SystemExit:
+        # Re-raise SystemExit to propagate to main thread
+        logger.critical(
+            "API error occurred in background thread - propagating exit")
+        sys.exit(1)
+    except Exception as e:
+        logger.error(
+            f"Unhandled exception in Tinder AI processing thread: {e}")
+        logger.debug("", exc_info=True)
+        with ai_response_lock:
+            ai_response = None
+        # Also exit the application on unhandled exceptions
+        sys.exit(1)
+
+
 def main():
     """Main function to run the dating app automation."""
     try:
         # Get device IP from environment variable
         device_ip = os.getenv("DEVICE_IP", "192.168.12.32")
 
-        # Select which dating app to use (Hinge, Bumble, or all)
+        # Select which dating app to use (Hinge, Bumble, Tinder, or all)
         dating_app = os.getenv("DATING_APP", "hinge").lower()
 
         # Set up logging based on the selected app
@@ -585,6 +755,10 @@ def main():
             logger.info("Starting automation on Bumble")
             run_automation_on_app(device, width, height, "bumble")
 
+            # Finally run on Tinder (comes last as specified)
+            logger.info("Starting automation on Tinder")
+            run_automation_on_app(device, width, height, "tinder")
+
             logger.info("Completed automation on all dating apps")
 
         else:
@@ -607,7 +781,7 @@ def run_automation_on_app(device, width, height, dating_app):
         device: The ADB device
         width: Screen width
         height: Screen height
-        dating_app: The dating app to run automation on (hinge or bumble)
+        dating_app: The dating app to run automation on (hinge, bumble, or tinder)
     """
     try:
         # Initialize profile counter for logging/screenshots only
@@ -656,6 +830,20 @@ def run_automation_on_app(device, width, height, dating_app):
 
             logger.info(
                 f"Using Bumble like/dislike logic: After {target_likes_before_dislike} likes without a dislike, force one. Continue to {total_likes_target} total likes")
+        elif dating_app == "tinder":
+            # Open Tinder app
+            open_tinder(device)
+
+            # Default paths for Tinder text files
+            format_txt_path = os.path.join(app_dir, 'tinderFormat.txt')
+
+            # Set a single random target for number of likes before forcing a dislike
+            target_likes_before_dislike = random.randint(
+                6, 9)  # Random number between 6-9
+            total_likes_target = 9
+
+            logger.info(
+                f"Using Tinder like/dislike logic: After {target_likes_before_dislike} likes without a dislike, force one. Continue to {total_likes_target} total likes")
         else:
             logger.error(f"Unsupported dating app: {dating_app}")
             return
@@ -687,6 +875,11 @@ def run_automation_on_app(device, width, height, dating_app):
                     disliked_profiles, total_likes, total_likes_target, format_txt_path, prompts_txt_path,
                     interests_txt_path, metadata_txt_path
                 )
+            elif dating_app == "tinder":
+                disliked_profiles, total_likes, success = process_tinder_profile(
+                    device, width, height, profile_num, target_likes_before_dislike,
+                    disliked_profiles, total_likes, total_likes_target, format_txt_path
+                )
 
             profile_num += 1
 
@@ -703,6 +896,8 @@ def run_automation_on_app(device, width, height, dating_app):
             close_hinge(device)
         elif dating_app == "bumble":
             close_bumble(device)
+        elif dating_app == "tinder":
+            close_tinder(device)
 
     except Exception as e:
         logger.error(f"Error in run_automation_on_app for {dating_app}: {e}")
@@ -714,6 +909,8 @@ def run_automation_on_app(device, width, height, dating_app):
                 close_hinge(device)
             elif dating_app == "bumble":
                 close_bumble(device)
+            elif dating_app == "tinder":
+                close_tinder(device)
         except Exception as close_error:
             logger.error(f"Error closing app after exception: {close_error}")
 
