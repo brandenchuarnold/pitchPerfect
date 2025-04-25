@@ -71,11 +71,6 @@ def scroll_profile_and_capture(device, width, height, profile_num, num_screensho
             device, f"profile_{profile_num}_part1")
         screenshots.append(screenshot_path)
 
-        # Process initial screenshot with app-specific OCR
-        if dating_app:
-            process_screenshot_with_visualization(
-                screenshot_path, profile_num, 0, dating_app=dating_app)
-
         # Take remaining screenshots
         for i in range(1, num_screenshots):
             logger.info(f"Scroll down #{i}")
@@ -87,8 +82,9 @@ def scroll_profile_and_capture(device, width, height, profile_num, num_screensho
                 device, f"profile_{profile_num}_part{i+1}")
             screenshots.append(screenshot_path)
 
-            # Process screenshot with app-specific OCR
-            if dating_app:
+        # Process all screenshots with app-specific OCR after collection
+        if dating_app:
+            for i, screenshot_path in enumerate(screenshots):
                 process_screenshot_with_visualization(
                     screenshot_path, profile_num, i, dating_app=dating_app)
 
