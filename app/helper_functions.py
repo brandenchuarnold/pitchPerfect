@@ -15,12 +15,14 @@ import traceback
 import sys
 import random
 import re
+import pytz
 
 load_dotenv()
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
-# Generate a unique timestamp for this run
-RUN_TIMESTAMP = datetime.now().strftime("%m-%d_%H-%M-%S")
+# Generate a unique timestamp for this run using Central Time zone
+central_tz = pytz.timezone('US/Central')
+RUN_TIMESTAMP = datetime.now(central_tz).strftime("%m-%d_%H-%M-%S")
 
 # Custom log filter to truncate long base64 strings
 
