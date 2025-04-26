@@ -93,17 +93,16 @@ def setup_logging(app_name=""):
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
 
-    # Create a single desktop logs directory for the entire run
+    # Create main desktop directory for the entire run
     desktop_dir_name = f"PitchPerfect_{RUN_TIMESTAMP}"
-    desktop_logs_dir_name = f"{desktop_dir_name}/logs"
+    desktop_dir = f"/app/desktop/{desktop_dir_name}"
 
-    desktop_logs_dir = f"/app/desktop/{desktop_logs_dir_name}"
-    if not os.path.exists(desktop_logs_dir):
-        os.makedirs(desktop_logs_dir)
+    if not os.path.exists(desktop_dir):
+        os.makedirs(desktop_dir)
 
-    # Single log file for the entire run
+    # Single log file in the main directory
     log_file_name = f"pitchperfect_{RUN_TIMESTAMP}.log"
-    desktop_log_file = os.path.join(desktop_logs_dir, log_file_name)
+    desktop_log_file = os.path.join(desktop_dir, log_file_name)
 
     # Configure the root logger
     logger = logging.getLogger()
