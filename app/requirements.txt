@@ -7,3 +7,4 @@ pytesseract==0.3.13
 Pillow==9.5.0
 opencv-python
 pure-python-adb
+pytz==2023.3
