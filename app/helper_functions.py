@@ -1854,19 +1854,48 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
         return False, None
 
 
-def dislike_profile(device):
+def dislike_profile(device, dating_app='hinge'):
     """Execute a dislike action by tapping the X button.
 
     Args:
         device: The ADB device
+        dating_app: The dating app ('hinge', 'bumble', or 'tinder') to adjust coordinates
 
     Returns:
         None
     """
-    # Dislike button is always at x=150, y=1600
-    tap(device, 150, 1600, with_additional_swipe=False)
-    # Wait 4 seconds for next profile to load
-    time.sleep(4)
+    if dating_app == 'hinge':
+        # Hinge dislike button coordinates
+        tap(device, 140, 2075, with_additional_swipe=False)
+    elif dating_app == 'tinder':
+        # Tinder dislike button coordinates
+        tap(device, 330, 2050, with_additional_swipe=False)
+    else:
+        # Default coordinates for Bumble
+        tap(device, 150, 1600, with_additional_swipe=False)
+
+    # No need to wait here as we'll wait at the beginning of the next profile processing
+
+
+def like_profile(device, dating_app):
+    """Execute a like action by tapping the like button.
+
+    Args:
+        device: The ADB device
+        dating_app: The dating app ('bumble' or 'tinder') to determine coordinates
+                    Note: Not used for Hinge since it uses OCR to find the button
+
+    Returns:
+        None
+    """
+    if dating_app == 'tinder':
+        # Tinder like button coordinates
+        tap(device, 750, 2050, with_additional_swipe=False)
+    else:
+        # Bumble like button coordinates
+        tap(device, 900, 1600, with_additional_swipe=False)
+
+    # No need to wait here as we'll wait at the beginning of the next profile processing
 
 
 def send_response_to_story(device, conversation_starter, profile_num, dating_app='hinge'):
@@ -2018,8 +2047,7 @@ def send_response_to_story(device, conversation_starter, profile_num, dating_app
     # Click Send Like button
     tap(device, send_x, send_y)
 
-    # Wait 4 seconds for next profile to load
-    time.sleep(4)
+    # No need to wait here as we'll wait at the beginning of the next profile processing
 
     return True
 
@@ -2206,7 +2234,7 @@ def launch_app(device, package_name, app_name):
     try:
         logger.info(f"Launching {app_name} app")
         device.shell(f"monkey -p {package_name} 1")
-        time.sleep(5)  # Wait for app to launch
+        time.sleep(2)  # Reduced wait time from 5 to 2 seconds
         logger.info(f"{app_name} app launched successfully")
     except Exception as e:
         logger.error(f"Error launching {app_name} app: {e}")
@@ -2227,7 +2255,7 @@ def close_app(device, package_name, app_name):
     try:
         logger.info(f"Closing {app_name} app")
         device.shell(f"am force-stop {package_name}")
-        time.sleep(5)  # Wait for app to fully close
+        time.sleep(2)  # Reduced wait time from 5 to 2 seconds
         logger.info(f"{app_name} app closed successfully")
     except Exception as e:
         logger.error(f"Error closing {app_name} app: {e}")
@@ -2411,7 +2439,7 @@ def check_for_bumble_advertisement(device, profile_num):
             tap(device, 80, 300)
 
             # Wait for the next profile to load
-            time.sleep(4)
+            time.sleep(2.0)
             return True
 
         # Handle regular advertisements with a swipe left gesture (changed from right)

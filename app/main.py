@@ -28,6 +28,7 @@ from helper_functions import (
     detect_prompt_in_screenshot,
     send_response_to_story,
     dislike_profile,
+    like_profile,
     save_profile_results,
     check_for_end_of_profiles,
     logger,
@@ -71,6 +72,8 @@ def scroll_profile_and_capture(device, width, height, profile_num, num_screensho
             device, f"profile_{profile_num}_part1")
         screenshots.append(screenshot_path)
 
+        # No longer processing initial screenshot with OCR during regular scrolling
+
         # Take remaining screenshots
         for i in range(1, num_screenshots):
             logger.info(f"Scroll down #{i}")
@@ -82,11 +85,7 @@ def scroll_profile_and_capture(device, width, height, profile_num, num_screensho
                 device, f"profile_{profile_num}_part{i+1}")
             screenshots.append(screenshot_path)
 
-        # Process all screenshots with app-specific OCR after collection
-        if dating_app:
-            for i, screenshot_path in enumerate(screenshots):
-                process_screenshot_with_visualization(
-                    screenshot_path, profile_num, i, dating_app=dating_app)
+            # No longer processing screenshots with OCR during regular scrolling
 
         logger.info(
             f"Captured {len(screenshots)} screenshots for profile #{profile_num}")
@@ -290,6 +289,10 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
     # Use 'hinge' as the dating app parameter
     dating_app = 'hinge'
 
+    # Wait for profile to load at the beginning
+    logger.info("Waiting 3.0 seconds for profile to load...")
+    time.sleep(3.0)
+
     # Scroll through profile and capture screenshots
     screenshots = scroll_profile_and_capture(
         device, width, height, profile_num, dating_app=dating_app)
@@ -308,7 +311,7 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
         logger.info(f"Saved profile results to: {results_dir}")
 
         logger.info("Disliking profile based on counter logic")
-        dislike_profile(device)
+        dislike_profile(device, dating_app='hinge')
         disliked_profiles += 1
         return disliked_profiles, total_likes, False
 
@@ -338,7 +341,7 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
     # Check if profile is undesirable (empty response)
     if not ai_response or not ai_response.get('prompt') or not ai_response.get('response') or not ai_response.get('conversation_starter') or ai_response.get('screenshot_index') == -1:
         logger.info("Profile marked as undesirable - disliking")
-        dislike_profile(device)
+        dislike_profile(device, dating_app='hinge')
         disliked_profiles += 1
         return disliked_profiles, total_likes, False
 
@@ -429,12 +432,16 @@ def process_bumble_profile(device, width, height, profile_num, target_likes_befo
     # Use 'bumble' as the dating app parameter
     dating_app = 'bumble'
 
+    # Wait for profile to load at the beginning
+    logger.info("Waiting 2.0 seconds for profile to load...")
+    time.sleep(2.0)
+
     # Check for advertisements before processing the profile
     ad_detected = check_for_bumble_advertisement(device, profile_num)
     if ad_detected:
         logger.info("Bumble advertisement detected and dismissed")
         # Wait a moment for the next profile to load properly after dismissing
-        time.sleep(4.0)
+        time.sleep(2.0)
 
     # Scroll through profile and capture screenshots with Bumble-specific OCR settings
     screenshots = scroll_profile_and_capture(
@@ -454,10 +461,10 @@ def process_bumble_profile(device, width, height, profile_num, target_likes_befo
         logger.info(f"Saved profile results to: {results_dir}")
 
         logger.info("Disliking profile based on counter logic")
-        # Tap dislike button (coordinates for Bumble)
-        tap(device, 150, 1600, with_additional_swipe=False)
+        # Use the dislike_profile function with 'bumble' parameter
+        dislike_profile(device, dating_app='bumble')
         disliked_profiles += 1
-        time.sleep(4)  # Wait for next profile to load
+        # No need to wait here as we'll wait at the beginning of the next profile processing
         return disliked_profiles, total_likes, False
 
     # Start AI processing in a separate thread
@@ -485,10 +492,10 @@ def process_bumble_profile(device, width, height, profile_num, target_likes_befo
     # Check if profile is undesirable based on AI response
     if not ai_response or ai_response.get('screenshot_index', -1) < 0:
         logger.info("Profile marked as undesirable - disliking")
-        # Tap dislike button (coordinates for Bumble)
-        tap(device, 150, 1600, with_additional_swipe=False)
+        # Use the dislike_profile function with 'bumble' parameter
+        dislike_profile(device, dating_app='bumble')
         disliked_profiles += 1
-        time.sleep(4)  # Wait for next profile to load
+        # No need to wait here as we'll wait at the beginning of the next profile processing
         return disliked_profiles, total_likes, False
 
     # Profile is desirable - like it
@@ -503,10 +510,10 @@ def process_bumble_profile(device, width, height, profile_num, target_likes_befo
         save_profile_results(profile_num, screenshots,
                              ai_response, app_name=dating_app)
 
-    # Tap like button (coordinates for Bumble)
-    tap(device, 900, 1600, with_additional_swipe=False)
+    # Like this profile using the like_profile function
+    like_profile(device, dating_app='bumble')
 
-    time.sleep(4)  # Wait for next profile to load
+    # No need to wait here as we'll wait at the beginning of the next profile processing
 
     # Increment likes counter
     total_likes += 1
@@ -557,6 +564,10 @@ def process_tinder_profile(device, width, height, profile_num, target_likes_befo
         dating_app = "tinder"
         logger.info(f"Processing Tinder profile #{profile_num}")
 
+        # Wait for profile to load at the beginning
+        logger.info("Waiting 2.0 seconds for profile to load...")
+        time.sleep(2.0)
+
         # Check for advertisements before processing the profile
         ad_detected = check_for_tinder_advertisement(device, profile_num)
         if ad_detected:
@@ -601,9 +612,7 @@ def process_tinder_profile(device, width, height, profile_num, target_likes_befo
 
             # Dislike this profile
             logger.info("Forcing dislike on this profile")
-            tap(device, 330, 2050, with_additional_swipe=False)
-            time.sleep(4)  # Wait for next profile to load
-
+            dislike_profile(device, dating_app='tinder')
             # Check for advertisements after profile loads
             check_for_tinder_advertisement(device, profile_num)
 
@@ -662,11 +671,11 @@ def process_tinder_profile(device, width, height, profile_num, target_likes_befo
             is_undesirable = True
 
         if is_undesirable:
-            # Tap dislike button at coordinates 330x2050
+            # Tap dislike button using the dislike_profile function
             logger.info("Disliking profile")
-            tap(device, 330, 2050, with_additional_swipe=False)
+            dislike_profile(device, dating_app='tinder')
             disliked_profiles += 1
-            time.sleep(4)  # Wait for next profile to load
+            # No need to wait here as we'll wait at the beginning of the next profile processing
 
             # Check for advertisements after profile loads
             check_for_tinder_advertisement(device, profile_num)
@@ -676,13 +685,13 @@ def process_tinder_profile(device, width, height, profile_num, target_likes_befo
         # Profile is desirable - like it
         logger.info("Profile marked as desirable - liking")
 
-        # Tap like button at coordinates 750x2050
-        tap(device, 750, 2050, with_additional_swipe=False)
+        # Like this profile using the like_profile function
+        like_profile(device, dating_app='tinder')
 
         # Check for "Send Super Like" popup and dismiss if found
         check_for_super_like_popup(device, profile_num, dating_app=dating_app)
 
-        time.sleep(4)  # Wait for next profile to load
+        # No need to wait here as we'll wait at the beginning of the next profile processing
 
         # Check for advertisements after profile loads
         check_for_tinder_advertisement(device, profile_num)
