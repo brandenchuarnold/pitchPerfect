@@ -1007,6 +1007,8 @@ For each prompt/response pair:
         * If she's kayaking in a photo: "Let's kayak on Lake Mendota this weekend."
         * If she's cooking in a photo: "We could cook something simple together."
         * If she's drinking in photos: "Let's grab a drink at The Tipsy Cow."
+        * If she's outside in the sun: "Let's enjoy a walk at James Madison Park."
+        * If she's at the beach: "How about a walk along the shore at Tenney Park?"
       - Examples of BAD suggestions (don't do these):
         * Offering a cross-country road trip because she mentioned one in a prompt
         * Suggesting you learn to bake together because she mentioned wanting to learn in a prompt
@@ -1098,6 +1100,10 @@ For each prompt/response pair:
             Response: "Recreating dishes from my favorite restaurants"
             Photo context: Cooking in a kitchen
             Conversation Starter: "Cool hiking boots in mountain photo, Lauren. Food creation deserves an audience. Cook together at my place sometime?"
+          * Prompt: "A life goal of mine"
+            Response: "To visit all the national parks in the US"
+            Photo context: Doing yoga in a park
+            Conversation Starter: "Nice sunset photo at the lake, Hannah. Nature lovers enjoy mindful movement. Yoga session at Dragonfly Hot Yoga?"
 
     BAD:
     - Prompt: "A random fact I love is"
