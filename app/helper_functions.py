@@ -83,7 +83,7 @@ def setup_logging(app_name=""):
     """Set up logging to file and console.
 
     Args:
-        app_name: Optional app name to create separate log directories
+        app_name: Optional app name (no longer affects log directory structure)
 
     Returns:
         Logger object
@@ -93,21 +93,16 @@ def setup_logging(app_name=""):
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
 
-    # Create a desktop logs directory
-    # If app_name is provided, include it in the directory name
-    desktop_logs_dir_name = f"PitchPerfect_Results_{RUN_TIMESTAMP}/logs"
-    if app_name:
-        desktop_logs_dir_name = f"PitchPerfect_Results_{app_name.capitalize()}_{RUN_TIMESTAMP}/logs"
+    # Create a single desktop logs directory for the entire run
+    desktop_dir_name = f"PitchPerfect_{RUN_TIMESTAMP}"
+    desktop_logs_dir_name = f"{desktop_dir_name}/logs"
 
     desktop_logs_dir = f"/app/desktop/{desktop_logs_dir_name}"
     if not os.path.exists(desktop_logs_dir):
         os.makedirs(desktop_logs_dir)
 
-    # Configure logging to write to both file and console
+    # Single log file for the entire run
     log_file_name = f"pitchperfect_{RUN_TIMESTAMP}.log"
-    if app_name:
-        log_file_name = f"pitchperfect_{app_name.lower()}_{RUN_TIMESTAMP}.log"
-
     desktop_log_file = os.path.join(desktop_logs_dir, log_file_name)
 
     # Configure the root logger
@@ -2183,12 +2178,14 @@ def save_profile_results(profile_num, screenshots, ai_response, add_timestamp=Fa
         os.makedirs(results_dir)
 
     # Create desktop directory path with timestamp for easy access from host
-    # If app_name is provided, include it in the directory name
-    desktop_dir_name = f"PitchPerfect_Results_{RUN_TIMESTAMP}"
-    if app_name:
-        desktop_dir_name = f"PitchPerfect_Results_{app_name.capitalize()}_{RUN_TIMESTAMP}"
-
+    # Single parent folder structure with app-specific subfolders
+    desktop_dir_name = f"PitchPerfect_{RUN_TIMESTAMP}"
     desktop_dir = f"/app/desktop/{desktop_dir_name}"
+
+    # Create app-specific subfolder if provided
+    if app_name:
+        desktop_dir = os.path.join(desktop_dir, app_name.capitalize())
+
     if not os.path.exists(desktop_dir):
         os.makedirs(desktop_dir)
 
