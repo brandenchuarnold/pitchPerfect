@@ -2432,11 +2432,11 @@ def check_for_bumble_advertisement(device, profile_num):
                 if regular_ad_detected:
                     break
 
-        # Handle X-button advertisements by tapping the X button at (80, 300)
+        # Handle X-button advertisements by tapping the X button at (70, 200)
         if x_button_ad_detected:
             logger.info(
-                f"Dismissing Bumble advertisement by tapping X button at (80, 300)")
-            tap(device, 80, 300)
+                f"Dismissing Bumble advertisement by tapping X button at (70, 200)")
+            tap(device, 70, 200)
 
             # Wait for the next profile to load
             time.sleep(2.0)
