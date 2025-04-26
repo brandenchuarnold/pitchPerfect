@@ -1590,10 +1590,12 @@ def find_prompt_response_match(screenshot_path, target_prompt, target_response, 
         logger.debug("")
 
         if is_prompt_match and prompt_ratio > best_prompt_ratio:
-            best_prompt_match = para
+            best_prompt_match = para.copy()  # Make a copy of the paragraph
+            best_prompt_match['match_type'] = 'prompt'  # Add match type
             best_prompt_ratio = prompt_ratio
         elif is_response_match and response_ratio > best_response_ratio:
-            best_response_match = para
+            best_response_match = para.copy()  # Make a copy of the paragraph
+            best_response_match['match_type'] = 'response'  # Add match type
             best_response_ratio = response_ratio
 
     # Use prompt match if found, otherwise use response match
@@ -1601,8 +1603,8 @@ def find_prompt_response_match(screenshot_path, target_prompt, target_response, 
     visualization_path = f"images/profile_{profile_num}_prompt_detection{suffix}_visual.png"
 
     if best_match:
-        match_type = 'prompt' if best_prompt_match else 'response'
-        match_ratio = max(best_prompt_ratio, best_response_ratio)
+        match_type = best_match['match_type']
+        match_ratio = best_prompt_ratio if match_type == 'prompt' else best_response_ratio
         logger.info(
             f"Found {match_type} match{suffix} with ratio {match_ratio:.2f}")
 
@@ -1654,9 +1656,11 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
         dating_app: The dating app type ('hinge' or 'bumble') to optimize OCR settings
 
     Returns:
-        tuple: (found, tap_coordinates) where:
+        tuple: (found, tap_coordinates, found_prompt_match, found_response_match) where:
             - found: bool indicating if prompt/response was found
             - tap_coordinates: (x,y) coordinates to tap if found, None if not found
+            - found_prompt_match: bool indicating if the prompt was matched
+            - found_response_match: bool indicating if the response was matched
     """
     try:
         # Check if we're dealing with "Two truths and a lie" special case
@@ -1707,6 +1711,10 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
         screenshot_path = capture_screenshot(
             device, f"profile_{profile_num}_prompt_detection")
 
+        # Variables to track whether prompt or response was matched
+        found_prompt_match = False
+        found_response_match = False
+
         # For two truths and a lie, try all response versions
         if is_two_truths and response_versions:
             # First try with all response versions
@@ -1720,7 +1728,8 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
                     tap_x, tap_y = tap_coordinates
                     tap(device, tap_x, tap_y, double_tap=True)
                     time.sleep(2.0)
-                    return True, tap_coordinates
+                    found_response_match = True
+                    return True, tap_coordinates, False, True
         else:
             # Standard flow - check for match with original prompt/response
             best_match, tap_coordinates, _ = find_prompt_response_match(
@@ -1730,7 +1739,14 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
                 tap_x, tap_y = tap_coordinates
                 tap(device, tap_x, tap_y, double_tap=True)
                 time.sleep(2.0)
-                return True, tap_coordinates
+
+                # Determine if prompt or response was matched
+                if best_match.get('match_type') == 'prompt':
+                    found_prompt_match = True
+                else:
+                    found_response_match = True
+
+                return True, tap_coordinates, found_prompt_match, found_response_match
 
         # If no match found, try scrolling up
         logger.info("\nAttempting to scroll up once to find prompt/response...")
@@ -1754,7 +1770,8 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
                     tap_x, tap_y = tap_coordinates_up
                     tap(device, tap_x, tap_y, double_tap=True)
                     time.sleep(2.0)
-                    return True, tap_coordinates_up
+                    found_response_match = True
+                    return True, tap_coordinates_up, False, True
         else:
             # Standard flow - check for match with original prompt/response
             best_match_up, tap_coordinates_up, _ = find_prompt_response_match(
@@ -1764,7 +1781,14 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
                 tap_x, tap_y = tap_coordinates_up
                 tap(device, tap_x, tap_y, double_tap=True)
                 time.sleep(2.0)
-                return True, tap_coordinates_up
+
+                # Determine if prompt or response was matched
+                if best_match_up.get('match_type') == 'prompt':
+                    found_prompt_match = True
+                else:
+                    found_response_match = True
+
+                return True, tap_coordinates_up, found_prompt_match, found_response_match
 
         # Scroll back down to original position
         logger.info("Scrolling back down to original position...")
@@ -1787,7 +1811,8 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
                 tap_x, tap_y = tap_coordinates_prompt
                 tap(device, tap_x, tap_y, double_tap=True)
                 time.sleep(2.0)
-                return True, tap_coordinates_prompt
+                found_prompt_match = True
+                return True, tap_coordinates_prompt, True, False
 
             # Try scrolling up one last time to match the prompt
             logger.info(
@@ -1799,59 +1824,32 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
             screenshot_path_up_final = capture_screenshot(
                 device, f"profile_{profile_num}_prompt_detection_up_final")
 
-            best_match_up_final, tap_coordinates_up_final, _ = find_prompt_response_match(
+            # Try matching with the prompt text
+            best_match_prompt_up, tap_coordinates_prompt_up, _ = find_prompt_response_match(
                 screenshot_path_up_final, target_prompt, None, profile_num, suffix="_up_final", dating_app=dating_app)
 
-            if best_match_up_final and tap_coordinates_up_final:
+            if best_match_prompt_up and tap_coordinates_prompt_up:
                 logger.info(
-                    f"Found match after final scroll up with prompt text: '{target_prompt[:30]}...'")
-                tap_x, tap_y = tap_coordinates_up_final
+                    f"Found match with prompt text after scrolling up one last time: '{target_prompt[:30]}...'")
+                tap_x, tap_y = tap_coordinates_prompt_up
                 tap(device, tap_x, tap_y, double_tap=True)
                 time.sleep(2.0)
-                return True, tap_coordinates_up_final
+                found_prompt_match = True
+                return True, tap_coordinates_prompt_up, True, False
 
             # Scroll back down to original position
             logger.info(
-                "Scrolling back down to original position for fallback...")
+                "Scrolling back down to original position one last time...")
             swipe(device, "down")
-            time.sleep(0.5)
 
-        # Fallback: Scroll to bottom and double-click center
-        logger.info(
-            "\nFallback: Scrolling to bottom and double-clicking center...")
-
-        # Calculate remaining scrolls (we've already done screenshot_index scrolls)
-        # For Hinge: 6 is max scrolls (7 screenshots total, 0-6)
-        # For Bumble: 8 is max scrolls (9 screenshots total, 0-8)
-        max_scrolls = 6
-        if dating_app == 'bumble':
-            max_scrolls = 8
-
-        remaining_scrolls = max_scrolls - screenshot_index
-
-        # Scroll the remaining distance to bottom
-        for i in range(remaining_scrolls):
-            logger.info(f"Fallback scroll #{i+1}")
-            swipe(device, "down")
-            time.sleep(0.5)  # Wait for scroll to complete
-
-        # Get screen dimensions for center tap
-        width, height = get_screen_resolution(device)
-        center_x = width // 2
-        center_y = height // 2
-
-        logger.info(
-            f"Double-clicking center of screen at ({center_x}, {center_y})")
-        tap(device, center_x, center_y, double_tap=True)
-        time.sleep(1)  # Wait for response interface to open
-
-        # Return True since we executed the fallback
-        return True, (center_x, center_y)
+        # No match found after all attempts
+        logger.warning("No matching prompt or response found")
+        return False, None, False, False
 
     except Exception as e:
         logger.error(f"Error in detect_prompt_in_screenshot: {e}")
-        logger.debug("", exc_info=True)
-        return False, None
+        logger.debug("", exc_info=True)  # Log full traceback at debug level
+        return False, None, False, False
 
 
 def dislike_profile(device, dating_app='hinge'):
@@ -1898,7 +1896,7 @@ def like_profile(device, dating_app):
     # No need to wait here as we'll wait at the beginning of the next profile processing
 
 
-def send_response_to_story(device, conversation_starter, profile_num, dating_app='hinge'):
+def send_response_to_story(device, conversation_starter, profile_num, dating_app='hinge', response_match_found=False, response_tap_coordinates=None):
     """Handle the flow of responding to an opened story.
 
     Args:
@@ -1906,6 +1904,8 @@ def send_response_to_story(device, conversation_starter, profile_num, dating_app
         conversation_starter: The text to send as a response
         profile_num: Current profile number for debugging visualization
         dating_app: Optional app type ('hinge' or 'bumble') to optimize OCR settings
+        response_match_found: Whether a response match was found during prompt detection
+        response_tap_coordinates: Coordinates of the response match if found
 
     Returns:
         bool: True if response was sent successfully, False otherwise
@@ -1940,15 +1940,87 @@ def send_response_to_story(device, conversation_starter, profile_num, dating_app
 
     if not comment_box:
         logger.warning("Could not find comment box")
-        # Create visualization without tap target
-        create_visual_debug_overlay(
-            screenshot_path,
-            boxes=boxes,
-            lines=lines,
-            paragraphs=paragraphs,
-            output_path=f"images/profile_{profile_num}_response_phase1_visual.png"
-        )
-        return False
+
+        # If we have a response match from previous detection, try tapping it
+        if response_match_found and response_tap_coordinates:
+            logger.info(
+                "No comment box found, but we have a response match. Trying to tap on response...")
+
+            # Create visualization without tap target for the current state
+            create_visual_debug_overlay(
+                screenshot_path,
+                boxes=boxes,
+                lines=lines,
+                paragraphs=paragraphs,
+                output_path=f"images/profile_{profile_num}_response_phase1_visual_before_response_tap.png"
+            )
+
+            # Tap on the response match coordinates
+            tap_x, tap_y = response_tap_coordinates
+            logger.info(
+                f"Tapping response match at coordinates: ({tap_x}, {tap_y})")
+            tap(device, tap_x, tap_y, double_tap=True)
+
+            # Wait for UI to update after tapping response
+            time.sleep(1.5)
+
+            # Take another screenshot and check if comment box appears now
+            retry_screenshot_path = capture_screenshot(
+                device, f"profile_{profile_num}_response_phase1_retry")
+
+            retry_boxes = extract_text_from_image_with_boxes(
+                retry_screenshot_path, app_type=dating_app)
+
+            if not retry_boxes:
+                logger.warning("No text boxes found in retry screenshot")
+                return False
+
+            retry_lines = group_boxes_into_lines(retry_boxes)
+            retry_paragraphs = group_lines_into_paragraphs(retry_lines)
+
+            # Look for comment box again
+            retry_comment_box = None
+            retry_comment_ratio = 0.0
+
+            for para in retry_paragraphs:
+                is_match, ratio, _ = fuzzy_match_text(
+                    "Add a comment", para['text'])
+                if is_match and ratio > retry_comment_ratio:
+                    retry_comment_box = para
+                    retry_comment_ratio = ratio
+
+            if not retry_comment_box:
+                logger.warning(
+                    "Still could not find comment box after tapping response")
+                # Create visualization without tap target
+                create_visual_debug_overlay(
+                    retry_screenshot_path,
+                    boxes=retry_boxes,
+                    lines=retry_lines,
+                    paragraphs=retry_paragraphs,
+                    output_path=f"images/profile_{profile_num}_response_phase1_retry_visual.png"
+                )
+                return False
+
+            # Update our variables to continue with the found comment box
+            comment_box = retry_comment_box
+            comment_ratio = retry_comment_ratio
+            boxes = retry_boxes
+            lines = retry_lines
+            paragraphs = retry_paragraphs
+            screenshot_path = retry_screenshot_path
+            logger.info(
+                f"Found comment box after tapping response with ratio {comment_ratio:.2f}")
+        else:
+            # No response match to try, create visualization without tap target
+            create_visual_debug_overlay(
+                screenshot_path,
+                boxes=boxes,
+                lines=lines,
+                paragraphs=paragraphs,
+                output_path=f"images/profile_{profile_num}_response_phase1_visual.png"
+            )
+            return False
 
     # Calculate tap coordinates for comment box
     comment_boxes = comment_box['boxes']

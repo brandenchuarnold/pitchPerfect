@@ -367,7 +367,7 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
     scroll_to_screenshot(device, ai_response['screenshot_index'])
 
     # Try to find and tap the prompt
-    found, tap_coords = detect_prompt_in_screenshot(
+    found, tap_coords, found_prompt_match, found_response_match = detect_prompt_in_screenshot(
         device,
         matched_prompt,
         ai_response['response'],
@@ -383,7 +383,7 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
         swipe(device, "up")
         time.sleep(1)  # Wait for scroll to complete
 
-        found, tap_coords = detect_prompt_in_screenshot(
+        found, tap_coords, found_prompt_match, found_response_match = detect_prompt_in_screenshot(
             device,
             matched_prompt,
             ai_response['response'],
@@ -400,7 +400,7 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
             time.sleep(1)  # Wait for scroll to complete
 
             # Try one more time on target screenshot
-            found, tap_coords = detect_prompt_in_screenshot(
+            found, tap_coords, found_prompt_match, found_response_match = detect_prompt_in_screenshot(
                 device,
                 matched_prompt,
                 ai_response['response'],
@@ -414,9 +414,15 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
                 logger.info("Exiting program due to prompt detection failure")
                 sys.exit(1)
 
-    # Send the response
+    # Send the response - pass along response match information
     success = send_response_to_story(
-        device, ai_response['conversation_starter'], profile_num, dating_app=dating_app)
+        device,
+        ai_response['conversation_starter'],
+        profile_num,
+        dating_app=dating_app,
+        response_match_found=found_response_match,
+        response_tap_coordinates=tap_coords
+    )
 
     if not success:
         logger.error("Failed to send response")
