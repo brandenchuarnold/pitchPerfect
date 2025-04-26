@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from ppadb.client import Client as AdbClient
 import difflib
 import logging
+import re
 
 from helper_functions import (
     connect_device_remote,
@@ -164,27 +165,6 @@ def process_ai_response(screenshots, format_txt_path, prompts_txt_path, captions
         # Also exit the application on unhandled exceptions
         sys.exit(1)
 
-
-def take_screenshot_and_extract_text(device, filename, dating_app=None):
-    """Take a screenshot and extract text from it."""
-    screenshot_path = capture_screenshot(device, filename)
-    boxes = extract_text_from_image_with_boxes(
-        screenshot_path, app_type=dating_app)
-    if not boxes:
-        return None, None, None, None
-
-    lines = group_boxes_into_lines(boxes)
-    paragraphs = group_lines_into_paragraphs(lines)
-
-    # Create visualization
-    create_visual_debug_overlay(
-        screenshot_path,
-        boxes=boxes,
-        lines=lines,
-        paragraphs=paragraphs,
-        output_path=f"images/{filename}_visual.png"
-    )
-
     return boxes, lines, paragraphs, screenshot_path
 
 
@@ -217,7 +197,9 @@ def process_screenshot_with_visualization(image_path, profile_num, screenshot_nu
         boxes=boxes,
         lines=lines,
         paragraphs=paragraphs,
-        output_path=f"images/profile_{profile_num}_screenshot_{screenshot_num}_visual.png"
+        output_path=f"images/profile_{profile_num}_screenshot_{screenshot_num}_visual.png",
+        profile_num=profile_num,
+        app_name=dating_app
     )
     logger.debug(f"Created visualization: {vis_path}")
 

@@ -566,7 +566,7 @@ def fuzzy_match_text(target_text, text_to_match, threshold=0.7):
     return is_match, final_ratio, text_to_match
 
 
-def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, output_path=None, tap_target=None):
+def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, output_path=None, tap_target=None, profile_num=None, app_name=None):
     """Create a visual debugging overlay showing text boxes, lines, and paragraphs.
 
     Args:
@@ -576,6 +576,8 @@ def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, 
         paragraphs: Optional list of paragraph groupings
         output_path: Optional path to save the visualization
         tap_target: Optional (x, y) coordinates for tap target
+        profile_num: Optional profile number to organize outputs
+        app_name: Optional app name for organizing outputs
 
     Returns:
         PIL Image object with the visualization overlay
@@ -589,6 +591,41 @@ def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, 
         if output_path is None:
             base, ext = os.path.splitext(image_path)
             output_path = f"{base}_visual{ext}"
+
+        # Flag to determine if we should save the file
+        should_save = False
+
+        # If profile_num is provided, save to the analysis folder (desktop only)
+        if profile_num is not None:
+            try:
+                # Determine if we need to save to app-specific folder
+                desktop_dir_name = f"PitchPerfect_{RUN_TIMESTAMP}"
+                desktop_dir = f"/app/desktop/{desktop_dir_name}"
+
+                if app_name:
+                    desktop_dir = os.path.join(
+                        desktop_dir, app_name.capitalize())
+
+                # Get the profile's analysis directory
+                desktop_profile_dir = os.path.join(
+                    desktop_dir, f"profile_{profile_num}")
+                analysis_dir = os.path.join(desktop_profile_dir, "analysis")
+
+                # Create it if it doesn't exist
+                if not os.path.exists(analysis_dir):
+                    os.makedirs(analysis_dir)
+
+                # Extract just the filename from the output_path
+                filename = os.path.basename(output_path)
+                # Update output path to save in analysis folder
+                output_path = os.path.join(analysis_dir, filename)
+                should_save = True
+                logger.debug(
+                    f"Will save debug visualization to desktop analysis folder: {output_path}")
+            except Exception as e:
+                logger.warning(
+                    f"Could not save visualization to analysis folder: {e}")
+                should_save = False
 
         # Draw text boxes (gray)
         for box in boxes:
@@ -635,12 +672,15 @@ def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, 
         # Draw tap target circle if provided
         if tap_target:
             tap_x, tap_y = tap_target
-            radius = 30
+            radius = 20
             draw.ellipse([tap_x - radius, tap_y - radius, tap_x +
-                         radius, tap_y + radius], outline='red', width=3)
+                         radius, tap_y + radius], outline='purple', width=3)
 
-        # Save the visualization
-        img.save(output_path)
+        # Save the visualization only if should_save is True
+        if should_save:
+            img.save(output_path)
+            logger.debug(f"Saved debug visualization to: {output_path}")
+
         return img
     except Exception as e:
         logger.error(f"Error creating visual debug overlay: {e}")
@@ -1659,7 +1699,9 @@ def find_prompt_response_match(screenshot_path, target_prompt, target_response, 
             lines=lines,
             paragraphs=paragraphs,
             output_path=visualization_path,
-            tap_target=(tap_x, tap_y)
+            tap_target=(tap_x, tap_y),
+            profile_num=profile_num,
+            app_name=dating_app
         )
 
         return best_match, (tap_x, tap_y), visualization_path
@@ -1672,7 +1714,9 @@ def find_prompt_response_match(screenshot_path, target_prompt, target_response, 
             boxes=boxes,
             lines=lines,
             paragraphs=paragraphs,
-            output_path=visualization_path
+            output_path=visualization_path,
+            profile_num=profile_num,
+            app_name=dating_app
         )
 
         return None, None, visualization_path
@@ -1986,7 +2030,9 @@ def send_response_to_story(device, conversation_starter, profile_num, dating_app
                 boxes=boxes,
                 lines=lines,
                 paragraphs=paragraphs,
-                output_path=f"images/profile_{profile_num}_response_phase1_visual_before_response_tap.png"
+                output_path=f"images/profile_{profile_num}_response_phase1_visual_before_response_tap.png",
+                profile_num=profile_num,
+                app_name=dating_app
             )
 
             # Tap on the response match coordinates
@@ -2032,7 +2078,9 @@ def send_response_to_story(device, conversation_starter, profile_num, dating_app
                     boxes=retry_boxes,
                     lines=retry_lines,
                     paragraphs=retry_paragraphs,
-                    output_path=f"images/profile_{profile_num}_response_phase1_retry_visual.png"
+                    output_path=f"images/profile_{profile_num}_response_phase1_retry_visual.png",
+                    profile_num=profile_num,
+                    app_name=dating_app
                 )
                 return False
 
@@ -2052,7 +2100,9 @@ def send_response_to_story(device, conversation_starter, profile_num, dating_app
                 boxes=boxes,
                 lines=lines,
                 paragraphs=paragraphs,
-                output_path=f"images/profile_{profile_num}_response_phase1_visual.png"
+                output_path=f"images/profile_{profile_num}_response_phase1_visual.png",
+                profile_num=profile_num,
+                app_name=dating_app
             )
             return False
 
@@ -2073,7 +2123,9 @@ def send_response_to_story(device, conversation_starter, profile_num, dating_app
         lines=lines,
         paragraphs=paragraphs,
         output_path=f"images/profile_{profile_num}_response_phase1_visual.png",
-        tap_target=(comment_x, comment_y)
+        tap_target=(comment_x, comment_y),
+        profile_num=profile_num,
+        app_name=dating_app
     )
 
     # Click comment box and enter text
@@ -2126,7 +2178,9 @@ def send_response_to_story(device, conversation_starter, profile_num, dating_app
             boxes=boxes,
             lines=lines,
             paragraphs=paragraphs,
-            output_path=f"images/profile_{profile_num}_response_phase2_visual.png"
+            output_path=f"images/profile_{profile_num}_response_phase2_visual.png",
+            profile_num=profile_num,
+            app_name=dating_app
         )
         return False
 
@@ -2147,14 +2201,15 @@ def send_response_to_story(device, conversation_starter, profile_num, dating_app
         lines=lines,
         paragraphs=paragraphs,
         output_path=f"images/profile_{profile_num}_response_phase2_visual.png",
-        tap_target=(send_x, send_y)
+        tap_target=(send_x, send_y),
+        profile_num=profile_num,
+        app_name=dating_app
     )
 
     # Click Send Like button
     tap(device, send_x, send_y)
 
     # No need to wait here as we'll wait at the beginning of the next profile processing
-
     return True
 
 
@@ -2222,20 +2277,6 @@ def save_profile_results(profile_num, screenshots, ai_response, add_timestamp=Fa
         desktop_dest_path = os.path.join(desktop_screenshots_dir, filename)
         shutil.copy2(screenshot, desktop_dest_path)
 
-    # Find and copy visualization files to DESKTOP analysis directory only
-    images_dir = "images"
-    if os.path.exists(images_dir):
-        for filename in os.listdir(images_dir):
-            # Check if this is a visualization file for the current profile
-            if f"profile_{profile_num}" in filename and "_visual" in filename:
-                source_path = os.path.join(images_dir, filename)
-                # Save only to desktop analysis directory
-                desktop_dest_path = os.path.join(
-                    desktop_analysis_dir, filename)
-                shutil.copy2(source_path, desktop_dest_path)
-                logger.debug(
-                    f"Copied visualization file: {filename} to desktop analysis folder")
-
     # Save AI response as JSON, but only to desktop
     desktop_response_path = os.path.join(desktop_profile_dir, "response.json")
 
@@ -2253,7 +2294,7 @@ def save_profile_results(profile_num, screenshots, ai_response, add_timestamp=Fa
 
     logger.info(f"Screenshots saved to container path: {profile_dir}")
     logger.info(
-        f"Analysis visualizations saved to desktop: {desktop_analysis_dir}")
+        f"Analysis directory for visualizations: {desktop_analysis_dir}")
     logger.info(
         f"Results and screenshots saved to desktop path: {desktop_profile_dir}")
 
@@ -2321,7 +2362,9 @@ def check_for_end_of_profiles(device, profile_num, dating_app=None):
                     boxes=boxes,
                     lines=lines,
                     paragraphs=paragraphs,
-                    output_path=f"images/profile_{profile_num}_end_detected_visual.png"
+                    output_path=f"images/profile_{profile_num}_end_detected_visual.png",
+                    profile_num=profile_num,
+                    app_name=dating_app
                 )
                 return True, message
 
@@ -2507,7 +2550,9 @@ def check_for_bumble_advertisement(device, profile_num):
                         boxes=boxes,
                         lines=lines,
                         paragraphs=paragraphs,
-                        output_path=f"images/profile_{profile_num}_ad_detected_visual.png"
+                        output_path=f"images/profile_{profile_num}_ad_detected_visual.png",
+                        profile_num=profile_num,
+                        app_name="bumble"
                     )
                     break
 
@@ -2535,7 +2580,9 @@ def check_for_bumble_advertisement(device, profile_num):
                             boxes=boxes,
                             lines=lines,
                             paragraphs=paragraphs,
-                            output_path=f"images/profile_{profile_num}_ad_detected_visual.png"
+                            output_path=f"images/profile_{profile_num}_ad_detected_visual.png",
+                            profile_num=profile_num,
+                            app_name="bumble"
                         )
                         break
 
@@ -2826,7 +2873,9 @@ def check_for_tinder_advertisement(device, profile_num):
             boxes=boxes,
             lines=lines,
             paragraphs=paragraphs,
-            output_path=f"images/profile_{profile_num}_tinder_ad_check_visual.png"
+            output_path=f"images/profile_{profile_num}_tinder_ad_check_visual.png",
+            profile_num=profile_num,
+            app_name="tinder"
         )
 
         # X-button advertisement indicators - to be dismissed with tap on X button
@@ -2947,7 +2996,9 @@ def check_for_hinge_rose_like_popup(device, profile_num):
             boxes=boxes,
             lines=lines,
             paragraphs=paragraphs,
-            output_path=f"images/profile_{profile_num}_rose_like_check_visual.png"
+            output_path=f"images/profile_{profile_num}_rose_like_check_visual.png",
+            profile_num=profile_num,
+            app_name="hinge"
         )
 
         # Check for "Send Rose" or "Send Like Anyway" text in paragraphs
