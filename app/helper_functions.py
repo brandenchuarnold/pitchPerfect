@@ -2373,7 +2373,9 @@ def check_for_bumble_advertisement(device, profile_num):
 
         # X-button advertisement indicators - to be dismissed with tap on X button
         x_button_ad_indicators = [
-            "You've already liked these bees, why not use compliment to help stand out?",
+            "You've already liked these bees, why not use Compliments to help stand out?",
+            "Compliments to help stand out?",
+            "You've already liked these bees, why not use",
             "Second time's a charm"
         ]
 
