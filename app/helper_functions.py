@@ -2806,3 +2806,100 @@ def check_for_tinder_advertisement(device, profile_num):
         logger.error(f"Error checking for Tinder advertisement: {e}")
         logger.debug("", exc_info=True)
         return False
+
+
+def check_for_hinge_rose_like_popup(device, profile_num):
+    """Check if a 'Send Rose' / 'Send Like Anyway' popup appeared after a profile loads on Hinge.
+
+    Args:
+        device: The ADB device
+        profile_num: Current profile number for debugging
+
+    Returns:
+        bool: True if popup was detected and 'Send Like Anyway' was clicked, False otherwise
+    """
+    try:
+        # Take a screenshot to check for the popup
+        screenshot_path = capture_screenshot(
+            device, f"profile_{profile_num}_rose_like_check")
+
+        # Extract text using OCR
+        boxes = extract_text_from_image_with_boxes(
+            screenshot_path, app_type='hinge')
+        if not boxes:
+            logger.info("No text found in screenshot, no popup detected")
+            return False
+
+        lines = group_boxes_into_lines(boxes)
+        paragraphs = group_lines_into_paragraphs(lines)
+
+        # Create visualization for debugging
+        create_visual_debug_overlay(
+            screenshot_path,
+            boxes=boxes,
+            lines=lines,
+            paragraphs=paragraphs,
+            output_path=f"images/profile_{profile_num}_rose_like_check_visual.png"
+        )
+
+        # Check for "Send Rose" or "Send Like Anyway" text in paragraphs
+        rose_detected = False
+        like_anyway_button = None
+
+        # Search for both buttons in the text
+        for para in paragraphs:
+            # Check for "Send Rose" text
+            is_match_rose, ratio_rose, _ = fuzzy_match_text(
+                "Send Rose", para['text'], threshold=0.7)
+            if is_match_rose:
+                logger.info(
+                    f"Detected 'Send Rose' button with ratio {ratio_rose:.2f}")
+                rose_detected = True
+
+            # Check for "Send Like Anyway" button
+            is_match_anyway, ratio_anyway, _ = fuzzy_match_text(
+                "Send Like Anyway", para['text'], threshold=0.7)
+            if is_match_anyway:
+                logger.info(
+                    f"Found 'Send Like Anyway' button with ratio {ratio_anyway:.2f}")
+                like_anyway_button = para
+
+        # If we see 'Send Rose' and 'Send Like Anyway', click 'Send Like Anyway'
+        if (rose_detected or like_anyway_button) and like_anyway_button:
+            logger.info(
+                "Rose/Like popup detected, clicking 'Send Like Anyway' button")
+
+            # Calculate tap coordinates for the 'Send Like Anyway' button
+            boxes_anyway = like_anyway_button['boxes']
+            min_x = min(box['box'][0] for box in boxes_anyway)
+            max_x = max(box['box'][0] + box['box'][2] for box in boxes_anyway)
+            min_y = min(box['box'][1] for box in boxes_anyway)
+            max_y = max(box['box'][1] + box['box'][3] for box in boxes_anyway)
+
+            like_anyway_x = (min_x + max_x) // 2
+            like_anyway_y = (min_y + max_y) // 2
+
+            # Create visualization with tap target
+            create_visual_debug_overlay(
+                screenshot_path,
+                boxes=boxes,
+                lines=lines,
+                paragraphs=paragraphs,
+                output_path=f"images/profile_{profile_num}_rose_like_click_visual.png",
+                tap_target=(like_anyway_x, like_anyway_y)
+            )
+
+            # Tap the 'Send Like Anyway' button
+            tap(device, like_anyway_x, like_anyway_y)
+
+            # Wait 3 seconds for the next profile to load
+            logger.info("Waiting 3.0 seconds for next profile to load...")
+            time.sleep(3.0)
+
+            return True
+
+        return False
+    except Exception as e:
+        logger.error(f"Error in check_for_hinge_rose_like_popup: {e}")
+        logger.debug("", exc_info=True)
+        return False

@@ -42,6 +42,7 @@ from helper_functions import (
     check_for_bumble_advertisement,
     check_for_super_like_popup,
     check_for_tinder_advertisement,
+    check_for_hinge_rose_like_popup,
 )
 
 # Global variable to store AI response
@@ -292,6 +293,12 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
     # Wait for profile to load at the beginning
     logger.info("Waiting 3.0 seconds for profile to load...")
     time.sleep(3.0)
+
+    # Check for the "Send Rose" / "Send Like Anyway" popup
+    if check_for_hinge_rose_like_popup(device, profile_num):
+        logger.info(
+            "Handled 'Send Rose'/'Send Like Anyway' popup, continuing with next profile")
+        return disliked_profiles, total_likes, True
 
     # Scroll through profile and capture screenshots
     screenshots = scroll_profile_and_capture(
