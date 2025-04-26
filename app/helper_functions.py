@@ -20,7 +20,7 @@ load_dotenv()
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
 # Generate a unique timestamp for this run
-RUN_TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
+RUN_TIMESTAMP = datetime.now().strftime("%m-%d_%H-%M-%S")
 
 # Custom log filter to truncate long base64 strings
 
@@ -94,14 +94,14 @@ def setup_logging(app_name=""):
         os.makedirs(results_dir)
 
     # Create main desktop directory for the entire run
-    desktop_dir_name = f"PitchPerfect_{RUN_TIMESTAMP}"
+    desktop_dir_name = f"pp_{RUN_TIMESTAMP}"
     desktop_dir = f"/app/desktop/{desktop_dir_name}"
 
     if not os.path.exists(desktop_dir):
         os.makedirs(desktop_dir)
 
     # Single log file in the main directory
-    log_file_name = f"pitchperfect_{RUN_TIMESTAMP}.log"
+    log_file_name = f"pp_{RUN_TIMESTAMP}.log"
     desktop_log_file = os.path.join(desktop_dir, log_file_name)
 
     # Configure the root logger
@@ -599,7 +599,7 @@ def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, 
         if profile_num is not None:
             try:
                 # Determine if we need to save to app-specific folder
-                desktop_dir_name = f"PitchPerfect_{RUN_TIMESTAMP}"
+                desktop_dir_name = f"pp_{RUN_TIMESTAMP}"
                 desktop_dir = f"/app/desktop/{desktop_dir_name}"
 
                 if app_name:
@@ -2233,7 +2233,7 @@ def save_profile_results(profile_num, screenshots, ai_response, add_timestamp=Fa
 
     # Create desktop directory path with timestamp for easy access from host
     # Single parent folder structure with app-specific subfolders
-    desktop_dir_name = f"PitchPerfect_{RUN_TIMESTAMP}"
+    desktop_dir_name = f"pp_{RUN_TIMESTAMP}"
     desktop_dir = f"/app/desktop/{desktop_dir_name}"
 
     # Create app-specific subfolder if provided
