@@ -992,10 +992,35 @@ For each prompt/response pair:
       - Reference something specific from her prompt or response
       - Keep it concise but clear why this activity relates to what she shared
       - This creates context for your suggestion and shows you paid attention
-   d. Finally, suggest a shared activity or experience related to the prompt
-      - Express that you'd like to share in an activity she mentioned
-      - Make it clear you want to participate with her, not just discuss the topic
-      - Suggest something fun and specific that connects to her interests
+      - IMPORTANT: If your date activity suggestion is based on an activity seen in her photos (preferred approach), create a bridge that connects from the prompt/response to that activity
+        * Example: If her prompt is about loving dogs but photos show her kayaking, you might say "Dog people love the outdoors" to bridge to kayaking
+        * The connection should feel natural even when connecting different topics
+   d. Finally, suggest a shared activity or experience related to what you've seen in her PHOTOS whenever possible
+      - CRITICAL: Prioritize activities you can see her doing in her photos over activities mentioned in prompt/response pairs
+      - Look for activities in her photos that would make good date suggestions (30-90 minutes, casual, conversational)
+      - Photos reflect her day-to-day life and actual interests better than prompt/response pairs
+      - Prompt/response pairs often contain humorous or dramatic statements not meant to be taken literally
+      - Prompt/response pairs often reflect goals, stories, or aspirations rather than regular activities
+      - Examples of GOOD photo-based date suggestions:
+        * If she's playing Uno cards in a photo: "How about a game of Uno at Colectivo Coffee?"
+        * If she's climbing/bouldering in a photo: "Want to boulder at Boulders Climbing Gym?"
+        * If she's kayaking in a photo: "Let's kayak on Lake Mendota this weekend."
+        * If she's cooking in a photo: "We could cook something simple together."
+        * If she's drinking in photos: "Let's grab a drink at The Tipsy Cow."
+      - Examples of BAD suggestions (don't do these):
+        * Offering a cross-country road trip because she mentioned one in a prompt
+        * Suggesting you learn to bake together because she mentioned wanting to learn in a prompt
+        * Proposing anything from a prompt that's clearly a personal goal or story
+      - When using information from her photos:
+        * Choose activities that you've seen her actually doing
+        * Keep the suggestion simple and time-limited (30-90 minutes)
+        * Make it something you can do together in a conversational setting
+        * Only suggest activities that would be appropriate for a first date
+      - When you MUST use information from prompt/response pairs:
+        * Focus on concrete preferences mentioned (e.g., food, drinks, casual interests)
+        * Avoid personal stories, goals, or aspirations mentioned in prompts
+        * Never suggest re-creating a significant experience she mentioned
+    e. Verify the location of the establishment is in Madison, Wisconsin
       - CRITICAL: When suggesting a specific location in Madison, Wisconsin:
          * First check the locations.txt file to see if the type of establishment exists in Madison
          * If suggesting a specific named establishment (e.g., "Barriques", "Eno Vino"), ONLY use establishments listed in locations.txt - READ THE ENTIRE LIST CAREFULLY
@@ -1012,6 +1037,7 @@ For each prompt/response pair:
          * Should allow conversation to flow naturally while doing something enjoyable
          * Examples of good date activities: coffee shop visit, wine tasting, casual walk, museum visit, dessert spot, casual game
          * Examples of poor date activities: full sporting events, multi-day projects, competitive activities, professional networking
+    f. When creating the three conversatoin starters for each prompt/response pair, make sure to follow these guidelines:
       * Each of the THREE starters should differ in either:
         - The aspect/item being acknowledged (e.g., different visible elements)
         - OR a different shared activity suggestion for the same topic
@@ -1035,59 +1061,67 @@ For each prompt/response pair:
     GOOD:
     - Prompt: "My Love Language is"
       Response: "Words of affirmation and cheese"
-      Conversation Starter: "Cute beanie in your hiking photo, Emma. Cheese lovers unite for snacking. Wine and cheese at Eno Vino?" 
-      (Simple acknowledgment, name, connection to her interest, date-appropriate shared activity)
+      Photo context: Playing Uno in one photo
+      Conversation Starter: "Cute beanie in your hiking photo, Emma. Games and cheese go together. Uno and wine at Eno Vino?" 
+      (Acknowledgment of visible item, name, connection to both response and photo, date-appropriate shared activity from photo)
     - Prompt: "I geek out on"
       Response: "NBA, specifically golden state warriors" 
-      Conversation Starter: "Great smile in your concert photo, Jessica. Warriors fans need sports bars. Warriors game at Coopers Tavern?" 
-      (Specific acknowledgment, name, connection explaining why bar, casual viewing activity)
+      Photo context: Rock climbing at a gym
+      Conversation Starter: "Great smile in your concert photo, Jessica. Sports fans need active hobbies. Want to boulder at Boulders Climbing Gym?" 
+      (Specific acknowledgment, name, connection to both interests, activity from her photo)
     - Prompt: "Two truths and a lie..."
       Response: "1) I have a scar on my hand from being bitten by a hamster 2) I wrote and directed a short film 
               3) I won a county-wide math competition in school"
-      Conversation Starter: "Nice kayak in your lake photo, Sophia. Filmmakers deserve coffee breaks. Tell me about your film at Barriques?" 
-      (Visible object acknowledgment, name, connection to her filmmaking, casual date activity)
+      Photo context: Kayaking on a lake
+      Conversation Starter: "Nice kayak in your lake photo, Sophia. Creative minds enjoy nature too. Kayak together on Lake Mendota?" 
+      (Visible object acknowledgment, name, connection from creative response to nature activity, date suggestion from her photo)
     - Prompt: "I take pride in"
       Response: "my ability to make friends with anyone, anywhere. I can strike up a conversation with a wall."
-      Conversation Starter: "Love your colorful scarf, Olivia. Social skills shine in cafes. Test your conversation skills at Capitol cafes?" 
-      (Specific compliment, name, connection to her social ability, fun casual activity)
+      Photo context: Cooking in a kitchen
+      Conversation Starter: "Love your colorful scarf, Olivia. Social skills shine while cooking. Cook a simple dinner together sometime?" 
+      (Specific compliment, name, connection between social skills and cooking, activity from her photo)
     - Prompt: "What I order for the table"
       Response: "Carbs, cheese and wine"
-      Conversation Starter: "Cool sunglasses in your beach photo, Mia. Wine pairs with good company. Cheese board at downtown wine bar?" 
-      (Specific visible element, name, connection to wine interest, specific time-limited activity)
+      Photo context: Drinking at a bar
+      Conversation Starter: "Cool sunglasses in your beach photo, Mia. Wine lovers appreciate good bars. Drink at The Tipsy Cow this weekend?" 
+      (Specific visible element, name, connection to wine interest and bars, activity from her photo)
           - More Good Examples:
           * Prompt: "My simple pleasures"
             Response: "Carbs, cheese, and wine"
-            Conversation Starter: "Great earrings in your dinner photo, Emily. Carbs and wine need proper venue. Let's enjoy a charcuterie board downtown."
+            Photo context: Playing board games
+            Conversation Starter: "Great earrings in your dinner photo, Emily. Wine and games make perfect pairs. Board games night at I/O Arcade Bar?"
           * Prompt: "The dorkiest thing about me is"
             Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
-            Conversation Starter: "Love your smile in profile pic, Ashley. History buffs need study breaks. Let's quiz each other over coffee at Barriques."  
+            Photo context: Hiking on a trail
+            Conversation Starter: "Love your smile in profile pic, Ashley. History buffs need fresh air. Short hike at Picnic Point sometime?"  
           * Prompt: "I geek out on"
             Response: "Recreating dishes from my favorite restaurants"
-            Conversation Starter: "Cool hiking boots in mountain photo, Lauren. Food recreation deserves audience. Would love to try your dishes sometime."
+            Photo context: Cooking in a kitchen
+            Conversation Starter: "Cool hiking boots in mountain photo, Lauren. Food creation deserves an audience. Cook together at my place sometime?"
 
     BAD:
     - Prompt: "A random fact I love is"
       Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight. And twilight is a fanfic of 
               My Chemical Romance, and if 9/11 didn't happen, they wouldn't exist. It's weird I know"
-      Conversation Starter: "That's a wild fanfic connection, Kate! Pop culture creates unexpected links. What other rabbit holes do you enjoy falling into?" 
-      (Just asks a question instead of suggesting a shared activity)
+      BAD Conversation Starter: "That's a wild fanfic connection, Kate! Let's explore this literary domino effect together at a bookstore." 
+      (Takes the prompt/response literally rather than using activities from photos)
     - Prompt: "The quickest way to my heart is"
       Response: "Talking over ice cream/coffee"
-      Conversation Starter: "That coffee shop looks cozy, Madison. Conversations need the right ambiance. What's your go-to coffee order for good talks?" 
-      (Asks about preferences rather than suggesting "Let's meet at that cozy coffee shop in your photo")
+      BAD Conversation Starter: "That coffee shop looks cozy, Madison. Let's recreate your perfect heart-opening conversation over coffee." 
+      (Makes the date about recreating her personal preference rather than suggesting activity from photos)
     - Prompt: "My biggest date fail"
       Response: "Going swimming in Lake Mendota and then cutting my foot on a piece of metal... 
               the date ended because I had to go to Urgent Care for a tetanus shot 😜"
-      Conversation Starter: "That's a memorable date story, Rachel. Lake accidents happen to everyone. Do tetanus shots make your top 5 worst dates?" 
-      (Asks a question instead of suggesting "Let's try kayaking on Mendota without the injury")
+      BAD Conversation Starter: "That's a memorable date story, Rachel. Let's try swimming in Lake Mendota again but without the injury!" 
+      (Suggests recreating a negative experience rather than looking at her photos for activities)
     - Prompt: "My best celebrity impression is..."
       Response: "\"Why hello there,\" in my best Obi-Wan Kenobi voice and my friends hate it."
-      Conversation Starter: "That's a solid Obi-Wan reference, Sarah. Star Wars fans understand the appeal. Do you have other impressions in your arsenal?" 
-      (Asks for more content instead of suggesting "Let's watch Star Wars and trade our best impressions")
+      BAD Conversation Starter: "That's a solid Obi-Wan reference, Sarah. Let's have a Star Wars marathon and practice our impressions." 
+      (Suggests a long activity based on prompt rather than photo activities)
     - Prompt: "The dorkiest thing about me is"
       Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
-      BAD Conversation Starter: "Your dedication is impressive, Hannah. History exams are challenging tasks. How long have you been studying for it?" 
-      (Just asks a question without offering to help)
+      BAD Conversation Starter: "Your dedication is impressive, Hannah. Let's have a study session where I quiz you on world history." 
+      (Makes her personal goal into a date activity rather than using activities from photos)
       """
 
 # New shared prompt components
