@@ -3054,7 +3054,9 @@ def check_for_hinge_rose_like_popup(device, profile_num):
                 lines=lines,
                 paragraphs=paragraphs,
                 output_path=f"images/profile_{profile_num}_rose_like_click_visual.png",
-                tap_target=(like_anyway_x, like_anyway_y)
+                tap_target=(like_anyway_x, like_anyway_y),
+                profile_num=profile_num,
+                app_name="hinge"
             )
 
             # Tap the 'Send Like Anyway' button
