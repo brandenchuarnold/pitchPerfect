@@ -2336,6 +2336,13 @@ def check_for_end_of_profiles(device, profile_num, dating_app=None):
         "You're out of free likes for today",
         "You're out of free",
         "likes for today",
+        "Hinge+",
+        "Send unlimited likes*",
+        "See everyone who likes you",
+        "Set more dating preferences",
+        "Sort all incoming likes",
+        "Browse by who's new ön nearby",
+        "Get 3 months for $89.99",
         "What a match!",
         "Now you have 24 hours to start chatting.",
         # Tinder-specific end messages
