@@ -545,6 +545,10 @@ def fuzzy_match_text(target_text, text_to_match, threshold=0.7):
     target_lower = target_text.lower().strip()
     match_lower = text_to_match.lower().strip()
 
+    # First check if one string is a substring of the other
+    if target_lower in match_lower or match_lower in target_lower:
+        return True, 0.85, text_to_match
+
     # Get base similarity ratio using sequence matcher
     ratio = difflib.SequenceMatcher(None, target_lower, match_lower).ratio()
 
@@ -553,19 +557,9 @@ def fuzzy_match_text(target_text, text_to_match, threshold=0.7):
         max(len(target_lower), len(match_lower))
     ratio = ratio * len_ratio
 
-    # Small bonus (max 0.1) if one string contains the other
-    contains_bonus = 0.0
-    if target_lower in match_lower or match_lower in target_lower:
-        # Bonus scaled by the length ratio of the contained string
-        contains_ratio = min(len(target_lower), len(
-            match_lower)) / max(len(target_lower), len(match_lower))
-        contains_bonus = 0.1 * contains_ratio
-
-    final_ratio = min(1.0, ratio + contains_bonus)
-
     # Only consider it a match if the ratio is above threshold
-    is_match = final_ratio >= threshold
-    return is_match, final_ratio, text_to_match
+    is_match = ratio >= threshold
+    return is_match, ratio, text_to_match
 
 
 def create_visual_debug_overlay(image_path, boxes, lines=None, paragraphs=None, output_path=None, tap_target=None, profile_num=None, app_name=None):
@@ -1642,36 +1636,19 @@ def find_prompt_response_match(screenshot_path, target_prompt, target_response, 
         logger.debug(f"  Text: '{para['text']}'")
         logger.debug(f"  Prompt match ratio: {prompt_ratio:.2f}")
 
-        # Check if target is substring of paragraph (case-insensitive)
-        para_text_lower = para['text'].lower()
-        if target_prompt_lower in para_text_lower:
-            logger.debug(f"  Found prompt as substring!")
-            is_prompt_match = True
-            # Give it a ratio higher than threshold but not perfect
-            prompt_ratio = 0.85
-
         # Also check for response match with lower threshold
         is_response_match, response_ratio, _ = fuzzy_match_text(
             target_response, para['text'], threshold=0.7)
         logger.debug(f"  Response match ratio: {response_ratio:.2f}")
 
-        # Check if target is substring of paragraph (case-insensitive)
-        para_text_lower = para['text'].lower()
-        if target_response_lower in para_text_lower:
-            logger.debug(f"  Found response as substring!")
-            is_response_match = True
-            # Give it a ratio higher than threshold but not perfect
-            response_ratio = 0.85
-
-        logger.debug("")
-
+        # Update best matches if we found better ones
         if is_prompt_match and prompt_ratio > best_prompt_ratio:
-            best_prompt_match = para.copy()  # Make a copy of the paragraph
-            best_prompt_match['match_type'] = 'prompt'  # Add match type
+            best_prompt_match = para
             best_prompt_ratio = prompt_ratio
-        elif is_response_match and response_ratio > best_response_ratio:
-            best_response_match = para.copy()  # Make a copy of the paragraph
-            best_response_match['match_type'] = 'response'  # Add match type
+            best_prompt_text = matched_text
+
+        if is_response_match and response_ratio > best_response_ratio:
+            best_response_match = para
             best_response_ratio = response_ratio
 
     # Use prompt match if found, otherwise use response match
