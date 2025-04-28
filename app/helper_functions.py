@@ -545,8 +545,8 @@ def fuzzy_match_text(target_text, text_to_match, threshold=0.7):
     target_lower = target_text.lower().strip()
     match_lower = text_to_match.lower().strip()
 
-    # First check if one string is a substring of the other
-    if target_lower in match_lower or match_lower in target_lower:
+    # Only fire substring match if the target appears as a contiguous substring (with spaces preserved)
+    if target_lower and target_lower in match_lower:
         return True, 0.85, text_to_match
 
     # Get base similarity ratio using sequence matcher
@@ -1624,10 +1624,6 @@ def find_prompt_response_match(screenshot_path, target_prompt, target_response, 
     best_response_match = None
     best_response_ratio = 0.0
 
-    # Prepare lowercase versions for substring matching
-    target_prompt_lower = target_prompt.lower() if target_prompt else ""
-    target_response_lower = target_response.lower() if target_response else ""
-
     for i, para in enumerate(paragraphs):
         # Check for prompt match
         is_prompt_match, prompt_ratio, matched_text = fuzzy_match_text(
@@ -1636,19 +1632,20 @@ def find_prompt_response_match(screenshot_path, target_prompt, target_response, 
         logger.debug(f"  Text: '{para['text']}'")
         logger.debug(f"  Prompt match ratio: {prompt_ratio:.2f}")
 
-        # Also check for response match with lower threshold
+        # Also check for response match with same threshold
         is_response_match, response_ratio, _ = fuzzy_match_text(
             target_response, para['text'], threshold=0.7)
         logger.debug(f"  Response match ratio: {response_ratio:.2f}")
 
         # Update best matches if we found better ones
         if is_prompt_match and prompt_ratio > best_prompt_ratio:
-            best_prompt_match = para
+            best_prompt_match = para.copy()  # Make a copy of the paragraph
+            best_prompt_match['match_type'] = 'prompt'  # Add match type
             best_prompt_ratio = prompt_ratio
-            best_prompt_text = matched_text
 
         if is_response_match and response_ratio > best_response_ratio:
-            best_response_match = para
+            best_response_match = para.copy()  # Make a copy of the paragraph
+            best_response_match['match_type'] = 'response'  # Add match type
             best_response_ratio = response_ratio
 
     # Use prompt match if found, otherwise use response match
