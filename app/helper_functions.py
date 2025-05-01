@@ -2328,7 +2328,8 @@ def check_for_end_of_profiles(device, profile_num, dating_app=None):
         "You've reached the end",
         "No one new around you",
         "Upgrade to Tinder Plus",
-        "Get Tinder Plus"
+        "Get Tinder Plus",
+        "You've got a secret admirer!"
     ]
 
     # Check each paragraph against each message
