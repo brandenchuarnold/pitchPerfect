@@ -2828,13 +2828,7 @@ def check_for_tinder_advertisement(device, profile_num):
     Detects specific advertisements and dismisses them appropriately:
     - 'Your new pic is everything' ad: dismissed by swiping left
     - 'Be Seen' boosts ad: dismissed by tapping X button at top left
-
-    Args:
-        device: The ADB device
-        profile_num: Current profile number for debugging
-
-    Returns:
-        bool: True if advertisement was detected and dismissed, False otherwise
+    - 'Passion in common' ad: dismissed by tapping at 550x1675
     """
     try:
         # Take a screenshot to check for the advertisement
@@ -2877,6 +2871,15 @@ def check_for_tinder_advertisement(device, profile_num):
             "BOOST ME"
         ]
 
+        # Passion in common ad indicators - to be dismissed with tap at 550x1675
+        passion_ad_indicators = [
+            "You have a Passion in common with",
+            "Send a Super Like to",
+            "increase your chance to match",
+            "Send Super Like",
+            "No Thanks"
+        ]
+
         # First check for X-button advertisements
         x_button_ad_detected = False
         matched_x_button_indicator = ""
@@ -2912,6 +2915,24 @@ def check_for_tinder_advertisement(device, profile_num):
                 if regular_ad_detected:
                     break
 
+        # Check for passion in common ad if no other ads detected
+        passion_ad_detected = False
+        matched_passion_indicator = ""
+
+        if not x_button_ad_detected and not regular_ad_detected:
+            for para in paragraphs:
+                for indicator in passion_ad_indicators:
+                    is_match, ratio, _ = fuzzy_match_text(
+                        indicator, para['text'], threshold=0.7)
+                    if is_match:
+                        logger.info(
+                            f"Detected Tinder passion ad indicator '{indicator}' with ratio {ratio:.2f}")
+                        passion_ad_detected = True
+                        matched_passion_indicator = indicator
+                        break
+                if passion_ad_detected:
+                    break
+
         # Handle X-button advertisements by tapping the X button at (75, 190)
         if x_button_ad_detected:
             logger.info(
@@ -2935,6 +2956,16 @@ def check_for_tinder_advertisement(device, profile_num):
 
             # Execute the swipe
             device.shell(f"input swipe {start_x} {mid_y} {end_x} {mid_y} 300")
+
+            # Wait for the ad to be dismissed
+            time.sleep(2.0)
+            return True
+
+        # Handle passion in common ad by tapping at 550x1675
+        elif passion_ad_detected:
+            logger.info(
+                "Tinder 'Passion in common' advertisement detected - tapping at (550, 1675) to dismiss")
+            tap(device, 550, 1675)
 
             # Wait for the ad to be dismissed
             time.sleep(2.0)
