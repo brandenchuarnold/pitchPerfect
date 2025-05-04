@@ -440,7 +440,7 @@ def process_bumble_profile(device, width, height, profile_num, target_likes_befo
 
     # Scroll through profile and capture screenshots with Bumble-specific OCR settings
     screenshots = scroll_profile_and_capture(
-        device, width, height, profile_num, num_screenshots=9, dating_app=dating_app)
+        device, width, height, profile_num, num_screenshots=8, dating_app=dating_app)
 
     # Check if we need to force dislike based on the counter logic
     # If we've reached our target likes and haven't disliked any, dislike this one
@@ -585,8 +585,8 @@ def process_tinder_profile(device, width, height, profile_num, target_likes_befo
                 device, f"profile_{profile_num}_part1")
             screenshots = [initial_screenshot]
 
-            # Tap 8 times to get through photos (9 total with initial)
-            for i in range(1, 9):
+            # Tap 3 times to get through photos (4 total with initial)
+            for i in range(1, 4):
                 # Tap to see next photo at coordinates 975x1300
                 logger.info(f"Tapping for photo #{i+1}")
                 tap(device, 975, 1300, with_additional_swipe=False)
@@ -620,8 +620,8 @@ def process_tinder_profile(device, width, height, profile_num, target_likes_befo
             device, f"profile_{profile_num}_part1")
         screenshots = [initial_screenshot]
 
-        # Tap 8 times to get through photos (9 total with initial)
-        for i in range(1, 9):
+        # Tap 3 times to get through photos (4 total with initial)
+        for i in range(1, 4):
             # Tap to see next photo at coordinates 975x1300
             logger.info(f"Tapping for photo #{i+1}")
             tap(device, 975, 1300, with_additional_swipe=False)
