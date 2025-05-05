@@ -2590,7 +2590,10 @@ def check_for_bumble_advertisement(device, profile_num):
             "You've already liked these bees, why not use Compliments to help stand out?",
             "Compliments to help stand out?",
             "You've already liked these bees, why not use",
-            "Second time's a charm"
+            "Second time's a charm",
+            "Be seen more for less, with 1 spotlight for $0.99",
+            "For 30 minutes we'll bump you to the front of the linew, here more eyes will be on you. Own it.",
+            "Get Spotlight for $0.99"
         ]
 
         # Check for X-button advertisements first
