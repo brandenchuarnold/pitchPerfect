@@ -1376,7 +1376,7 @@ def generate_bumble_reply_from_screenshots(screenshots, format_txt_path, prompts
     system_prompt = f"""{DATING_APP_INTRO}
 
     PROFILE STRUCTURE:
-    You will analyze 8 screenshots of a Bumble profile. Each profile may contain the following elements (following the exact order described in bumbleFormat.txt):
+    You will analyze 7 screenshots of a Bumble profile. Each profile may contain the following elements (following the exact order described in bumbleFormat.txt):
     1. Photos (0-7 total)
     2. About Me section (optional)
     3. Basic Information attributes (optional)
@@ -1986,45 +1986,59 @@ def detect_prompt_in_screenshot(device, target_prompt, target_response, screensh
 
 
 def dislike_profile(device, dating_app='hinge'):
-    """Execute a dislike action by tapping the X button.
+    """Execute a dislike action by tapping the X button or swiping left.
 
     Args:
         device: The ADB device
-        dating_app: The dating app ('hinge', 'bumble', or 'tinder') to adjust coordinates
+        dating_app: The dating app ('hinge', 'bumble', or 'tinder') to adjust coordinates/actions
 
     Returns:
         None
     """
-    if dating_app == 'hinge':
+    if dating_app == 'bumble':
+        # For Bumble, swipe left to dislike
+        width, height = get_screen_resolution(device)
+        swipe_start_x = int(width * 0.8)  # Start at 80% of screen width
+        swipe_end_x = int(width * 0.2)    # End at 20% of screen width
+        swipe_y = int(height * 0.5)       # Middle of screen height
+
+        # Execute the left swipe
+        device.shell(
+            f"input swipe {swipe_start_x} {swipe_y} {swipe_end_x} {swipe_y} 300")
+    elif dating_app == 'hinge':
         # Hinge dislike button coordinates
         tap(device, 140, 2075, with_additional_swipe=False)
     elif dating_app == 'tinder':
         # Tinder dislike button coordinates
         tap(device, 330, 2050, with_additional_swipe=False)
-    else:
-        # Default coordinates for Bumble
-        tap(device, 150, 1600, with_additional_swipe=False)
 
     # No need to wait here as we'll wait at the beginning of the next profile processing
 
 
 def like_profile(device, dating_app):
-    """Execute a like action by tapping the like button.
+    """Execute a like action by tapping the like button or swiping right.
 
     Args:
         device: The ADB device
-        dating_app: The dating app ('bumble' or 'tinder') to determine coordinates
+        dating_app: The dating app ('bumble' or 'tinder') to determine action
                     Note: Not used for Hinge since it uses OCR to find the button
 
     Returns:
         None
     """
-    if dating_app == 'tinder':
+    if dating_app == 'bumble':
+        # For Bumble, swipe right to like
+        width, height = get_screen_resolution(device)
+        swipe_start_x = int(width * 0.2)  # Start at 20% of screen width
+        swipe_end_x = int(width * 0.8)    # End at 80% of screen width
+        swipe_y = int(height * 0.5)       # Middle of screen height
+
+        # Execute the right swipe
+        device.shell(
+            f"input swipe {swipe_start_x} {swipe_y} {swipe_end_x} {swipe_y} 300")
+    elif dating_app == 'tinder':
         # Tinder like button coordinates
         tap(device, 750, 2050, with_additional_swipe=False)
-    else:
-        # Bumble like button coordinates
-        tap(device, 900, 1600, with_additional_swipe=False)
 
     # No need to wait here as we'll wait at the beginning of the next profile processing
 
