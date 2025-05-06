@@ -942,6 +942,14 @@ Analyze ONLY the main person (not other people in photos) for these traits:
      * Facial hair (mustache or beard)
      * Flat chest with no boob growth visible
 
+4. Advertisement Profile:
+   - Any ONE of these indicates the profile is actually an advertisement:
+     * Multiple photos showing the same exact image/scene repeatedly
+     * Text in the profile containing words like "Ad", "Advertisement", or "Sponsored"
+     * Product promotion is evident in photos or bio text (showing specific products with branding)
+     * Profile seems focused on promoting a service, product, or business rather than dating
+     * Profile contains website URLs or social media handles to follow
+
 If ANY of these trait categories are met, return the below response exactly, where prompt, response, and conversation_starter are empty strings, and screenshot_index is -1:
 {
     "prompt": "",
