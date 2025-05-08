@@ -165,7 +165,8 @@ def process_ai_response(screenshots, format_txt_path, prompts_txt_path, captions
         # Also exit the application on unhandled exceptions
         sys.exit(1)
 
-    return boxes, lines, paragraphs, screenshot_path
+    # Return ai_response instead of undefined variables
+    return ai_response
 
 
 def process_screenshot_with_visualization(image_path, profile_num, screenshot_num, dating_app=None):
