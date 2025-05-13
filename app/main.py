@@ -104,7 +104,7 @@ def scroll_back_to_top(device, num_scrolls=6, dating_app=None):
     Args:
         device: The ADB device
         num_scrolls: Number of scrolls to perform (default 6 for Hinge with 7 screenshots)
-        dating_app: Optional app type to adjust scroll count (if 'bumble', uses 8 scrolls by default)
+        dating_app: Optional app type to adjust scroll count (if 'bumble', uses 6 scrolls by default)
 
     Returns:
         bool: True if successful, False otherwise
@@ -112,7 +112,8 @@ def scroll_back_to_top(device, num_scrolls=6, dating_app=None):
     try:
         # Adjust number of scrolls based on dating app if not explicitly specified
         if dating_app == 'bumble' and num_scrolls == 6:
-            num_scrolls = 8  # Bumble typically uses 9 screenshots, so 8 scrolls to return to top
+            # Bumble now uses 7 screenshots (reduced from 9), so 6 scrolls to return to top
+            num_scrolls = 6
 
         for i in range(1, num_scrolls+1):
             logger.info(f"Scroll up #{i}")
@@ -441,7 +442,7 @@ def process_bumble_profile(device, width, height, profile_num, target_likes_befo
 
     # Scroll through profile and capture screenshots with Bumble-specific OCR settings
     screenshots = scroll_profile_and_capture(
-        device, width, height, profile_num, num_screenshots=8, dating_app=dating_app)
+        device, width, height, profile_num, num_screenshots=6, dating_app=dating_app)
 
     # Check if we need to force dislike based on the counter logic
     # If we've reached our target likes and haven't disliked any, dislike this one
@@ -551,8 +552,8 @@ def process_tinder_profile(device, width, height, profile_num, target_likes_befo
     """Process a Tinder profile with tapping through photos and AI evaluation.
 
     For Tinder, we take the initial screenshot, then tap to view more photos instead of scrolling.
-    We tap at coordinates 975x1300 eight times with a 0.75 second pause between each tap.
-    This gives us nine screenshots total. Then we send to prompt generator for desireable/undesireable analysis only.
+    We tap at coordinates 975x1300 to take photos. This gives us three screenshots total. 
+    Then we send to prompt generator for desireable/undesireable analysis only.
     Based on the response, we click at 330x2050 if undesireable or 750x2050 if desireable.
     """
     try:
@@ -586,8 +587,8 @@ def process_tinder_profile(device, width, height, profile_num, target_likes_befo
                 device, f"profile_{profile_num}_part1")
             screenshots = [initial_screenshot]
 
-            # Tap 3 times to get through photos (4 total with initial)
-            for i in range(1, 4):
+            # Tap 2 times to get through photos (3 total with initial)
+            for i in range(1, 3):
                 # Tap to see next photo at coordinates 975x1300
                 logger.info(f"Tapping for photo #{i+1}")
                 tap(device, 975, 1300, with_additional_swipe=False)
@@ -621,8 +622,8 @@ def process_tinder_profile(device, width, height, profile_num, target_likes_befo
             device, f"profile_{profile_num}_part1")
         screenshots = [initial_screenshot]
 
-        # Tap 3 times to get through photos (4 total with initial)
-        for i in range(1, 4):
+        # Tap 2 times to get through photos (3 total with initial)
+        for i in range(1, 3):
             # Tap to see next photo at coordinates 975x1300
             logger.info(f"Tapping for photo #{i+1}")
             tap(device, 975, 1300, with_additional_swipe=False)
