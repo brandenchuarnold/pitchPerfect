@@ -1047,9 +1047,13 @@ For each prompt/response pair:
       1. First, find something that stands out and is visibly attractive from her profile photos.
          - Focus on concrete, observable things in her photos:
            * Physical appearance (only if obvious and tasteful)
-             - A genuine smile in a photo
-             - A distinctive hairstyle or color
-             - A stylish outfit or specific piece of clothing
+              - A genuine smile in a photo
+              - A distinctive hairstyle or color
+              - A stylish outfit or specific piece of clothing
+              - Her tattoos (take note of ink color, size, placement, and design)
+              - Good posture in activities (yoga, surfing, dancing)
+              - Athletic form when engaged in sports
+              - Balanced movements captured in action shots
            * Activities she's doing in photos
              - Good posture while doing an activity
              - Calm expression while cooking or focused on something
@@ -1062,6 +1066,8 @@ For each prompt/response pair:
            * looking adventurous
            * seeming really cool
            * looking like she has a great personality
+         - The goal is to find something natural or intrinsic about her that is attractive to us
+         - People like to be noticed for specific qualities they have in photos
          - Keep it straightforward and honestly observable
          - The attractive quality must be something you could literally point to in a photo
          - No marketing speak or over-the-top descriptions
@@ -1111,105 +1117,112 @@ For each prompt/response pair:
       * Easy to respond to over text
       * Creates a pleasant shared experience
 
-    CRITICAL: People don't narrate their lives with dramatic language - they just express interest in things they want to do together.
+    CRITICAL:
+    - People don't narrate their lives with dramatic language - they just express interest in things they want to do together.
+    - Your conversation starters must be rooted in reality and suggest real shared activities based on her interests.
+    - Shorter messages are significantly more understandable over text. Keep messages brief, direct, and immediately clear - avoid any unnecessary words.
 
-    CRITICAL: Your conversation starters must be rooted in reality and suggest real shared activities based on her interests.
-
-    CRITICAL: Shorter messages are significantly more understandable over text. Keep messages brief, direct, and immediately clear - avoid any unnecessary words.
-
-    Note: The bad examples still attempt to connect the prompt/response to an activity, but do so in vague, generic ways that don't show attention to specific details or suggest concrete activities from the photos.
-
-    Examples of good vs bad conversation starters:
+    Examples of good vs bad conversation starters. Note: The bad examples still attempt to connect the prompt/response to an activity, but do so in vague, generic ways that don't show attention to specific details or suggest concrete activities from the photos:
 
     GOOD:
     - Prompt: "My Love Language is"
       Response: "Words of affirmation and cheese"
       Photo context: Playing board games in one photo
-      Conversation Starter: "Cheese appreciation calls for proper tasting atmosphere. Would you like to try the cheese board at Fromagination together? I want to see that genuine smile you have in your picture in person, Emma." 
+      Conversation Starter: "Cheese appreciation calls for proper tasting atmosphere. Would you like to try the cheese board at Fromagination together? I'd love to see that bright smile from your board game photo in person, Emma." 
       Analysis:
       - Step 1 (Bridge): ✓ Connects cheese interest to a tasting experience
       - Step 2 (Activity): ✓ Specific activity at proper venue with "together"
-      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her smile)
+      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her smile in a specific photo)
       - Step 4 (Name): ✓ Natural placement with comma
 
     - Prompt: "I geek out on"
       Response: "NBA, specifically golden state warriors" 
       Photo context: Rock climbing at a gym
-      Conversation Starter: "Sports fans understand physical challenges and competition. Want to try some beginner routes at Boulders Climbing Gym with me? I'd love to see those cool climbing shoes from your gym photo up close, Jessica." 
+      Conversation Starter: "Sports fans understand physical challenges and competition. Want to try some beginner routes at Boulders Climbing Gym with me? I'd love to see that focused expression from your climbing photo in person, Jessica." 
       Analysis:
       - Step 1 (Bridge): ✓ Links sports interest to physical activity
       - Step 2 (Activity): ✓ Specific activity at venue with "with me"
-      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her climbing shoes)
+      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her facial expression in a specific photo)
       - Step 4 (Name): ✓ Natural placement with comma
 
     - Prompt: "Two truths and a lie..."
       Response: "1) I have a scar on my hand from being bitten by a hamster 2) I wrote and directed a short film 3) I won a county-wide math competition in school"
       Photo context: Kayaking on a lake
-      Conversation Starter: "Creative people appreciate nature's peaceful inspiration too. Let's paddle a tandem kayak along Lake Mendota together? I'd love to see that cute hat you're wearing in your beach photo in real life, Sophia." 
+      Conversation Starter: "Creative people appreciate nature's peaceful inspiration too. Let's paddle a tandem kayak along Lake Mendota together? I want to see that wide-brimmed sun hat from your beach photo in real life, Sophia." 
       Analysis:
       - Step 1 (Bridge): ✓ Connects creative identity to nature appreciation
       - Step 2 (Activity): ✓ Specific activity at location with "together"
-      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her hat)
+      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her hat in a specific photo)
       - Step 4 (Name): ✓ Natural placement with comma
 
     - Prompt: "What I order for the table"
       Response: "Carbs, cheese and wine"
       Photo context: Drinking at a bar
-      Conversation Starter: "Wine enthusiasts deserve quality local venues for tasting. Want to try a flight of reds at Eno Vino together? I'd love to see that elegant necklace you're wearing in your profile picture in person, Mia." 
+      Conversation Starter: "Wine enthusiasts deserve quality local venues for tasting. Want to try a flight of reds at Eno Vino together? I'd love to see that curly hair from your profile picture in person, Mia." 
       Analysis:
       - Step 1 (Bridge): ✓ Links wine interest to quality tasting experience
       - Step 2 (Activity): ✓ Specific activity at venue with "together"
-      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her necklace)
+      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her hair in a specific photo)
       - Step 4 (Name): ✓ Natural placement with comma
 
     - Prompt: "My simple pleasures"
       Response: "Carbs, cheese, and wine"
       Photo context: Playing board games
-      Conversation Starter: "Wine perfectly complements friendly competition nights. Would you like to play Clue at Gamer's Library with me? I want to hear that contagious laugh I can see in your birthday photo in person, Emily."
+      Conversation Starter: "Wine perfectly complements friendly competition nights. Would you like to play Clue at Gamer's Library with me? I want to see that black geometric tattoo on your forearm in person, Emily."
       Analysis:
       - Step 1 (Bridge): ✓ Connects wine to game night in logical way
       - Step 2 (Activity): ✓ Specific game at venue with "with me"
-      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her laugh)
+      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her tattoo in a specific location)
       - Step 4 (Name): ✓ Natural placement with comma
 
     - Prompt: "The dorkiest thing about me is"
       Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
       Photo context: Hiking on a trail
-      Conversation Starter: "History buffs need peaceful breaks from intensive studying. How about taking a short hike at Picnic Point together? I'd love to see that stylish hiking outfit from your trail photo in action, Ashley."  
+      Conversation Starter: "History buffs need peaceful breaks from intensive studying. How about taking a short hike at Picnic Point together? I'd love to see that athletic posture from your trail photo in person, Ashley."  
       Analysis:
       - Step 1 (Bridge): ✓ Connects history studying to need for breaks
       - Step 2 (Activity): ✓ Specific activity and location with "together"
-      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her hiking outfit)
+      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her posture in a specific photo)
       - Step 4 (Name): ✓ Natural placement with comma
 
     - Prompt: "The quickest way to my heart is"
       Response: "Making me laugh and ice cream"
       Photo context: At a park with friends
-      Conversation Starter: "Ice cream creates perfect summer memories to share. Would you like to try some flavors at Chocolate Shoppe on State with me? I'd love to see that beautiful curly hair from your profile picture in person, Zoe."
+      Conversation Starter: "Ice cream creates perfect summer memories to share. Would you like to try some flavors at Chocolate Shoppe on State with me? I'd love to see that blue mermaid tattoo from your beach photo in real life, Zoe."
       Analysis:
       - Step 1 (Bridge): ✓ Links ice cream interest to summer memory creation
       - Step 2 (Activity): ✓ Specific food item at venue with "with me"
-      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her hair)
+      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her tattoo design in a specific photo)
       - Step 4 (Name): ✓ Natural placement with comma
 
     - Prompt: "I'm weirdly attracted to"
       Response: "Guys who can beat me at Mario Kart"
       Photo context: At a party with friends
-      Conversation Starter: "Gaming gets better with friendly competition and stakes. Want to race Mario Kart at Double Tap Beercade together? I want to see your stylish glasses from that party photo in real life, Megan."
+      Conversation Starter: "Gaming gets better with friendly competition and stakes. Want to race Mario Kart at Double Tap Beercade together? I want to see those round glasses from your party photo in real life, Megan."
       Analysis:
       - Step 1 (Bridge): ✓ Connects gaming to enhanced competition with stakes
       - Step 2 (Activity): ✓ Specific competitive activity at venue with "together"
-      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her glasses)
+      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her glasses in a specific photo)
       - Step 4 (Name): ✓ Natural placement with comma
 
     - Prompt: "A non-negotiable for me is"
       Response: "Having a good book on the go at all times"
       Photo context: Reading at a cafe
-      Conversation Starter: "Book lovers thrive in cozy literary spaces with character. Want to browse the fiction section at Lake City Books together? I'd love to see those unique earrings from your profile photo up close, Lily."
+      Conversation Starter: "Book lovers thrive in cozy literary spaces with character. Want to browse the fiction section at Lake City Books together? I'd love to see those dangling earrings from your cafe photo in person, Lily."
       Analysis:
       - Step 1 (Bridge): ✓ Links reading interest to literary environment value
       - Step 2 (Activity): ✓ Specific browsing activity at venue with "together"
-      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her earrings)
+      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her earrings in a specific photo)
+      - Step 4 (Name): ✓ Natural placement with comma
+      
+    - Prompt: "The one thing I want to know about you is"
+      Response: "If you have a favorite hiking trail"
+      Photo context: Yoga on a beach
+      Conversation Starter: "Nature lovers appreciate different outdoor experiences. Want to try a weekend hike at Devil's Lake State Park together? I'd love to see that graceful yoga posture from your beach photo in person, Hannah."
+      Analysis:
+      - Step 1 (Bridge): ✓ Connects hiking interest to broader outdoor experiences
+      - Step 2 (Activity): ✓ Specific activity at location with "together"
+      - Step 3 (Compliment): ✓ Completely unrelated to prompt/activity; focuses on what the person wants to experience (her posture in a specific photo)
       - Step 4 (Name): ✓ Natural placement with comma
 
     BAD:
