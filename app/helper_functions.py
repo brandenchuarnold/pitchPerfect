@@ -1043,36 +1043,48 @@ For each prompt/response pair:
          * Prioritize interactive experiences where you can do something together rather than just talking
          * Only suggest bowling/ice skating/climbing/kayaking if she shows specific interest in these activities
          * Examples of poor date activities: full sporting events, multi-day projects, competitive activities, professional networking
-   c. Third, add a compliment that explains why she would be a good partner for this date activity
-      - Focus on concrete, observable things in her photos:
-        * Physical appearance (only if obvious and tasteful)
-          - "I can tell from your smile in that concert photo you'd bring good energy"
-          - "Your confident pose in that hiking picture shows you'd be fun to adventure with"
-        * Activities she's doing in photos
-          - "The way you handled that surfboard shows you're up for new challenges"
-          - "Your focus in that cooking photo suggests you'd appreciate the details"
-        * Specific items or objects in photos
-          - "The way you hold that camera shows you notice the interesting moments"
-          - "Your choice of hiking boots tells me you come prepared for anything"
-      - CRITICAL: The compliment should:
-        * Be COMPLETELY SEPARATE from both the prompt and the suggested activity
-        * Express what YOU want to experience about her in person (slightly selfish but genuine)
-        * Use natural, conversational language - not overly flattering or formal
-        * Be specific enough that it couldn't apply to just anyone
-        * Avoid generic personality traits unless clearly evident in photos
-        * Explain why you are asking HER specifically out (not someone else)
-        * Be genuine and observational, not presumptuous
-      - AVOID vague or personality-based compliments not clearly visible:
-        * "You look like you know how to have fun"
-        * "You seem like a fun person"
-        * "You look adventurous"
-        * "You seem really cool"
-        * "You look like you have a great personality"
-      - Keep it straightforward and based on clear visual evidence
-      - The compliment should function as your reasoning for wanting to do this activity with her
+   c. Third, add a compliment that is entirely based on what you genuinely find attractive about her
+      1. First, find something that stands out and is visibly attractive from her profile photos.
+         - Focus on concrete, observable things in her photos:
+           * Physical appearance (only if obvious and tasteful)
+             - A genuine smile in a photo
+             - A distinctive hairstyle or color
+             - A stylish outfit or specific piece of clothing
+           * Activities she's doing in photos
+             - Good posture while doing an activity
+             - Calm expression while cooking or focused on something
+           * Specific items or objects in photos
+             - Unique jewelry or accessories
+             - Interesting shoes or hat
+         - AVOID vague or personality-based observations like:
+           * seeming like she knows how to have fun
+           * seeming like a fun person
+           * looking adventurous
+           * seeming really cool
+           * looking like she has a great personality
+         - Keep it straightforward and honestly observable
+         - The attractive quality must be something you could literally point to in a photo
+         - No marketing speak or over-the-top descriptions
+      2. Turn this observation into a compliment by saying you want to see it in person
+         - Simply express that you want to experience this attractive trait in real life
+         - Format: "I'd love to see that [specific attractive trait] from your [specific photo context] in person"
+         - Examples:
+           * "I'd love to see that good posture from your surfing photo in person"
+           * "I'd love to see that calm expression from your cooking photo in real life"
+           * "I'd love to see that genuine smile from your beach photo in person"
+           * "I want to see those unique earrings from your profile photo in real life"
+           * "I'd love to see that stylish hat you're wearing in your hiking photo in person"
+         - CRITICAL: The compliment MUST be:
+           * COMPLETELY SEPARATE from both the prompt and the suggested activity
+           * Selfish but genuine (what YOU want to experience about her)
+           * Specific to something visibly evident in her photos
+           * Simple and straightforward, not flowery or exaggerated
+           * Expressed as something you want to see "in person" or "in real life"
+         - DO NOT connect the compliment to the activity in any way
+         - The compliment explains why you're asking HER out specifically, based on a genuine attraction
    d. Finally, add her name after a comma to end the message
       - This personalizes the message and shows you paid attention to her profile
-      - For example: "... brings good energy to activities, Sarah." or "... would make this more fun, Jessica."
+      - For example: "... in person, Sarah." or "... in real life, Jessica."
       - Always include her name at the end preceded by a comma
       - Keep it natural and conversational
    e. Verify the location of the establishment is in Madison, Wisconsin
