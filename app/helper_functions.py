@@ -996,381 +996,758 @@ For each prompt/response pair:
     a. CRITICAL: Immediately check if the prompt appears in hingePolls.txt
     b. If the prompt is found in hingePolls.txt, it is a poll prompt and must be DISQUALIFIED for conversation starters
     c. Only generate conversation starters for the three actual prompt/response pairs where the prompt is NOT in hingePolls.txt
-3. Create exactly THREE unique conversation starters that follow this three-step approach:
-   a. First, create a bridge (6-9 words) between her prompt/response and your suggested date activity
-      - CRITICAL: The bridge must create a logical connection that explains WHY this activity relates to her interests
-      - CRITICAL: The bridge should articulate a genuine reason why someone with her interest would enjoy this activity
-      - Reference something specific from her prompt or response
-      - Keep it concise but make the connection crystal clear
-      - This creates context for your suggestion and shows you paid attention
-      - IMPORTANT: If your date activity suggestion is based on an activity seen in her photos (preferred approach), create a bridge that connects from the prompt/response to that activity
-        * Example: If her prompt is about loving dogs but photos show her kayaking, you might say "Dog people love exploring nature together" to bridge to kayaking
-        * The connection should feel natural even when connecting different topics
-      CRITICAL: The bridge must be:
-      1. Specific to her prompt/response
-      2. Clear and obvious to understand
-      3. Natural lead-in to the date activity
-      4. Between 6-9 words exactly
-      5. Shows you paid attention to her profile
-      6. Explains WHY the activity is relevant to her interest
-      7. Suggests a genuine benefit or logical relationship
-   b. Second, suggest a shared activity or experience (8-10 words)
-      - CRITICAL: While it's ideal to suggest activities you see her doing in photos, this isn't always possible
-      - You'll often need to base date activities on prompt/response pairs when photos don't show suitable activities
-      - When using information from her photos:
-        * Choose activities you've seen her actually doing
-        * Keep the suggestion simple and time-limited (30-90 minutes)
-      - When using information from prompt/response pairs:
-        * Focus on concrete preferences mentioned (foods, drinks, interests)
-        * Avoid using personal stories, goals, or aspirations
-      - CRITICAL: Always use this exact format for date suggestions:
-        * Start with the VERB + at venue + with me/together + question mark
-        * VERB must be the first word - no introductory phrases like "Want to" or "Would you like to"
-        * Examples: "Play monopoly at Role Play Lounge with me?" or "Drink at The Old Fashioned together?"
-        * Bad examples: "Do you want to play monopoly at Role Play Lounge?" or "Let's grab drinks downtown?"
-        * Use specific, direct verbs instead of generic ones like "try" or "sample" (e.g., "Eat", "Drink", "Climb", "Play", "Browse", "Hike")
-        * Must be a complete grammatical sentence
-        * Must include a specific action verb
-        * Must include the venue name
-        * Must end with "with me" or "together" followed by a comma and her name, then a question mark
-      - CRITICAL: The suggested activity MUST be suitable for a date context:
-         * Takes between 30-90 minutes (half hour to hour and a half)
-         * Fun, casual and low-stakes (avoid high-pressure or complex activities)
-         * No larger goals that overshadow the natural connection
-         * Should allow conversation to flow naturally while doing something enjoyable
+3. Generate three conversation starters per prompt/response pair (nine total) that follow this three-step approach:
+    a. First, think of a date activity (eight to ten words) that is relevant to her prompt/response.
+       - CRITICAL: While it's ideal to suggest activities you see her doing in photos, this isn't always possible
+       - You'll often need to base date activities on prompt/response pairs when photos don't show suitable activities
+       - When using information from her photos:
+         * Choose activities you've seen her actually doing
+         * Keep the suggestion simple and time-limited (30-90 minutes)
+       - When using information from prompt/response pairs:
+         * Focus on concrete preferences mentioned (foods, drinks, interests)
+         * Avoid using personal stories, goals, or aspirations
+       - CRITICAL: Always use this exact format for date suggestions:
+         * Start with the VERB + at venue + with me/together + question mark
+         * VERB must be the first word - no introductory phrases like "Want to" or "Would you like to"
+         * Examples: "Play monopoly at Role Play Lounge with me?" or "Drink at The Old Fashioned together?"
+         * Bad examples: "Do you want to play monopoly at Role Play Lounge?" or "Let's grab drinks downtown?"
+         * Use specific, direct verbs instead of generic ones like "try" or "sample" (e.g., "Eat", "Drink", "Climb", "Play", "Browse", "Hike")
+         * Must be a complete grammatical sentence
+         * Must include a specific action verb
+         * Must include the venue name
+         * Must end with "with me" or "together" followed by a comma and her name, then a question mark
+       - CRITICAL: The suggested activity MUST:
+         * Take between 30-90 minutes (half hour to hour and a half)
+         * Be fun, casual and low-stakes (avoid high-pressure or complex activities)
+         * Have no larger goals that overshadow the natural connection
+         * Allow conversation to flow naturally while doing something enjoyable
          * Prioritize interactive experiences where you can do something together rather than just talking
+         * Be between eight to ten words in length
          * Only suggest bowling/ice skating/climbing/kayaking if she shows specific interest in these activities
          * Examples of poor date activities: full sporting events, multi-day projects, competitive activities, professional networking
-   c. Third, add her name after a comma after the activity suggestion
-      - This personalizes the message and shows you paid attention to her profile
-      - For example: "... with me, Sarah?" or "... together, Jessica?"
-      - Always include her name at the end preceded by a comma
-      - Keep it natural and conversational
-   d. Finally, add a compliment that is entirely based on what you genuinely find attractive about her
-      1. First, find something that stands out and is visibly attractive from her profile photos.
-         - Focus on concrete, observable things in her photos:
-           * Physical appearance (only if obvious and tasteful)
-              - A genuine smile in a photo
-              - A distinctive hairstyle or color
-              - A stylish outfit or specific piece of clothing
-              - Her tattoos (take note of ink color, size, placement, and design)
-              - Good posture in activities (yoga, surfing, dancing)
-              - Athletic form when engaged in sports
-              - Balanced movements captured in action shots
-           * Activities she's doing in photos
-             - Good posture while doing an activity
-             - Calm expression while cooking or focused on something
-           * Specific items or objects in photos
-             - Unique jewelry or accessories
-             - Interesting shoes or hat
-         - AVOID vague or personality-based observations like:
-           * seeming like she knows how to have fun
-           * seeming like a fun person
-           * looking adventurous
-           * seeming really cool
-           * looking like she has a great personality
-         - The goal is to find something natural or intrinsic about her that is attractive to us
-         - People like to be noticed for specific qualities they have in photos
-         - Keep it straightforward and honestly observable
-         - The attractive quality must be something you could literally point to in a photo
-         - No marketing speak or over-the-top descriptions
-      2. Turn this observation into a direct compliment
-         - Express that you want to experience this attractive trait in person with fewer words
-         - Format: "I want to see that [specific attractive trait] from your [specific photo context] in person" or "Pleas show me that [specific attractive trait] from your [specific photo context] in firsthand"
-         - Examples:
-           * "I want to see that good posture from your surfing photo in person"
-           * "I want to see that calm expression from your cooking photo in firsthand"
-           * "Please show me that genuine smile from your beach photo in person"
-           * "Please show me those unique earrings from your profile photo in firsthand"
-         - CRITICAL: The compliment MUST be:
-           * COMPLETELY SEPARATE from both the prompt and the suggested activity
-           * Selfish but genuine (what YOU want to experience about her)
-           * Specific to something visibly evident in her photos
-           * Simple, direct, and straightforward - no unnecessary words
-           * Expressed with minimal wording (use "I want to see" or "Show me")
-         - DO NOT connect the compliment to the activity in any way
-         - The compliment explains why you're asking HER out specifically, based on a genuine attraction
-   e. Verify the location of the establishment is in Madison, Wisconsin
-      - CRITICAL: When suggesting a specific location in Madison, Wisconsin:
-         * First check the locations.txt file to see if the type of establishment exists in Madison
-         * If suggesting a specific named establishment (e.g., "Barriques", "Eno Vino"), ONLY use establishments listed in locations.txt - READ THE ENTIRE LIST CAREFULLY
-         * If the specific type of establishment isn't in locations.txt, just use the generic type (e.g., "a cafe downtown" instead of naming one)
-         * NEVER suggest a specific named establishment that isn't in locations.txt
-         * ONLY mention establishments that are EXACTLY as they appear in locations.txt - no similar names or variations
-         * Double-check the spelling and exact name of any establishment you mention
-         * Do not suggest places that have permanently closed - if you're not 100% certain a place is still open, use a generic location instead
-         * It's always safe to suggest general areas like "downtown", "near the Capitol", or "by the lake" without naming a specific establishment
-   f. When creating the three conversation starters for each prompt/response pair, make sure to follow these guidelines:
-      * Each of the THREE starters should differ in either:
-        - The bridge between prompt/response and activity
-        - OR a different shared activity suggestion for the same topic
-        - OR a different compliment highlighting a different quality
-      * Aim to create inviting scenarios that feel natural, fun and time-limited
-      * Uses natural, everyday language - how you'd actually talk to someone
-      * Avoids flowery metaphors or dramatic language
-      * Never uses marketing-style words like "perfect", "amazing", "journey", "adventure"
-      * Shows interest through specificity and shared experiences
-      * Aims for brevity - 6-9 words for part one (bridge), 8-10 words for part two (activity suggestion), and 12-15 words for part three (direct compliment
-      * Easy to respond to over text
-      * Creates a pleasant shared experience
+    b. Second, create a bridge (6-9 words) between her prompt/response and the suggested date activity
+       - CRITICAL: The bridge must create a logical connection that explains WHY this activity relates to her interests
+       - CRITICAL: The bridge should articulate a genuine reason why someone with her interest would enjoy this activity
+       - Reference something specific from her prompt or response
+       - Keep it concise but make the connection crystal clear
+       - This creates context for your suggestion and shows you paid attention
+       - IMPORTANT: If your date activity suggestion is based on an activity seen in her photos (preferred approach), create a bridge that connects from the prompt/response to that activity
+         * Example: If her prompt is about loving dogs but photos show her kayaking, you might say "Dog people love exploring nature together" to bridge to kayaking
+         * The connection should feel natural even when connecting different topics
+       CRITICAL: The bridge must be:
+       1. Specific to her prompt/response
+       2. Clear and obvious to understand
+       3. Natural lead-in to the date activity
+       4. Between 6-9 words exactly
+       5. Shows you paid attention to her profile
+       6. Explains WHY the activity is relevant to her interest
+       7. Suggests a genuine benefit or logical relationship
+    c. Third, add her name after a comma after the activity suggestion
+       - This personalizes the message and shows you paid attention to her profile
+       - For example: "... with me, Sarah?" or "... together, Jessica?"
+       - Always include her name at the end preceded by a comma
+       - Keep it natural and conversational
+    d. Verify the location of the establishment is in Madison, Wisconsin
+       - CRITICAL: When suggesting a specific location in Madison, Wisconsin:
+          * First check the locations.txt file to see if the type of establishment exists in Madison
+          * If suggesting a specific named establishment (e.g., "Barriques", "Eno Vino"), ONLY use establishments listed in locations.txt - READ THE ENTIRE LIST CAREFULLY
+          * If the specific type of establishment isn't in locations.txt, just use the generic type (e.g., "a cafe downtown" instead of naming one)
+          * NEVER suggest a specific named establishment that isn't in locations.txt
+          * ONLY mention establishments that are EXACTLY as they appear in locations.txt - no similar names or variations
+          * Double-check the spelling and exact name of any establishment you mention
+          * Do not suggest places that have permanently closed - if you're not 100% certain a place is still open, use a generic location instead
+          * It's always safe to suggest general areas like "downtown", "near the Capitol", or "by the lake" without naming a specific establishment
+    e. For each of the three prompt/response pairs, generate THREE distinct date activity suggestions:
+       * Each with a unique bridge connecting it to the prompt/response
+       * Each with a distinct activity that would be enjoyable based on her profile
+       * Each should use a different venue or location
+       * Each should follow all guidelines above
 
-    CRITICAL:
-    - People don't narrate their lives with dramatic language - they just express interest in things they want to do together.
-    - Your conversation starters must be rooted in reality and suggest real shared activities based on her interests.
-    - Shorter messages are significantly more understandable over text. Keep messages brief, direct, and immediately clear - avoid any unnecessary words.
+    - The conversation starter tuples should follow these general guidelines:
+        * Aim to create inviting scenarios that feel natural, fun and time-limited
+        * Use natural, everyday language - how you'd actually talk to someone
+        * Avoid flowery metaphors or dramatic language
+        * Never use marketing-style words like "perfect", "amazing", "journey", "adventure"
+        * Show interest through specificity and shared experiences
+        * Aim for brevity - 6-9 words for the bridge, 8-10 words for the activity suggestion with name
+        * Keep it easy to respond to over text
+        * Create a pleasant shared experience
+   
+   This will result in 9 total conversation starter tuples (3 per prompt/response pair). Count the number of conversation starter tuples. Are there 9? If not, you need to go back and generate three conversation starters per prompt/response pair for a total of 9.
 
-    Examples of good vs bad conversation starters. Note: The bad examples still attempt to connect the prompt/response to an activity, but do so in vague, generic ways that don't show attention to specific details or suggest concrete activities from the photos:
+    Examples of good vs bad DATE SUGGESTION TUPLES:
 
-    GOOD:
+    GOOD DATE SUGGESTION TUPLES:
     - Prompt: "My Love Language is"
       Response: "Words of affirmation and cheese"
       Photo context: Playing board games in one photo
-      Conversation Starter: "Cheese appreciation calls for proper tasting atmosphere. Eat the cheese board at Fromagination together, Emma? I want to see that bright smile from your board game photo in person." 
+      Good Tuple: "Cheese appreciation calls for proper tasting atmosphere. Eat the cheese board at Fromagination together, Emma?"
       Analysis:
-      - Step 1 (Bridge): ✓ Connects cheese interest to a tasting experience
-      - Step 2 (Activity): ✓ Specific activity at proper venue with verb first
-      - Step 3 (Name): ✓ Name after "together" with comma and question mark
-      - Step 4 (Compliment): ✓ Completely unrelated to prompt/activity with photo context reference
+      - Bridge (6-9 words): ✓ Connects cheese interest to a tasting experience
+      - Activity (verb-first): ✓ Specific action verb "Eat" with proper venue
+      - Name: ✓ Name after "together" with comma and question mark
+      - Overall: ✓ Natural flow from bridge to activity suggestion
+      
+      Alternative Good Tuple: "Board games pair perfectly with specialty cheeses. Play Catan at Roll Play Lounge, Emma?"
+      Analysis:
+      - Bridge (6-9 words): ✓ Connects both cheese interest and board game activity
+      - Activity (verb-first): ✓ Specific action verb "Play" with proper venue
+      - Name: ✓ Name after "together" with comma and question mark
+      - Overall: ✓ Incorporates both her interests in one cohesive suggestion
 
     - Prompt: "I geek out on"
       Response: "NBA, specifically golden state warriors" 
       Photo context: Rock climbing at a gym
-      Conversation Starter: "Sports fans understand physical challenges and competition. Climb some beginner routes at Boulders Climbing Gym with me, Jessica? Please show me that focused expression from your climbing photo in person." 
+      Good Tuple: "Sports fans understand physical challenges and competition. Climb some beginner routes at Boulders Climbing Gym with me, Jessica?"
       Analysis:
-      - Step 1 (Bridge): ✓ Links sports interest to physical activity
-      - Step 2 (Activity): ✓ Specific activity at venue with verb first
-      - Step 3 (Name): ✓ Name after "with me" with comma and question mark
-      - Step 4 (Compliment): ✓ Completely unrelated to prompt/activity with photo context reference
+      - Bridge (6-9 words): ✓ Links sports interest to physical activity challenges
+      - Activity (verb-first): ✓ Specific action verb "Climb" with proper venue
+      - Name: ✓ Name after "with me" with comma and question mark
+      - Overall: ✓ Natural flow connecting interest to relevant activity
+      
+      Alternative Good Tuple: "Basketball enthusiasts appreciate analysis. Watch the Bucks game at Sconnie Bar together, Jessica?"
+      Analysis:
+      - Bridge (6-9 words): ✓ Links basketball interest to athletic appreciation
+      - Activity (verb-first): ✓ Specific action verb "Watch" with proper venue
+      - Name: ✓ Name after "together" with comma and question mark
+      - Overall: ✓ Focuses directly on her stated basketball interest
 
     - Prompt: "Two truths and a lie..."
       Response: "1) I have a scar on my hand from being bitten by a hamster 2) I wrote and directed a short film 3) I won a county-wide math competition in school"
       Photo context: Kayaking on a lake
-      Conversation Starter: "Creative people appreciate nature's peaceful inspiration too. Paddle a tandem kayak along Lake Mendota together, Sophia? I want to see that wide-brimmed sun hat from your beach photo in person." 
+      Good Tuple: "Creative people appreciate nature's peaceful inspiration too. Paddle a tandem kayak along Lake Mendota together, Sophia?"
       Analysis:
-      - Step 1 (Bridge): ✓ Connects creative identity to nature appreciation
-      - Step 2 (Activity): ✓ Verb-first activity at location
-      - Step 3 (Name): ✓ Name after "together" with comma and question mark
-      - Step 4 (Compliment): ✓ Completely unrelated to prompt/activity with photo context reference
+      - Bridge (6-9 words): ✓ Connects creative identity to nature appreciation
+      - Activity (verb-first): ✓ Specific action verb "Paddle" with proper location
+      - Name: ✓ Name after "together" with comma and question mark
+      - Overall: ✓ Natural connection between creativity and peaceful outdoor activity
+      
+      Alternative Good Tuple: "Filmmaking requires observant eyes for detail. Explore film exhibits at Chazen Museum of Art with me, Sophia?"
+      Analysis:
+      - Bridge (6-9 words): ✓ Connects to her filmmaking experience
+      - Activity (verb-first): ✓ Specific action verb "Explore" with proper venue
+      - Name: ✓ Name after "with me" with comma and question mark
+      - Overall: ✓ Focuses on her creative interest mentioned in her response
 
     - Prompt: "What I order for the table"
       Response: "Carbs, cheese and wine"
       Photo context: Drinking at a bar
-      Conversation Starter: "Wine enthusiasts deserve quality local venues for tasting. Drink a flight of reds at Eno Vino together, Mia? Please show me that curly hair from your profile photo in person." 
+      Good Tuple: "Wine enthusiasts deserve quality local venues for tasting. Drink a flight of reds at Eno Vino together, Mia?"
       Analysis:
-      - Step 1 (Bridge): ✓ Links wine interest to quality tasting experience
-      - Step 2 (Activity): ✓ Verb-first activity at venue
-      - Step 3 (Name): ✓ Name after "together" with comma and question mark
-      - Step 4 (Compliment): ✓ Completely unrelated to prompt/activity with photo context reference
+      - Bridge (6-9 words): ✓ Links wine interest to quality tasting experience
+      - Activity (verb-first): ✓ Specific action verb "Drink" with proper venue
+      - Name: ✓ Name after "together" with comma and question mark
+      - Overall: ✓ Direct connection between her preference and activity
+      
+      Alternative Good Tuple: "Cheese and wine create perfect flavor pairings. Sample charcuterie boards at Fromagination with me, Mia?"
+      Analysis:
+      - Bridge (6-9 words): ✓ Links cheese and wine interests together
+      - Activity (verb-first): ✓ Specific action verb "Sample" with proper venue
+      - Name: ✓ Name after "with me" with comma and question mark
+      - Overall: ✓ Focuses on multiple aspects of her food preferences
 
     - Prompt: "My simple pleasures"
       Response: "Carbs, cheese, and wine"
       Photo context: Playing board games
-      Conversation Starter: "Wine perfectly complements friendly competition nights. Play Clue at Gamer's Library with me, Emily? I want to see that black geometric tattoo from your board game photo in firsthand."
+      Good Tuple: "Wine perfectly complements friendly competition nights. Play Clue at Gamer's Library with me, Emily?"
       Analysis:
-      - Step 1 (Bridge): ✓ Connects wine to game night in logical way
-      - Step 2 (Activity): ✓ Verb-first game at venue
-      - Step 3 (Name): ✓ Name after "with me" with comma and question mark
-      - Step 4 (Compliment): ✓ Completely unrelated to prompt/activity with photo context reference
+      - Bridge (6-9 words): ✓ Connects wine to game night in logical way
+      - Activity (verb-first): ✓ Specific action verb "Play" with proper venue
+      - Name: ✓ Name after "with me" with comma and question mark
+      - Overall: ✓ Logical flow between interests and activity
+      
+      Alternative Good Tuple: "Carbs fuel long evenings of strategic thinking. Eat wood-fired pizza at Salvatore's Tomato Pies together, Emily?"
+      Analysis:
+      - Bridge (6-9 words): ✓ Connects carb interest to strategic activities
+      - Activity (verb-first): ✓ Specific action verb "Eat" with proper venue
+      - Name: ✓ Name after "together" with comma and question mark
+      - Overall: ✓ Connects her food interest to a relevant dining experience
 
     - Prompt: "The dorkiest thing about me is"
       Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
       Photo context: Hiking on a trail
-      Conversation Starter: "History buffs need peaceful breaks from intensive studying. Hike at Picnic Point together, Ashley? I want to see that athletic posture from your trail photo in person."  
+      Good Tuple: "History buffs need peaceful breaks from intensive studying. Hike at Picnic Point together, Ashley?"
       Analysis:
-      - Step 1 (Bridge): ✓ Connects history studying to need for breaks
-      - Step 2 (Activity): ✓ Verb-first activity and location
-      - Step 3 (Name): ✓ Name after "together" with comma and question mark
-      - Step 4 (Compliment): ✓ Completely unrelated to prompt/activity with photo context reference
+      - Bridge (6-9 words): ✓ Connects history studying to need for breaks
+      - Activity (verb-first): ✓ Specific action verb "Hike" with proper location
+      - Name: ✓ Name after "together" with comma and question mark
+      - Overall: ✓ Logical connection between mental activity and physical break
+      
+      Alternative Good Tuple: "History comes alive through museum exhibits. Explore the Wisconsin Historical Museum with me, Ashley?"
+      Analysis:
+      - Bridge (6-9 words): ✓ Connects history interest to interactive learning
+      - Activity (verb-first): ✓ Specific action verb "Explore" with proper venue
+      - Name: ✓ Name after "with me" with comma and question mark
+      - Overall: ✓ Directly relevant to her current studies in an engaging way
 
     - Prompt: "The quickest way to my heart is"
       Response: "Making me laugh and ice cream"
       Photo context: At a park with friends
-      Conversation Starter: "Ice cream creates perfect summer memories to share. Taste different flavors at Chocolate Shoppe on State with me, Zoe? Please show me that blue mermaid tattoo from your beach photo in firsthand."
+      Good Tuple: "Ice cream is great for the summer. Taste different flavors at Chocolate Shoppe on State with me, Zoe?"
       Analysis:
-      - Step 1 (Bridge): ✓ Links ice cream interest to summer memory creation
-      - Step 2 (Activity): ✓ Verb-first food item at venue
-      - Step 3 (Name): ✓ Name after "with me" with comma and question mark
-      - Step 4 (Compliment): ✓ Completely unrelated to prompt/activity with photo context reference
+      - Bridge (6-9 words): ✓ Links ice cream interest to summer memory creation
+      - Activity (verb-first): ✓ Specific action verb "Taste" with proper venue
+      - Name: ✓ Name after "with me" with comma and question mark
+      - Overall: ✓ Direct connection to her mentioned interest
+      
+      Alternative Good Tuple: "Comedy shows guarantee laughter and good vibes. Watch standup at Comedy Club on State together, Zoe?"
+      Analysis:
+      - Bridge (6-9 words): ✓ Connects to her interest in laughter
+      - Activity (verb-first): ✓ Specific action verb "Watch" with proper venue
+      - Name: ✓ Name after "together" with comma and question mark
+      - Overall: ✓ Focuses on her other stated interest effectively
 
     - Prompt: "I'm weirdly attracted to"
       Response: "Guys who can beat me at Mario Kart"
       Photo context: At a party with friends
-      Conversation Starter: "Gaming gets better with friendly competition and stakes. Race Mario Kart at Double Tap Beercade together, Megan? I want to see those round glasses from your party photo in person."
+      Good Tuple: "Gaming gets better with friendly competition and stakes. Race Mario Kart at Double Tap Beercade together, Megan?"
       Analysis:
-      - Step 1 (Bridge): ✓ Connects gaming to enhanced competition with stakes
-      - Step 2 (Activity): ✓ Verb-first competitive activity at venue
-      - Step 3 (Name): ✓ Name after "together" with comma and question mark
-      - Step 4 (Compliment): ✓ Completely unrelated to prompt/activity with photo context reference
+      - Bridge (6-9 words): ✓ Connects gaming to enhanced competition with stakes
+      - Activity (verb-first): ✓ Specific action verb "Race" with proper venue
+      - Name: ✓ Name after "together" with comma and question mark
+      - Overall: ✓ Perfect activity match for her stated interest
+      
+      Alternative Good Tuple: "Competitive gaming requires proper fuel and atmosphere. Drink craft beers at I/O Arcade Bar with me, Megan?"
+      Analysis:
+      - Bridge (6-9 words): ✓ Links gaming competition to gaming venue atmosphere
+      - Activity (verb-first): ✓ Specific action verb "Drink" with proper venue
+      - Name: ✓ Name after "with me" with comma and question mark
+      - Overall: ✓ Gaming-adjacent activity that complements her interest
 
     - Prompt: "A non-negotiable for me is"
       Response: "Having a good book on the go at all times"
       Photo context: Reading at a cafe
-      Conversation Starter: "Book lovers thrive in cozy literary spaces with character. Browse the fiction section at Lake City Books together, Lily? Please show me those dangling earrings from your cafe photo in person."
+      Good Tuple: "Book lovers love cozy literary spaces. Browse the fiction section at Lake City Books together, Lily?"
       Analysis:
-      - Step 1 (Bridge): ✓ Links reading interest to literary environment value
-      - Step 2 (Activity): ✓ Verb-first browsing activity at venue
-      - Step 3 (Name): ✓ Name after "together" with comma and question mark
-      - Step 4 (Compliment): ✓ Completely unrelated to prompt/activity with photo context reference
+      - Bridge (6-9 words): ✓ Links reading interest to literary environment value
+      - Activity (verb-first): ✓ Specific action verb "Browse" with proper venue
+      - Name: ✓ Name after "together" with comma and question mark
+      - Overall: ✓ Natural extension of her reading interest
       
+      Alternative Good Tuple: "Reading pairs perfectly with artisanal coffee flavors. Sip pour-overs at Colectivo Coffee with me, Lily?"
+      Analysis:
+      - Bridge (6-9 words): ✓ Connects reading to complementary coffee experience
+      - Activity (verb-first): ✓ Specific action verb "Sip" with proper venue
+      - Name: ✓ Name after "with me" with comma and question mark
+      - Overall: ✓ Builds on context of reading at cafe from her photo
+
     - Prompt: "The one thing I want to know about you is"
       Response: "If you have a favorite hiking trail"
       Photo context: Yoga on a beach
-      Conversation Starter: "Nature lovers appreciate different outdoor experiences. Explore a trail at Devil's Lake State Park together, Hannah? I want to see that graceful posture from your beach photo in person."
+      Good Tuple: "Nature lovers appreciate different outdoor experiences. Explore a trail at Devil's Lake State Park together, Hannah?"
       Analysis:
-      - Step 1 (Bridge): ✓ Connects hiking interest to broader outdoor experiences
-      - Step 2 (Activity): ✓ Verb-first activity at location
-      - Step 3 (Name): ✓ Name after "together" with comma and question mark
-      - Step 4 (Compliment): ✓ Completely unrelated to prompt/activity with photo context reference
+      - Bridge (6-9 words): ✓ Connects hiking interest to broader outdoor experiences
+      - Activity (verb-first): ✓ Specific action verb "Explore" with proper location
+      - Name: ✓ Name after "together" with comma and question mark
+      - Overall: ✓ Direct response to her explicit interest in hiking trails
+      
+      Alternative Good Tuple: "Hiking enthusiasm translates well to yoga practice. Join outdoor yoga class at Olbrich Gardens with me, Hannah?"
+      Analysis:
+      - Bridge (6-9 words): ✓ Connects hiking interest to yoga activity
+      - Activity (verb-first): ✓ Specific action verb "Join" with proper venue
+      - Name: ✓ Name after "with me" with comma and question mark
+      - Overall: ✓ Incorporates both her stated interest and photo activity
 
-    BAD:
+    BAD DATE SUGGESTION TUPLES:
     - Prompt: "A random fact I love is"
       Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight. And twilight is a fanfic of My Chemical Romance, and if 9/11 didn't happen, they wouldn't exist. It's weird I know"
-      BAD Conversation Starter: "Literary connections show your intellectual curiosity. Would you like to explore this fascinating domino effect at a bookstore with me, Kate? You seem like someone who enjoys deep conversations." 
+      Photo context: Woman at a bookstore
+      Bad Tuple: "Literary connections show your intellectual curiosity. Would you like to explore this fascinating domino effect at a bookstore with me, Kate?"
       Analysis:
-      - Step 1 (Bridge): ✗ Too generic about "literary connections"
-      - Step 2 (Activity): ✗ Doesn't start with verb - uses "Would you like to"
-      - Step 3 (Name): ✓ Name included after "with me" with comma
-      - Step 4 (Compliment): ✗ Not based on anything visible in photos and doesn't reference specific photo context
+      - Bridge: ✗ Too generic about "literary connections" without specificity
+      - Activity: ✗ Doesn't start with verb - uses "Would you like to" instead of direct verb
+      - Name: ✓ Name included with comma
+      - Overall: ✗ Vague connection and indirect verb structure
 
     - Prompt: "A random fact I love is"
       Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight. And twilight is a fanfic of My Chemical Romance, and if 9/11 didn't happen, they wouldn't exist. It's weird I know"
-      BAD Conversation Starter: "Literary connections show your intellectual curiosity. Let's explore this fascinating domino effect at a bookstore together, Kate? Your determination would make this activity better." 
+      Photo context: Woman at a bookstore
+      Bad Tuple: "Literary connections show your intellectual curiosity. Let's explore this fascinating domino effect at a bookstore together, Kate?"
       Analysis:
-      - Step 1 (Bridge): ✗ Too generic about "literary connections"
-      - Step 2 (Activity): ✗ Doesn't start with verb - uses "Let's"
-      - Step 3 (Name): ✓ Name included with comma and question mark
-      - Step 4 (Compliment): ✗ Compliments a non-physical quality that isn't directly observable and doesn't reference specific photo
+      - Bridge: ✗ Too generic about "literary connections" without specificity
+      - Activity: ✗ Doesn't start with verb - uses "Let's" instead of direct verb
+      - Name: ✓ Name included with comma and question mark
+      - Overall: ✗ Vague connection and indirect verb structure
 
     - Prompt: "The quickest way to my heart is"
       Response: "Talking over ice cream/coffee"
-      BAD Conversation Starter: "Deep conversations are better with sweet treats. Want to get some ice cream at Memorial Union and chat with me, Madison? Your profile suggests you're a great conversationalist." 
+      Photo context: Woman at a cafe
+      Bad Tuple: "Deep conversations are better with sweet treats. Want to get some ice cream at Memorial Union and chat with me, Madison?"
       Analysis:
-      - Step 1 (Bridge): ✓ Decent bridge between conversation and treats
-      - Step 2 (Activity): ✗ Doesn't start with verb - uses "Want to" instead of direct verb
-      - Step 3 (Name): ✓ Name included with comma
-      - Step 4 (Compliment): ✗ Vague inference not based on anything visible and doesn't reference specific photo
+      - Bridge: ✓ Decent bridge connecting conversation and treats
+      - Activity: ✗ Doesn't start with verb - uses "Want to" instead of direct verb
+      - Name: ✓ Name included with comma
+      - Overall: ✗ Indirect verb structure makes it less concise and direct
 
     - Prompt: "The quickest way to my heart is"
       Response: "Talking over ice cream/coffee"
-      BAD Conversation Starter: "Deep conversations are better with sweet treats. Let's get some ice cream at Memorial Union and chat, Madison? I'd love to see your adventurous spirit in real life." 
+      Photo context: Woman at a cafe
+      Bad Tuple: "Deep conversations are better with sweet treats. Let's get some ice cream at Memorial Union and chat, Madison?"
       Analysis:
-      - Step 1 (Bridge): ✓ Decent bridge between conversation and treats
-      - Step 2 (Activity): ✗ Doesn't start with verb - uses "Let's"
-      - Step 3 (Name): ✓ Name included with comma and question mark
-      - Step 4 (Compliment): ✗ Uses wordy "I'd love to see", compliments a non-physical quality, and doesn't reference specific photo
+      - Bridge: ✓ Decent bridge connecting conversation and treats
+      - Activity: ✗ Doesn't start with verb - uses "Let's" instead of direct verb
+      - Name: ✓ Name included with comma and question mark
+      - Overall: ✗ Indirect verb structure makes it less concise and direct
 
     - Prompt: "My biggest date fail"
       Response: "Going swimming in Lake Mendota and then cutting my foot on a piece of metal... the date ended because I had to go to Urgent Care for a tetanus shot 😜"
-      BAD Conversation Starter: "Adventure mishaps make for great stories to share. Would you like to try swimming in Lake Mendota again but safely together, Rachel? You seem adventurous and willing to try things again." 
+      Photo context: Woman at a lake
+      Bad Tuple: "Adventure mishaps make for great stories to share. Would you like to try swimming in Lake Mendota again but safely together, Rachel?"
       Analysis:
-      - Step 1 (Bridge): ✗ Frames negative experience as positive without justification
-      - Step 2 (Activity): ✗ Doesn't start with verb - uses "Would you like to"
-      - Step 3 (Name): ✓ Name included with comma
-      - Step 4 (Compliment): ✗ Makes assumptions about personality not visible in photos and doesn't reference specific photo
+      - Bridge: ✗ Frames negative experience as positive without clear justification
+      - Activity: ✗ Doesn't start with verb - uses "Would you like to" instead of direct verb
+      - Name: ✓ Name included with comma
+      - Overall: ✗ Suggests recreating a negative experience from her profile
 
     - Prompt: "My best celebrity impression is..."
       Response: "\"Why hello there,\" in my best Obi-Wan Kenobi voice and my friends hate it."
-      BAD Conversation Starter: "Star Wars references reveal your fun pop culture side. Want to have a Star Wars marathon and practice impressions together, Sarah? I would love to see you bring entertainment to any situation." 
+      Photo context: Woman with friends
+      Bad Tuple: "Star Wars references reveal your fun pop culture side. Want to have a Star Wars marathon and practice impressions together, Sarah?"
       Analysis:
-      - Step 1 (Bridge): ✗ Too generic about "pop culture"
-      - Step 2 (Activity): ✗ Doesn't start with verb - uses "Want to"
-      - Step 3 (Name): ✓ Name included with comma
-      - Step 4 (Compliment): ✗ Uses wordy "I would love to see", not based on anything visible, and doesn't reference specific photo
+      - Bridge: ✗ Too generic about "pop culture" without specificity
+      - Activity: ✗ Doesn't start with verb - uses "Want to" instead of direct verb
+      - Name: ✓ Name included with comma
+      - Overall: ✗ Generic activity that's too long (movie marathon exceeds 90 minutes)
 
     - Prompt: "My best celebrity impression is..."
       Response: "\"Why hello there,\" in my best Obi-Wan Kenobi voice and my friends hate it."
-      BAD Conversation Starter: "Star Wars references reveal your fun pop culture side. Let's have a Star Wars marathon and practice impressions together, Sarah? I'd love to see your intelligence in real life." 
+      Photo context: Woman with friends
+      Bad Tuple: "Star Wars references reveal your fun pop culture side. Let's have a Star Wars marathon and practice impressions together, Sarah?"
       Analysis:
-      - Step 1 (Bridge): ✗ Too generic about "pop culture"
-      - Step 2 (Activity): ✗ Doesn't start with verb - uses "Let's"
-      - Step 3 (Name): ✓ Name included with comma and question mark
-      - Step 4 (Compliment): ✗ Uses wordy "I'd love to see", compliments a non-physical quality, says "in real life" instead of "in person", and doesn't reference specific photo
+      - Bridge: ✗ Too generic about "pop culture" without specificity
+      - Activity: ✗ Doesn't start with verb - uses "Let's" instead of direct verb
+      - Name: ✓ Name included with comma and question mark
+      - Overall: ✗ Activity is too long and non-specific
 
     - Prompt: "A random fact I love is"
       Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight. And twilight is a fanfic of My Chemical Romance, and if 9/11 didn't happen, they wouldn't exist. It's weird I know"
-      BAD Conversation Starter: "Literary connections show your intellectual curiosity. Would you like to explore this fascinating domino effect at a bookstore together, Kate? I'd love to see your knowledge of literary history in real life." 
+      Photo context: Woman at a bookstore
+      Bad Tuple: "Literary connections show your intellectual curiosity. Would you like to explore this fascinating domino effect at a bookstore together, Kate?"
       Analysis:
-      - Step 1 (Bridge): ✗ Too generic about "literary connections"
-      - Step 2 (Activity): ✗ Doesn't start with verb - uses "Would you like to"
-      - Step 3 (Name): ✓ Name included with comma
-      - Step 4 (Compliment): ✗ MISTAKE: Uses wordy phrasing, relates compliment to prompt, says "in real life" instead of "in person", and doesn't reference specific photo
+      - Bridge: ✗ Too generic about "literary connections" without specificity
+      - Activity: ✗ Doesn't start with verb - uses "Would you like to" instead of direct verb
+      - Name: ✓ Name included with comma
+      - Overall: ✗ Vague connection and activity not well-defined
 
     - Prompt: "The quickest way to my heart is"
       Response: "Talking over ice cream/coffee"
-      BAD Conversation Starter: "Deep conversations are better with sweet treats. Want to get some ice cream at Memorial Union together, Madison? I'd love to see your conversational style in real life." 
+      Photo context: Woman at a cafe
+      Bad Tuple: "Deep conversations are better with sweet treats. Want to get some ice cream at Memorial Union together, Madison?"
       Analysis:
-      - Step 1 (Bridge): ✓ Decent bridge between conversation and treats
-      - Step 2 (Activity): ✗ Doesn't start with verb - uses "Want to" 
-      - Step 3 (Name): ✓ Name included with comma
-      - Step 4 (Compliment): ✗ MISTAKE: Uses wordy "I'd love to see", says "in real life" instead of "in person", relates to prompt, and doesn't reference specific photo
+      - Bridge: ✓ Decent bridge between conversation and treats
+      - Activity: ✗ Doesn't start with verb - uses "Want to" instead of direct verb
+      - Name: ✓ Name included with comma
+      - Overall: ✗ Indirect verb structure makes it less concise
 
     - Prompt: "I geek out on"
       Response: "NBA, specifically golden state warriors" 
-      BAD Conversation Starter: "Sports fans appreciate good competition and teamwork. Would you like to try some beginner routes at Boulders Climbing Gym with me, Jessica? I'd love to see how your basketball knowledge translates to climbing." 
+      Photo context: Rock climbing at a gym
+      Bad Tuple: "Sports fans appreciate good competition and teamwork. Would you like to try some beginner routes at Boulders Climbing Gym with me, Jessica?"
       Analysis:
-      - Step 1 (Bridge): ✓ Links sports interest to physical activity
-      - Step 2 (Activity): ✗ Doesn't start with verb - uses "Would you like to"
-      - Step 3 (Name): ✓ Name included with comma
-      - Step 4 (Compliment): ✗ MISTAKE: Uses wordy phrasing, relates compliment to both prompt and activity, and doesn't reference specific photo
+      - Bridge: ✓ Links sports interest to physical activity
+      - Activity: ✗ Doesn't start with verb - uses "Would you like to" instead of direct verb
+      - Name: ✓ Name included with comma
+      - Overall: ✗ Indirect verb structure makes it less concise and direct
 
     - Prompt: "My biggest date fail"
       Response: "Going swimming in Lake Mendota and then cutting my foot on a piece of metal... the date ended because I had to go to Urgent Care for a tetanus shot 😜"
-      BAD Conversation Starter: "Everyone has awkward date stories to share. Would you like to grab coffee at Colectivo together, Rachel? I'd love to see your good sense of humor about life's mishaps in person." 
+      Photo context: Woman at a lake
+      Bad Tuple: "Everyone has awkward date stories to share. Would you like to grab coffee at Colectivo together, Rachel?"
       Analysis:
-      - Step 1 (Bridge): ✓ Reasonable bridge about shared experiences
-      - Step 2 (Activity): ✗ Doesn't start with verb - uses "Would you like to"
-      - Step 3 (Name): ✓ Name included with comma
-      - Step 4 (Compliment): ✗ MISTAKE: Uses wordy phrasing, relates to prompt, and doesn't reference specific photo
+      - Bridge: ✓ Reasonable bridge about shared experiences
+      - Activity: ✗ Doesn't start with verb - uses "Would you like to" instead of direct verb
+      - Name: ✓ Name included with comma
+      - Overall: ✗ Indirect verb structure and generic connection
 
     - Prompt: "What I order for the table"
       Response: "Carbs, cheese and wine"
-      BAD Conversation Starter: "Wine enthusiasts deserve quality local venues for tasting. Would you like to try a flight of reds at Eno Vino together, Mia? I'd love to see your refined taste in action." 
+      Photo context: Woman at a bar
+      Bad Tuple: "Wine enthusiasts deserve quality local venues for tasting. Would you like to try a flight of reds at Eno Vino together, Mia?"
       Analysis:
-      - Step 1 (Bridge): ✓ Links wine interest to quality tasting experience
-      - Step 2 (Activity): ✗ Doesn't start with verb - uses "Would you like to"
-      - Step 3 (Name): ✓ Name included with comma
-      - Step 4 (Compliment): ✗ MISTAKE: Uses wordy phrasing, relates to prompt, and doesn't reference specific photo
+      - Bridge: ✓ Links wine interest to quality tasting experience
+      - Activity: ✗ Doesn't start with verb - uses "Would you like to" instead of direct verb
+      - Name: ✓ Name included with comma
+      - Overall: ✗ Indirect verb structure makes it less concise
 
     - Prompt: "A non-negotiable for me is"
       Response: "Having a good book on the go at all times"
-      BAD Conversation Starter: "Book lovers appreciate thoughtfully curated collections. Want to browse the fiction section at Lake City Books together, Lily? I'd love to see how being well-read influences your browsing."
+      Photo context: Woman reading at a cafe
+      Bad Tuple: "Book lovers appreciate thoughtfully curated collections. Want to browse the fiction section at Lake City Books together, Lily?"
       Analysis:
-      - Step 1 (Bridge): ✓ Links reading interest to literary environment value
-      - Step 2 (Activity): ✗ Doesn't start with verb - uses "Want to"
-      - Step 3 (Name): ✓ Name included with comma
-      - Step 4 (Compliment): ✗ MISTAKE: Uses wordy phrasing, relates to both prompt and activity, and doesn't reference specific photo
-      """
+      - Bridge: ✓ Links reading interest to literary environment value
+      - Activity: ✗ Doesn't start with verb - uses "Want to" instead of direct verb
+      - Name: ✓ Name included with comma
+      - Overall: ✗ Indirect verb structure makes it less direct and concise"""
 
-# New shared prompt components
-IDENTIFY_MAIN_PERSON = """STEP 2: IDENTIFY THE MAIN PERSON
-1. Analyze all photos to identify the main person whose profile this is:
-   - If a photo has just one person, that is likely the profile owner
-   - If photos have multiple people, identify who appears most consistently across photos
-   - Photos with no people are interest photos and should be ignored for identity
-   - The main person should appear in the majority of photos
-   - Note any distinguishing features of the main person for later analysis
-2. Remember this person's identity throughout the rest of the analysis"""
+COMPLIMENT_GENERATION = """STEP 8: GENERATE COMPLIMENTS
+For each photo (there will be exactly 6 photos):
+1. Generate THREE unique compliments (twelve to fifteen words each) based on something visibly attractive in each photo:
+   a. First, find something that stands out and is visibly attractive from the profile photo.
+      - Focus on concrete, observable things in her photos:
+        * Physical appearance (only if obvious and tasteful)
+           - A genuine smile in a photo
+           - A distinctive hairstyle or color
+           - A stylish outfit or specific piece of clothing
+           - Her tattoos (take note of ink color, size, placement, and design)
+           - Good posture in activities (yoga, surfing, dancing)
+           - Athletic form when engaged in sports
+           - Balanced movements captured in action shots
+        * Activities she's doing in photos
+          - Good posture while doing an activity
+          - Muscle definition in activities (rock climbing, weightlifting, etc.)
+          - Calm expression while cooking or focused on something
+        * Specific items or objects in photos
+          - Unique jewelry or accessories
+          - Interesting shoes or hat
+      - AVOID vague or personality-based observations like:
+        * seeming like she knows how to have fun
+        * seeming like a fun person
+        * looking adventurous
+        * seeming really cool
+        * looking like she has a great personality
+      - AVOID complimenting items she won't bring on a date:
+        * Yoga mats, sports equipment, pets, scenery
+        * Temporary items specific to the activity in the photo
+      - The goal is to find something natural or intrinsic about her that is attractive to us
+      - People like to be noticed for specific qualities they have in photos
+      - Keep it straightforward and honestly observable
+      - The attractive quality must be something you could literally point to in a photo
+      - No marketing speak or over-the-top descriptions
+   b. Turn this observation into a direct compliment
+      - Express that you want to experience this attractive trait in person with fewer words
+      - Format: "I want to see that [specific attractive trait] from your [specific photo context] in person" or "Please show me that [specific attractive trait] from your [specific photo context] firsthand"
+      - Examples:
+        * "I want to see that straight posture from your surfing photo in person"
+        * "I want to see that short bob haircut from your cooking photo firsthand"
+        * "Please show me that bright smile from your beach photo in person"
+        * "Please show me those silver hoop earrings from your profile photo firsthand"
+      - CRITICAL: The compliment MUST be:
+        * Based on something specifically visible in the photo
+        * Simple, direct, and straightforward - no unnecessary words
+        * Expressed with minimal wording (use "I want to see" or "Please show me")
+        * Always reference the specific photo context
+        * Between 12-15 words in total length
+        * Selfish but genuine (what YOU want to experience about her)
+   
+2. For each compliment, make sure it's:
+   * COMPLETELY distinct from other compliments for the same photo
+   * Based on different visual elements in the same photo
+   * Varies in wording and structure
+   * Easy to understand and unambiguous
+   * Flattering without being excessive
+   * Reflective of something tangible in her profile
 
-COMPILE_CHARACTERISTICS = """STEP 6: COMPILE CHARACTERISTICS
-1. List all characteristics derived from stories about the main person
-2. Organize by confidence level. Also determine what her characteristics are based 
-   on all of the analysis of the stories we just did.
-3. Note when multiple stories support same characteristic
-   - Example: Two stories about exercise → high confidence in active lifestyle
-4. Read this list out loud to yourself. Does this sound like a reasonable person? 
-   Do they have hobbies that seem realistic? If there are characteristics of her 
-   that seem vague or exaggerated, be critical of them. Such as, "she's an adventurous 
-   person" - it's hard to prove this characteristic because it is vague. It's also hard 
-   to prove because it's exaggerated. Imagine you are going to represent this list of 
-   characteristics to the woman. Would she be flattered? Shocked? Disinterested? Feel 
-   awkward? Focus on things that are highly likely to be true as a few good truths are 
-   better than many assumptions."""
+3. This will result in 18 total compliments (3 for each of the 6 photos). Count the number of compliments. Are there 18? If not, you need to go back and generate three compliments per photo for a total of 18.
 
-SIMULATE_CONVERSATION = """STEP 8: SIMULATE CONVERSATION
-For each of the NINE starters (3 per prompt/response pair):
-1. Conduct a complete simulated conversation:
+Examples of good vs bad COMPLIMENTS:
+
+GOOD COMPLIMENTS:
+- Prompt: "My Love Language is"
+  Response: "Words of affirmation and cheese"
+  Photo context: Woman playing board games with friends
+  Good Compliment: "I want to see that bright smile from your board game photo in person."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her smile)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "I want to see"
+  - Overall: ✓ Genuine, specific, and tied to visible attribute
+  
+  Alternative Good Compliment: "Please show me that relaxed posture from your board game photo in person."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her posture)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "Please show me"
+  - Overall: ✓ Observes a different visual element from the same photo
+
+- Prompt: "I geek out on"
+  Response: "NBA, specifically golden state warriors" 
+  Photo context: Woman rock climbing at a gym
+  Good Compliment: "Please show me that strong jawline from your climbing photo in person."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her jawline)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "Please show me"
+  - Overall: ✓ Specific to her physical appearance
+  
+  Alternative Good Compliment: "I want to see those muscles from your climbing photo firsthand."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her eyes)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "I want to see"
+  - Overall: ✓ Comments on a physical feature that will be present on the date
+
+- Prompt: "Two truths and a lie..."
+  Response: "1) I have a scar on my hand from being bitten by a hamster 2) I wrote and directed a short film 3) I won a county-wide math competition in school"
+  Photo context: Woman at the beach wearing a hat
+  Good Compliment: "I want to see that wide-brimmed sun hat from your beach photo in person."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her hat)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "I want to see"
+  - Overall: ✓ Specific to an item she chose to wear
+  
+  Alternative Good Compliment: "Please show me that long wavy hair from your beach photo firsthand."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her hair)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "Please show me"
+  - Overall: ✓ Comments on a physical feature that will be present on the date
+
+- Prompt: "What I order for the table"
+  Response: "Carbs, cheese and wine"
+  Photo context: Woman with curly hair in profile photo
+  Good Compliment: "Please show me that curly hair from your profile photo in person."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible and distinctive (her hair)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "Please show me"
+  - Overall: ✓ Personal, distinctive, and tied to a natural feature
+  
+  Alternative Good Compliment: "I want to see that warm smile from your profile photo firsthand."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her smile)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "I want to see"
+  - Overall: ✓ Highlights a physical feature she'll definitely have on a date
+
+- Prompt: "My simple pleasures"
+  Response: "Carbs, cheese, and wine"
+  Photo context: Woman with tattoo visible in board game photo
+  Good Compliment: "I want to see that black geometric tattoo from your board game photo firsthand."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her tattoo)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "I want to see"
+  - Overall: ✓ Specific to a permanent feature with details
+  
+  Alternative Good Compliment: "Please show me those brown bangs from your board game photo in person."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her eyes)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "Please show me"
+  - Overall: ✓ Comments on a physical feature she'll definitely have on a date
+
+- Prompt: "The dorkiest thing about me is"
+  Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
+  Photo context: Woman hiking on a trail
+  Good Compliment: "I want to see that good posture from your trail photo in person."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her posture)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "I want to see"
+  - Overall: ✓ Specific to her physical appearance in activity
+  
+  Alternative Good Compliment: "Please show me that hiking outfit from your trail photo firsthand."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her outfit)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "Please show me"
+  - Overall: ✓ Comments on clothing she might wear again
+
+- Prompt: "The quickest way to my heart is"
+  Response: "Making me laugh and ice cream"
+  Photo context: Woman with tattoo at beach
+  Good Compliment: "Please show me that blue mermaid tattoo from your beach photo firsthand."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her tattoo)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "Please show me"
+  - Overall: ✓ Specific to a distinctive personal feature
+  
+  Alternative Good Compliment: "I want to see that confident posture from your beach photo in person."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her posture)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "I want to see"
+  - Overall: ✓ Highlights a physical attribute she'll bring to the date
+
+- Prompt: "I'm weirdly attracted to"
+  Response: "Guys who can beat me at Mario Kart"
+  Photo context: Woman at a party with glasses
+  Good Compliment: "I want to see those round glasses from your party photo in person."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her glasses)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "I want to see"
+  - Overall: ✓ Specific to an accessory she chose to wear
+  
+  Alternative Good Compliment: "Please show me that cute hairstyle from your party photo firsthand."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her hairstyle)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "Please show me"
+  - Overall: ✓ Highlights a physical feature she'll bring to the date
+
+- Prompt: "A non-negotiable for me is"
+  Response: "Having a good book on the go at all times"
+  Photo context: Woman at cafe wearing earrings
+  Good Compliment: "Please show me those dangling earrings from your cafe photo in person."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her earrings)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "Please show me"
+  - Overall: ✓ Specific to a distinctive accessory
+  
+  Alternative Good Compliment: "I want to see that relaxed demeanor from your cafe photo firsthand."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her demeanor/expression)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "I want to see"
+  - Overall: ✓ Comments on a visible attribute she'll bring to the date
+
+- Prompt: "The one thing I want to know about you is"
+  Response: "If you have a favorite hiking trail"
+  Photo context: Woman doing yoga on a beach
+  Good Compliment: "I want to see that good posture from your beach photo in person."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her posture)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "I want to see"
+  - Overall: ✓ Specific to her physical form during activity
+  
+  Alternative Good Compliment: "Please show me that vibrant hair color from your beach yoga photo firsthand."
+  Analysis:
+  - Observable attribute: ✓ Focuses on something visible (her hair color)
+  - Photo context: ✓ References specific photo context
+  - Wording: ✓ Direct and clear with "Please show me"
+  - Overall: ✓ Highlights a physical feature she'll bring to the date
+
+BAD COMPLIMENTS:
+- Prompt: "A random fact I love is"
+  Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight..."
+  Photo context: Woman at a bookstore
+  Bad Compliment: "You seem like someone who enjoys deep conversations."
+  Analysis:
+  - Observable attribute: ✗ Focuses on a personality trait, not something visible
+  - Photo context: ✗ Doesn't reference specific photo context
+  - Wording: ✗ Completely misses the "I want to see" or "Please show me" format
+  - Overall: ✗ Generic personality assumption not tied to anything visible
+
+- Prompt: "A random fact I love is"
+  Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight..."
+  Photo context: Woman at a bookstore
+  Bad Compliment: "Your determination would make this activity better."
+  Analysis:
+  - Observable attribute: ✗ Focuses on a personality trait, not something visible
+  - Photo context: ✗ Doesn't reference specific photo context
+  - Wording: ✗ Completely misses the "I want to see" or "Please show me" format
+  - Overall: ✗ Vague personality assumption not tied to anything visible
+
+- Prompt: "The quickest way to my heart is"
+  Response: "Talking over ice cream/coffee"
+  Photo context: Woman at a cafe
+  Bad Compliment: "Your profile suggests you're a great conversationalist."
+  Analysis:
+  - Observable attribute: ✗ Focuses on a personality trait, not something visible
+  - Photo context: ✗ Doesn't reference specific photo context
+  - Wording: ✗ Completely misses the "I want to see" or "Please show me" format
+  - Overall: ✗ Vague inference not based on anything visible
+
+- Prompt: "The quickest way to my heart is"
+  Response: "Talking over ice cream/coffee"
+  Photo context: Woman at a park with friends
+  Bad Compliment: "I'd love to see your adventurous spirit in real life."
+  Analysis:
+  - Observable attribute: ✗ Focuses on a personality trait, not something visible
+  - Photo context: ✗ Doesn't reference specific photo context
+  - Wording: ✗ Uses wordy "I'd love to see" and "in real life" instead of "in person"
+  - Overall: ✗ Vague, assumption-based, not tied to visible attribute
+
+- Prompt: "My biggest date fail"
+  Response: "Going swimming in Lake Mendota and then cutting my foot on a piece of metal..."
+  Photo context: Woman at a lake
+  Bad Compliment: "You seem adventurous and willing to try things again."
+  Analysis:
+  - Observable attribute: ✗ Makes personality assumption rather than commenting on visible attribute
+  - Photo context: ✗ Vaguely references the outdoor setting but not specific details
+  - Wording: ✗ Completely misses the "I want to see" or "Please show me" format
+  - Overall: ✗ Generic personality assessment not tied to anything visible
+
+- Prompt: "My best celebrity impression is..."
+  Response: "\"Why hello there,\" in my best Obi-Wan Kenobi voice and my friends hate it."
+  Photo context: Woman with friends
+  Bad Compliment: "I would love to see you bring entertainment to any situation."
+  Analysis:
+  - Observable attribute: ✗ Focuses on a personality trait, not something visible
+  - Photo context: ✗ Doesn't reference specific photo context
+  - Wording: ✗ Uses wordy "I would love to see" format
+  - Overall: ✗ Generic personality assumption not tied to anything visible
+
+- Prompt: "My best celebrity impression is..."
+  Response: "\"Why hello there,\" in my best Obi-Wan Kenobi voice and my friends hate it."
+  Photo context: Woman with friends
+  Bad Compliment: "I'd love to see your intelligence in real life."
+  Analysis:
+  - Observable attribute: ✗ Focuses on a non-physical quality that isn't directly observable
+  - Photo context: ✗ Doesn't reference specific photo context
+  - Wording: ✗ Uses wordy "I'd love to see" and "in real life" instead of "in person"
+  - Overall: ✗ Comments on an intellectual quality not visible in photos
+
+- Prompt: "A random fact I love is"
+  Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight..."
+  Photo context: Woman at a bookstore
+  Bad Compliment: "I'd love to see your knowledge of literary history in real life."
+  Analysis:
+  - Observable attribute: ✗ Focuses on an intellectual quality that isn't directly observable
+  - Photo context: ✗ Vaguely references literary interest but not visual details
+  - Wording: ✗ Uses wordy "I'd love to see" and "in real life" instead of "in person"
+  - Overall: ✗ Comments on knowledge (not visible) and relates to prompt content
+
+- Prompt: "The quickest way to my heart is"
+  Response: "Talking over ice cream/coffee"
+  Photo context: Woman at a cafe
+  Bad Compliment: "I'd love to see your focused expression when you're listening."
+  Analysis:
+  - Observable attribute: ✗ Uses subjective qualifier "focused" rather than describing what is visible
+  - Photo context: ✗ References the cafe but not specific visible details
+  - Wording: ✗ Uses wordy "I'd love to see" format
+  - Overall: ✗ Comments on a subjective quality using marketing-like language
+
+- Prompt: "I geek out on"
+  Response: "NBA, specifically golden state warriors" 
+  Photo context: Woman rock climbing at a gym
+  Bad Compliment: "I'd love to see how your impressive grip strength translates to handshakes."
+  Analysis:
+  - Observable attribute: ✗ Uses subjective qualifier "impressive" rather than describing what is visible
+  - Photo context: ✗ References climbing but uses subjective judgment
+  - Wording: ✗ Uses wordy "I'd love to see how" format
+  - Overall: ✗ Comments on a quality using unnecessary qualifiers
+
+- Prompt: "My biggest date fail"
+  Response: "Going swimming in Lake Mendota and then cutting my foot on a piece of metal..."
+  Photo context: Woman at a lake
+  Bad Compliment: "I'd love to see your genuine smile in person sometime."
+  Analysis:
+  - Observable attribute: ✗ Uses subjective qualifier "genuine" rather than describing what is visible
+  - Photo context: ✗ Doesn't reference specific photo context
+  - Wording: ✗ Uses wordy "I'd love to see" format with "sometime"
+  - Overall: ✗ Uses marketing-like language with unnecessary qualifier
+
+- Prompt: "What I order for the table"
+  Response: "Carbs, cheese and wine"
+  Photo context: Woman at a bar
+  Bad Compliment: "I'd love to see your colorful yoga mat on our next outing."
+  Analysis:
+  - Observable attribute: ✗ Focuses on an item (yoga mat) she won't bring on a date
+  - Photo context: ✗ Doesn't reference the actual photo context (bar)
+  - Wording: ✗ Uses wordy "I'd love to see" format
+  - Overall: ✗ Comments on an item that won't be present for the date
+
+- Prompt: "A non-negotiable for me is"
+  Response: "Having a good book on the go at all times"
+  Photo context: Woman reading at a cafe
+  Bad Compliment: "I'd love to see how being well-read influences your browsing."
+  Analysis:
+  - Observable attribute: ✗ Focuses on an intellectual quality that isn't directly observable
+  - Photo context: ✗ Vaguely references reading but not specific visual details
+  - Wording: ✗ Uses wordy "I'd love to see how" format
+  - Overall: ✗ Comments on being well-read (not visible) and relates to prompt and activity"""
+
+EVALUATE_DATE_TUPLES = """STEP 9: EVALUATE DATE SUGGESTION TUPLES
+For each of the NINE tuples (3 per prompt/response pair):
+1. Conduct a simulated conversation:
    a. Message 1: Her prompt/response as the first message
-   b. Message 2: Your conversation starter as the response
+   b. Message 2: Your tuple (bridge + activity + name) as the response
    c. Message 3: Imagine her most likely reply based on her profile characteristics
    d. Message 4: Your natural follow-up to continue the conversation
    e. Message 5: Her second response
@@ -1383,19 +1760,16 @@ For each of the NINE starters (3 per prompt/response pair):
    - Is it easy for her to respond without requiring complex thinking?
    - Does it show genuine interest in shared experiences?
    - Does it respect her intelligence without being pretentious?
-3. Rank each conversation on a scale of 1-10 for overall quality
-4. Note which conversation feels most natural and has the best flow"""
-
-SELECT_BEST_STARTER = """STEP 9: SELECT BEST STARTER
-1. Choose the starter that best:
+3. Rank each conversation on a scale of 1-10 for overall quality. Keep in mind if the conversation starter:
    - Uses the most natural, everyday language
    - Gets straight to the point
    - Shows interest through specificity, not enthusiasm
    - Creates easy conversation flow
    - Respects the complexity of her personality
    - Creates positive imagery or stories in her mind
-   - Requires minimal mental effort to respond
-   - Has the highest-ranked simulated conversation
+   Is between eight to ten words (wordy date suggestions are penalized).
+4. Select the single best conversation starter tuple ranked highest by you.
+5. Re-validate the location of the establishment and if it is responding to a poll prompt in your conversation starter tuple:
    - CRITICAL: Location validation - FOLLOW THESE STEPS CAREFULLY:
       * Carefully scan your conversation starter for ANY specific venue or business name (e.g., "Brocach", "Barriques", "Eno Vino")
       * If you find one, check if it appears EXACTLY as written in the locations.txt file
@@ -1410,15 +1784,51 @@ SELECT_BEST_STARTER = """STEP 9: SELECT BEST STARTER
       * If it does, this is a poll prompt and MUST NOT be used for conversation starters
       * If you selected a poll prompt, immediately disqualify it and select a different one from the three valid prompt/response pairs
       * A valid prompt must NOT be in hingePolls.txt
-      * There are always exactly three non-poll prompts in every profile - ensure you've selected one of these
-2. Note which prompt/response pair of the woman's profile matches the chosen starter
-3. Reference prompts.txt and separate the prompt/response pair into the prompt and the response. Take note of the prompt distinctly from the response."""
+      * There are always exactly three non-poll prompts in every profile - ensure you've selected one of these"""
 
-IDENTIFY_SCREENSHOT = """STEP 10: IDENTIFY SCREENSHOT
+EVALUATE_COMPLIMENTS = """STEP 10: EVALUATE COMPLIMENTS
+For each of the 18 compliments (3 per photo):
+1. Conduct a simulated conversation:
+   a. Imagine adding this compliment to a standard date suggestion
+   b. Message 1: Her receiving the full message with this compliment
+   c. Message 2: Imagine her most likely reply based on profile characteristics
+   d. Message 3: Your natural follow-up based on her reply
+2. Evaluate based on these criteria:
+   - Is the compliment easy to understand immediately?
+   - Is it flattering without being excessive?
+   - Is it unambiguous in meaning?
+   - Does it clearly reference something visible in her photos?
+   - Does it avoid sounding generic or like it could apply to anyone?
+   - Would it make her feel noticed for something specific about her?
+   - Does it avoid objectifying her inappropriately?
+   - Would it be received positively by most women?
+3. Rank each compliment on a scale of 1-10 for overall quality. Make sure that the compliment:
+   - Makes her feel genuinely noticed
+   - References something unique or distinctive about her
+   - Is direct and clear without requiring interpretation
+   - Uses simple, straightforward language
+   - Avoids being overly sexual or inappropriate
+   - Creates a positive feeling when read
+   - Penalize compliments that are overly wordy/too long (more than twelve 15 words)
+4. Select the single best compliment ranked highest by you.
+   """
+
+COMBINE_COMPONENTS = """STEP 11: COMBINE TUPLE AND COMPLIMENT
+1. Take the winning tuple from Step 9
+   - This includes the bridge, activity suggestion, and name with question mark
+2. Take the winning compliment from Step 10
+   - This includes the direct statement about something attractive in her photo
+3. Combine them in this exact format:
+   "[Bridge. Activity suggestion with me, NAME? [Compliment]."
+4. Verify that the combined message flows naturally
+5. Ensure the compliment remains completely separate from the activity suggestion
+6. The final conversation starter should be approximately 25-35 words in total"""
+
+IDENTIFY_SCREENSHOT = """STEP 12: IDENTIFY SCREENSHOT
 1. Note which screenshot contains the prompt/response pair text of the woman's profile that matches the chosen starter
 2. If prompt/response pair is cut off or spans multiple screenshots, note which screenshot contains the majority of the prompt/response pair text"""
 
-FINAL_VALIDATION_CHECK = """STEP 11: FINAL VALIDATION CHECK
+FINAL_VALIDATION_CHECK = """STEP 13: FINAL VALIDATION CHECK
 Before returning your result, perform one last critical check:
 1. Review your conversation_starter one more time
 2. If it mentions ANY specific venue name:
@@ -1724,9 +2134,13 @@ def generate_hinge_reply_from_screenshots(screenshots, format_txt_path, prompts_
 
     {CONVERSATION_STARTER_GUIDE}
 
-    {SIMULATE_CONVERSATION}
+    {COMPLIMENT_GENERATION}
 
-    {SELECT_BEST_STARTER}
+    {EVALUATE_DATE_TUPLES}
+
+    {EVALUATE_COMPLIMENTS}
+
+    {COMBINE_COMPONENTS}
 
     {IDENTIFY_SCREENSHOT}
 
