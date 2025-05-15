@@ -104,7 +104,7 @@ def scroll_back_to_top(device, num_scrolls=6, dating_app=None):
     Args:
         device: The ADB device
         num_scrolls: Number of scrolls to perform (default 6 for Hinge with 7 screenshots)
-        dating_app: Optional app type to adjust scroll count (if 'bumble', uses 6 scrolls by default)
+        dating_app: Optional app type to adjust scroll count (if 'bumble', uses 2 scrolls by default)
 
     Returns:
         bool: True if successful, False otherwise
@@ -112,8 +112,8 @@ def scroll_back_to_top(device, num_scrolls=6, dating_app=None):
     try:
         # Adjust number of scrolls based on dating app if not explicitly specified
         if dating_app == 'bumble' and num_scrolls == 6:
-            # Bumble now uses 7 screenshots (reduced from 9), so 6 scrolls to return to top
-            num_scrolls = 6
+            # Bumble now uses 3 screenshots (reduced from 7), so 2 scrolls to return to top
+            num_scrolls = 2
 
         for i in range(1, num_scrolls+1):
             logger.info(f"Scroll up #{i}")
@@ -442,7 +442,7 @@ def process_bumble_profile(device, width, height, profile_num, target_likes_befo
 
     # Scroll through profile and capture screenshots with Bumble-specific OCR settings
     screenshots = scroll_profile_and_capture(
-        device, width, height, profile_num, num_screenshots=6, dating_app=dating_app)
+        device, width, height, profile_num, num_screenshots=3, dating_app=dating_app)
 
     # Check if we need to force dislike based on the counter logic
     # If we've reached our target likes and haven't disliked any, dislike this one

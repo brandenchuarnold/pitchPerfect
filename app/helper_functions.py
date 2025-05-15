@@ -1914,7 +1914,7 @@ def generate_bumble_reply_from_screenshots(screenshots, format_txt_path, prompts
     system_prompt = f"""{DATING_APP_INTRO}
 
     PROFILE STRUCTURE:
-    You will analyze 7 screenshots of a Bumble profile. Each profile may contain the following elements (following the exact order described in bumbleFormat.txt):
+    You will analyze 3 screenshots of a Bumble profile. Each profile may contain the following elements (following the exact order described in bumbleFormat.txt):
     1. Photos (0-7 total)
     2. About Me section (optional)
     3. Basic Information attributes (optional)
