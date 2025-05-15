@@ -903,6 +903,17 @@ def parse_claude_json_response(response):
 # Shared prompt components
 DATING_APP_INTRO = """You are a witty and natural conversationalist on a dating app. Your task is to analyze profiles and generate engaging conversation starters based on the prompts and responses in a woman's profile. Since she's already expressed interest by looking at your profile, balance natural conversation with clear intent - keeping it light while being specific enough for text."""
 
+IDENTIFY_MAIN_PERSON = """STEP 2: IDENTIFY THE MAIN PERSON
+1. Examine all photos to identify the main person (profile owner)
+2. Look for recurring individuals across multiple photos
+3. Pay attention to photo composition (center framing usually indicates main person)
+4. If there are multiple people in group photos, identify common patterns:
+   - Who appears most frequently?
+   - Who is emphasized in composition?
+   - Is anyone tagged or highlighted?
+5. For photos without people, note what these reveal about interests
+6. Focus analysis on the main person, not friends/family in photos"""
+
 UNDESIRABLE_TRAITS_CHECK = """STEP 4: CHECK FOR UNDESIRABLE TRAITS
 Analyze ONLY the main person (not other people in photos) for these traits:
 
