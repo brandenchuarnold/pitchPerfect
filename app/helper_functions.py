@@ -1000,7 +1000,22 @@ For each story (element), determine what it reveals about the main person:
 6. Voice Prompt: Unknown content, only prompt visible
 7. Poll Prompt: Shows topics she'd discuss"""
 
-CONVERSATION_STARTER_GUIDE = """STEP 7: GENERATE CONVERSATION STARTERS
+COMPILE_CHARACTERISTICS = """STEP 6: COMPILE CHARACTERISTICS
+1. List all characteristics derived from stories about the main person
+2. Organize by confidence level. Also determine what her characteristics are based 
+   on all of the analysis of the stories we just did.
+3. Note when multiple stories support same characteristic
+   - Example: Two stories about exercise → high confidence in active lifestyle
+4. Read this list out loud to yourself. Does this sound like a reasonable person? 
+   Do they have hobbies that seem realistic? If there are characteristics of her 
+   that seem vague or exaggerated, be critical of them. Such as, "she's an adventurous 
+   person" - it's hard to prove this characteristic because it is vague. It's also hard 
+   to prove because it's exaggerated. Imagine you are going to represent this list of 
+   characteristics to the woman. Would she be flattered? Shocked? Disinterested? Feel 
+   awkward? Focus on things that are highly likely to be true as a few good truths are 
+   better than many assumptions."""
+
+CONVERSATION_STARTER_TUPLES_GENERATION = """STEP 7: GENERATE CONVERSATION STARTERS
 For each prompt/response pair:
 1. Use characteristics and stories as context
 2. Confirm that the prompt of the prompt/response pair is NOT a poll prompt:
@@ -1754,7 +1769,7 @@ BAD COMPLIMENTS:
   - Wording: ✗ Uses wordy "I'd love to see how" format
   - Overall: ✗ Comments on being well-read (not visible) and relates to prompt and activity"""
 
-EVALUATE_DATE_TUPLES = """STEP 9: EVALUATE DATE SUGGESTION TUPLES
+EVALUATE_CONVERSATION_STARTER_TUPLES = """STEP 9: EVALUATE DATE SUGGESTION TUPLES
 For each of the NINE tuples (3 per prompt/response pair):
 1. Conduct a simulated conversation:
    a. Message 1: Her prompt/response as the first message
@@ -1968,11 +1983,15 @@ def generate_bumble_reply_from_screenshots(screenshots, format_txt_path, prompts
 
     {COMPILE_CHARACTERISTICS}
 
-    {CONVERSATION_STARTER_GUIDE}
+    {CONVERSATION_STARTER_TUPLES_GENERATION}
 
-    {SIMULATE_CONVERSATION}
+    {COMPLIMENT_GENERATION}
 
-    {SELECT_BEST_STARTER}
+    {EVALUATE_CONVERSATION_STARTER_TUPLES}
+
+    {EVALUATE_COMPLIMENTS}
+
+    {COMBINE_COMPONENTS}
 
     {IDENTIFY_SCREENSHOT}
 
@@ -2143,11 +2162,11 @@ def generate_hinge_reply_from_screenshots(screenshots, format_txt_path, prompts_
 
     {COMPILE_CHARACTERISTICS}
 
-    {CONVERSATION_STARTER_GUIDE}
+    {CONVERSATION_STARTER_TUPLES_GENERATION}
 
     {COMPLIMENT_GENERATION}
 
-    {EVALUATE_DATE_TUPLES}
+    {EVALUATE_CONVERSATION_STARTER_TUPLES}
 
     {EVALUATE_COMPLIMENTS}
 
