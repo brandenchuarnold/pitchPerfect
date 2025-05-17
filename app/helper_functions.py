@@ -1405,369 +1405,397 @@ For each prompt/response pair:
       - Name: ✓ Name included with comma
       - Overall: ✗ Indirect verb structure makes it less direct and concise"""
 
-COMPLIMENT_GENERATION = """STEP 8: GENERATE COMPLIMENTS
+HOT_TOPICS_GENERATION = """STEP 8: GENERATE HOT TOPICS
 For each photo (there will be exactly 6 photos):
-1. Generate THREE unique compliments (twelve to fifteen words each) based on something visibly attractive in each photo:
-   a. First, find something that stands out and is visibly attractive from the profile photo.
-      - Focus on concrete, observable things in her photos:
-        * Physical appearance (only if obvious and tasteful)
-           - A genuine smile in a photo
-           - A distinctive hairstyle or color
-           - A stylish outfit or specific piece of clothing
-           - Her tattoos (take note of ink color, size, placement, and design)
-           - Good posture in activities (yoga, surfing, dancing)
-           - Athletic form when engaged in sports
-           - Balanced movements captured in action shots
-        * Activities she's doing in photos
-          - Good posture while doing an activity
-          - Muscle definition in activities (rock climbing, weightlifting, etc.)
-          - Calm expression while cooking or focused on something
-        * Specific items or objects in photos
-          - Unique jewelry or accessories
-          - Interesting shoes or hat
-      - AVOID vague or personality-based observations like:
-        * seeming like she knows how to have fun
-        * seeming like a fun person
-        * looking adventurous
-        * seeming really cool
-        * looking like she has a great personality
-      - AVOID complimenting items she won't bring on a date:
-        * Yoga mats, sports equipment, pets, scenery
-        * Temporary items specific to the activity in the photo
-      - The goal is to find something natural or intrinsic about her that is attractive to us
-      - People like to be noticed for specific qualities they have in photos
-      - Keep it straightforward and honestly observable
-      - The attractive quality must be something you could literally point to in a photo
-      - No marketing speak or over-the-top descriptions
-   b. Turn this observation into a direct compliment
-      - Express that you want to experience this attractive trait in person with fewer words
-      - Format: "I want to see that [specific attractive trait] from your [specific photo context] in person" or "Please show me that [specific attractive trait] from your [specific photo context] firsthand"
+1. Generate THREE unique hot topics (conversation starters) based on something interesting in each photo that could lead to a story:
+   a. First, identify concrete elements or activities in the photo that could lead to interesting conversation:
+      - Focus on elements that tell a story or suggest an experience:
+        * Activities she's engaged in
+           - Sporting events she's attending (e.g., a Packers game)
+           - Outdoor activities (hiking, kayaking, skiing)
+           - Travel destinations or landmarks
+           - Concerts or festivals
+           - Restaurants or food experiences
+        * Specific elements with story potential
+           - Unique locations or settings
+           - Interesting clothing items with potential context (team jerseys, event shirts)
+           - Seasonal activities (fall foliage hikes, winter sports)
+           - Cultural experiences (museums, international travel)
+           - Food or drinks that might have a story
+      - AVOID topics about:
+        * Other people in her photos - focus on HER experience
+        * Physical appearance compliments without story potential
+        * Vague personality traits like "adventurous" or "fun-loving"
+        * Generic questions that don't connect to specific photo elements
+        * Anything that focuses on how she looks rather than what she's doing
+      - The goal is to identify elements that could spark a story SHE would want to tell
+      - Focus on her real experiences visible in the photos, not abstract ideas
+      - Topics should be tangible things you can literally point to in the photo
+      - Each topic should have clear conversation potential beyond a simple answer
+   b. Turn these observations into direct conversation starters about specific topics
+      - Format: "I want to hear about [specific interesting element] from your [specific photo context] in person" or "I want to know [specific question about visible element] from your [specific photo context] firsthand"
       - Examples:
-        * "I want to see that straight posture from your surfing photo in person"
-        * "I want to see that short bob haircut from your cooking photo firsthand"
-        * "Please show me that bright smile from your beach photo in person"
-        * "Please show me those silver hoop earrings from your profile photo firsthand"
-      - CRITICAL: The compliment MUST be:
+        * "I want to hear about that Packers game from your stadium photo in person"
+        * "I want to know where you got that vibrant team hat from your football photo firsthand"
+        * "I want to hear about how you handle cold outdoor sporting events from your bundled-up game photo in person"
+        * "I want to know which tattoo is your favorite from your beach photo firsthand"
+        * "I want to hear about why you chose that penguin costume from your Halloween photo in person"
+      - CRITICAL: The hot topic MUST be:
         * Based on something specifically visible in the photo
-        * Simple, direct, and straightforward - no unnecessary words
-        * Expressed with minimal wording (use "I want to see" or "Please show me")
+        * Focused on an experience or story she could elaborate on
+        * Simple and direct - no unnecessary words
         * Always reference the specific photo context
-        * Between 12-15 words in total length
-        * Selfish but genuine (what YOU want to experience about her)
+        * About HER experience, not about other people in the photo
+        * Something that would naturally lead to a back-and-forth conversation
+        * ALWAYS end with either "in person" or "firsthand"
    
-2. For each compliment, make sure it's:
-   * COMPLETELY distinct from other compliments for the same photo
-   * Based on different visual elements in the same photo
-   * Varies in wording and structure
-   * Easy to understand and unambiguous
-   * Flattering without being excessive
-   * Reflective of something tangible in her profile
+2. For each hot topic, make sure it's:
+   * COMPLETELY distinct from other hot topics for the same photo
+   * Based on different elements or activities in the same photo
+   * Focused on something she did or experienced (not just what she has)
+   * Easy for her to respond to with a story or explanation
+   * Natural and conversational
+   * Specific enough to show you paid attention to her photos
 
-3. This will result in 18 total compliments (3 for each of the 6 photos). Count the number of compliments. Are there 18? If not, you need to go back and generate three compliments per photo for a total of 18.
+3. This will result in 18 total hot topics (3 for each of the 6 photos). Count the number of hot topics. Are there 18? If not, you need to go back and generate three hot topics per photo for a total of 18. Each hot topic MUST end with "in person" or "firsthand" - verify this for all 18.
 
-Examples of good vs bad COMPLIMENTS:
+Examples of good vs bad HOT TOPICS:
 
-GOOD COMPLIMENTS:
+GOOD HOT TOPICS:
 - Prompt: "My Love Language is"
   Response: "Words of affirmation and cheese"
   Photo context: Woman playing board games with friends
-  Good Compliment: "I want to see that bright smile from your board game photo in person."
+  Good Hot Topic: "I want to hear about that board game from your game night photo in person."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her smile)
+  - Interesting element: ✓ Focuses on a specific activity (board game)
+  - Story potential: ✓ Natural topic she can elaborate on
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "I want to see"
-  - Overall: ✓ Genuine, specific, and tied to visible attribute
+  - Overall: ✓ Opens conversation about a real experience she had
   
-  Alternative Good Compliment: "Please show me that relaxed posture from your board game photo in person."
+  Alternative Good Hot Topic: "I want to know which board games you play most often from your game night photo firsthand."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her posture)
+  - Interesting element: ✓ Focuses on her gaming preferences/experience
+  - Story potential: ✓ Invites her to share gaming preferences and experiences
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "Please show me"
-  - Overall: ✓ Observes a different visual element from the same photo
+  - Overall: ✓ Centers on her interests rather than appearance
 
 - Prompt: "I geek out on"
   Response: "NBA, specifically golden state warriors" 
   Photo context: Woman rock climbing at a gym
-  Good Compliment: "Please show me that strong jawline from your climbing photo in person."
+  Good Hot Topic: "I want to hear about your experience at that climbing gym from your photo in person."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her jawline)
+  - Interesting element: ✓ Focuses on a specific activity (climbing)
+  - Story potential: ✓ Natural topic she can elaborate on
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "Please show me"
-  - Overall: ✓ Specific to her physical appearance
+  - Overall: ✓ Opens conversation about a real experience she had
   
-  Alternative Good Compliment: "I want to see those muscles from your climbing photo firsthand."
+  Alternative Good Hot Topic: "I want to know how long you've been rock climbing from your gym photo firsthand."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her eyes)
+  - Interesting element: ✓ Focuses on her climbing experience/history
+  - Story potential: ✓ Invites her to share her journey with the activity
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "I want to see"
-  - Overall: ✓ Comments on a physical feature that will be present on the date
+  - Overall: ✓ Centers on her experiences rather than appearance
 
 - Prompt: "Two truths and a lie..."
   Response: "1) I have a scar on my hand from being bitten by a hamster 2) I wrote and directed a short film 3) I won a county-wide math competition in school"
   Photo context: Woman at the beach wearing a hat
-  Good Compliment: "I want to see that wide-brimmed sun hat from your beach photo in person."
+  Good Hot Topic: "I want to hear about that beach trip from your vacation photo in person."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her hat)
+  - Interesting element: ✓ Focuses on a specific experience (beach trip)
+  - Story potential: ✓ Natural topic she can elaborate on
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "I want to see"
-  - Overall: ✓ Specific to an item she chose to wear
+  - Overall: ✓ Opens conversation about a real travel experience
   
-  Alternative Good Compliment: "Please show me that long wavy hair from your beach photo firsthand."
+  Alternative Good Hot Topic: "I want to know if that beach in your photo was local or somewhere you traveled to firsthand."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her hair)
+  - Interesting element: ✓ Focuses on the location and travel aspect
+  - Story potential: ✓ Invites her to share travel experiences
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "Please show me"
-  - Overall: ✓ Comments on a physical feature that will be present on the date
+  - Overall: ✓ Centers on her experiences rather than appearance
 
 - Prompt: "What I order for the table"
   Response: "Carbs, cheese and wine"
-  Photo context: Woman with curly hair in profile photo
-  Good Compliment: "Please show me that curly hair from your profile photo in person."
+  Photo context: Woman at a restaurant with food
+  Good Hot Topic: "I want to hear about that restaurant from your dining photo in person."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible and distinctive (her hair)
+  - Interesting element: ✓ Focuses on a specific location (restaurant)
+  - Story potential: ✓ Natural topic she can elaborate on
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "Please show me"
-  - Overall: ✓ Personal, distinctive, and tied to a natural feature
+  - Overall: ✓ Opens conversation about a real dining experience
   
-  Alternative Good Compliment: "I want to see that warm smile from your profile photo firsthand."
+  Alternative Good Hot Topic: "I want to know what dish you were eating in your restaurant photo firsthand."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her smile)
+  - Interesting element: ✓ Focuses on food preferences/experiences
+  - Story potential: ✓ Invites her to share food experiences
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "I want to see"
-  - Overall: ✓ Highlights a physical feature she'll definitely have on a date
+  - Overall: ✓ Centers on a concrete element in the photo
 
 - Prompt: "My simple pleasures"
   Response: "Carbs, cheese, and wine"
-  Photo context: Woman with tattoo visible in board game photo
-  Good Compliment: "I want to see that black geometric tattoo from your board game photo firsthand."
+  Photo context: Woman at a vineyard/winery
+  Good Hot Topic: "I want to hear about that winery visit from your vineyard photo in person."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her tattoo)
+  - Interesting element: ✓ Focuses on a specific experience (winery visit)
+  - Story potential: ✓ Natural topic she can elaborate on
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "I want to see"
-  - Overall: ✓ Specific to a permanent feature with details
+  - Overall: ✓ Opens conversation about a real experience she had
   
-  Alternative Good Compliment: "Please show me those brown bangs from your board game photo in person."
+  Alternative Good Hot Topic: "I want to know if you've done many wine tastings from your vineyard photo firsthand."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her eyes)
+  - Interesting element: ✓ Focuses on her wine experiences
+  - Story potential: ✓ Invites her to share related experiences
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "Please show me"
-  - Overall: ✓ Comments on a physical feature she'll definitely have on a date
+  - Overall: ✓ Centers on her experiences rather than appearance
 
 - Prompt: "The dorkiest thing about me is"
   Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
   Photo context: Woman hiking on a trail
-  Good Compliment: "I want to see that good posture from your trail photo in person."
+  Good Hot Topic: "I want to hear about that hiking trail from your outdoor photo in person."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her posture)
+  - Interesting element: ✓ Focuses on a specific location (hiking trail)
+  - Story potential: ✓ Natural topic she can elaborate on
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "I want to see"
-  - Overall: ✓ Specific to her physical appearance in activity
+  - Overall: ✓ Opens conversation about a real outdoor experience
   
-  Alternative Good Compliment: "Please show me that hiking outfit from your trail photo firsthand."
+  Alternative Good Hot Topic: "I want to know if that was a challenging hike from your trail photo firsthand."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her outfit)
+  - Interesting element: ✓ Focuses on the nature of the experience
+  - Story potential: ✓ Invites her to share details about the experience
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "Please show me"
-  - Overall: ✓ Comments on clothing she might wear again
+  - Overall: ✓ Centers on her experience rather than appearance
 
 - Prompt: "The quickest way to my heart is"
   Response: "Making me laugh and ice cream"
-  Photo context: Woman with tattoo at beach
-  Good Compliment: "Please show me that blue mermaid tattoo from your beach photo firsthand."
+  Photo context: Woman at a sporting event
+  Good Hot Topic: "I want to hear about that game you attended in your stadium photo in person."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her tattoo)
+  - Interesting element: ✓ Focuses on a specific event (sporting event)
+  - Story potential: ✓ Natural topic she can elaborate on
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "Please show me"
-  - Overall: ✓ Specific to a distinctive personal feature
+  - Overall: ✓ Opens conversation about a real experience she had
   
-  Alternative Good Compliment: "I want to see that confident posture from your beach photo in person."
+  Alternative Good Hot Topic: "I want to know if you're a regular fan of that team from your stadium photo firsthand."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her posture)
+  - Interesting element: ✓ Focuses on her sports interests/fandom
+  - Story potential: ✓ Invites her to share her connection to the team
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "I want to see"
-  - Overall: ✓ Highlights a physical attribute she'll bring to the date
+  - Overall: ✓ Centers on her interests rather than appearance
 
 - Prompt: "I'm weirdly attracted to"
   Response: "Guys who can beat me at Mario Kart"
-  Photo context: Woman at a party with glasses
-  Good Compliment: "I want to see those round glasses from your party photo in person."
+  Photo context: Woman at a concert/music festival
+  Good Hot Topic: "I want to hear about that concert from your music venue photo in person."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her glasses)
+  - Interesting element: ✓ Focuses on a specific event (concert)
+  - Story potential: ✓ Natural topic she can elaborate on
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "I want to see"
-  - Overall: ✓ Specific to an accessory she chose to wear
+  - Overall: ✓ Opens conversation about a real music experience
   
-  Alternative Good Compliment: "Please show me that cute hairstyle from your party photo firsthand."
+  Alternative Good Hot Topic: "I want to know if that band is one of your favorites from your concert photo firsthand."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her hairstyle)
+  - Interesting element: ✓ Focuses on her music preferences
+  - Story potential: ✓ Invites her to share music interests
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "Please show me"
-  - Overall: ✓ Highlights a physical feature she'll bring to the date
+  - Overall: ✓ Centers on her interests rather than appearance
+
+- Prompt: "Two truths and a lie..."
+  Response: "1) I have a scar on my hand from being bitten by a hamster 2) I wrote and directed a short film 3) I won a county-wide math competition in school"
+  Photo context: Woman with visible tattoo artwork on her arm
+  Good Hot Topic: "I want to hear about the story behind that artistic tattoo from your beach photo in person."
+  Analysis:
+  - Interesting element: ✓ Focuses on a distinctive personal choice (tattoo)
+  - Story potential: ✓ Natural topic with meaningful story potential
+  - Photo context: ✓ References specific photo context
+  - Overall: ✓ Opens conversation about a deliberate choice she made
+  
+  Alternative Good Hot Topic: "I want to know which of your tattoos is your favorite from your beach photo firsthand."
+  Analysis:
+  - Interesting element: ✓ Focuses on her tattoo preferences/collection
+  - Story potential: ✓ Invites her to share meanings and choices
+  - Photo context: ✓ References specific photo context
+  - Overall: ✓ Centers on her choices rather than appearance
+
+- Prompt: "The dorkiest thing about me is"
+  Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
+  Photo context: Woman in penguin costume at Halloween party
+  Good Hot Topic: "I want to hear about why you chose that penguin costume from your Halloween photo in person."
+  Analysis:
+  - Interesting element: ✓ Focuses on a fun costume choice with story potential
+  - Story potential: ✓ Natural topic she can elaborate on about her interests
+  - Photo context: ✓ References specific photo context
+  - Overall: ✓ Opens conversation about a deliberate choice with personality
+  
+  Alternative Good Hot Topic: "I want to know if penguins are your favorite animal from your costume photo firsthand."
+  Analysis:
+  - Interesting element: ✓ Focuses on her preferences and interests
+  - Story potential: ✓ Invites her to share animal preferences and humor
+  - Photo context: ✓ References specific photo context
+  - Overall: ✓ Centers on her choices that reflect personality
 
 - Prompt: "A non-negotiable for me is"
   Response: "Having a good book on the go at all times"
-  Photo context: Woman at cafe wearing earrings
-  Good Compliment: "Please show me those dangling earrings from your cafe photo in person."
+  Photo context: Woman at cafe with a book
+  Good Hot Topic: "I want to hear about that book you were reading in your cafe photo in person."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her earrings)
+  - Interesting element: ✓ Focuses on a specific item with story potential (book)
+  - Story potential: ✓ Natural topic she can elaborate on
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "Please show me"
-  - Overall: ✓ Specific to a distinctive accessory
+  - Overall: ✓ Opens conversation about her reading interests
   
-  Alternative Good Compliment: "I want to see that relaxed demeanor from your cafe photo firsthand."
+  Alternative Good Hot Topic: "I want to know if that cafe is your favorite reading spot from your photo firsthand."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her demeanor/expression)
+  - Interesting element: ✓ Focuses on the location and activity
+  - Story potential: ✓ Invites her to share her reading habits
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "I want to see"
-  - Overall: ✓ Comments on a visible attribute she'll bring to the date
+  - Overall: ✓ Centers on her experiences rather than appearance
 
 - Prompt: "The one thing I want to know about you is"
   Response: "If you have a favorite hiking trail"
-  Photo context: Woman doing yoga on a beach
-  Good Compliment: "I want to see that good posture from your beach photo in person."
+  Photo context: Woman at a festival or cultural event
+  Good Hot Topic: "I want to hear about that festival from your event photo in person."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her posture)
+  - Interesting element: ✓ Focuses on a specific event (festival)
+  - Story potential: ✓ Natural topic she can elaborate on
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "I want to see"
-  - Overall: ✓ Specific to her physical form during activity
+  - Overall: ✓ Opens conversation about a real cultural experience
   
-  Alternative Good Compliment: "Please show me that vibrant hair color from your beach yoga photo firsthand."
+  Alternative Good Hot Topic: "I want to know what was happening at that event in your festival photo firsthand."
   Analysis:
-  - Observable attribute: ✓ Focuses on something visible (her hair color)
+  - Interesting element: ✓ Focuses on the nature of the event
+  - Story potential: ✓ Invites her to share details about the experience
   - Photo context: ✓ References specific photo context
-  - Wording: ✓ Direct and clear with "Please show me"
-  - Overall: ✓ Highlights a physical feature she'll bring to the date
+  - Overall: ✓ Centers on her experience rather than appearance
 
-BAD COMPLIMENTS:
+BAD HOT TOPICS:
 - Prompt: "A random fact I love is"
   Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight..."
   Photo context: Woman at a bookstore
-  Bad Compliment: "You seem like someone who enjoys deep conversations."
+  Bad Hot Topic: "I want to hear about your beautiful smile in your bookstore photo in person."
   Analysis:
-  - Observable attribute: ✗ Focuses on a personality trait, not something visible
-  - Photo context: ✗ Doesn't reference specific photo context
-  - Wording: ✗ Completely misses the "I want to see" or "Please show me" format
-  - Overall: ✗ Generic personality assumption not tied to anything visible
+  - Interesting element: ✗ Focuses on physical appearance, not an experience or story
+  - Story potential: ✗ Doesn't invite sharing of an experience
+  - Photo context: ✓ References specific photo context
+  - Overall: ✗ Focuses on appearance rather than something with story potential
 
 - Prompt: "A random fact I love is"
   Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight..."
   Photo context: Woman at a bookstore
-  Bad Compliment: "Your determination would make this activity better."
+  Bad Hot Topic: "I want to know if you're always this photogenic in your photos firsthand."
   Analysis:
-  - Observable attribute: ✗ Focuses on a personality trait, not something visible
+  - Interesting element: ✗ Focuses on general appearance, not specific elements
+  - Story potential: ✗ Generic compliment without conversation potential
   - Photo context: ✗ Doesn't reference specific photo context
-  - Wording: ✗ Completely misses the "I want to see" or "Please show me" format
-  - Overall: ✗ Vague personality assumption not tied to anything visible
+  - Overall: ✗ Generic appearance comment without story potential
 
 - Prompt: "The quickest way to my heart is"
   Response: "Talking over ice cream/coffee"
   Photo context: Woman at a cafe
-  Bad Compliment: "Your profile suggests you're a great conversationalist."
+  Bad Hot Topic: "I want to hear about your friend in the background of your cafe photo in person."
   Analysis:
-  - Observable attribute: ✗ Focuses on a personality trait, not something visible
-  - Photo context: ✗ Doesn't reference specific photo context
-  - Wording: ✗ Completely misses the "I want to see" or "Please show me" format
-  - Overall: ✗ Vague inference not based on anything visible
+  - Interesting element: ✗ Focuses on another person, not her experience
+  - Story potential: ✗ Shifts focus away from her
+  - Photo context: ✓ References specific photo context
+  - Overall: ✗ Focuses on other people rather than her experience
 
 - Prompt: "The quickest way to my heart is"
   Response: "Talking over ice cream/coffee"
   Photo context: Woman at a park with friends
-  Bad Compliment: "I'd love to see your adventurous spirit in real life."
+  Bad Hot Topic: "I want to hear about how adventurous you are from your park photo in person."
   Analysis:
-  - Observable attribute: ✗ Focuses on a personality trait, not something visible
-  - Photo context: ✗ Doesn't reference specific photo context
-  - Wording: ✗ Uses wordy "I'd love to see" and "in real life" instead of "in person"
-  - Overall: ✗ Vague, assumption-based, not tied to visible attribute
+  - Interesting element: ✗ Focuses on a vague personality trait
+  - Story potential: ✗ Too vague to spark specific conversation
+  - Photo context: ✓ References photo context but vaguely
+  - Overall: ✗ Vague personality assessment without specific story hook
 
 - Prompt: "My biggest date fail"
   Response: "Going swimming in Lake Mendota and then cutting my foot on a piece of metal..."
   Photo context: Woman at a lake
-  Bad Compliment: "You seem adventurous and willing to try things again."
+  Bad Hot Topic: "I want to hear about how relaxed you are in your lake photo in person."
   Analysis:
-  - Observable attribute: ✗ Makes personality assumption rather than commenting on visible attribute
-  - Photo context: ✗ Vaguely references the outdoor setting but not specific details
-  - Wording: ✗ Completely misses the "I want to see" or "Please show me" format
-  - Overall: ✗ Generic personality assessment not tied to anything visible
+  - Interesting element: ✗ Focuses on subjective state rather than concrete elements
+  - Story potential: ✗ Assumes emotional state without clear conversation path
+  - Photo context: ✓ References specific photo context
+  - Overall: ✗ Makes assumptions without specific story hook
 
 - Prompt: "My best celebrity impression is..."
   Response: "\"Why hello there,\" in my best Obi-Wan Kenobi voice and my friends hate it."
   Photo context: Woman with friends
-  Bad Compliment: "I would love to see you bring entertainment to any situation."
+  Bad Hot Topic: "I want to hear about how fun and social you are from your friends photo in person."
   Analysis:
-  - Observable attribute: ✗ Focuses on a personality trait, not something visible
-  - Photo context: ✗ Doesn't reference specific photo context
-  - Wording: ✗ Uses wordy "I would love to see" format
-  - Overall: ✗ Generic personality assumption not tied to anything visible
+  - Interesting element: ✗ Focuses on vague personality trait
+  - Story potential: ✗ Too generic to spark interesting conversation
+  - Photo context: ✓ References photo context but vaguely
+  - Overall: ✗ Generic personality assessment without specific story hook
 
 - Prompt: "My best celebrity impression is..."
   Response: "\"Why hello there,\" in my best Obi-Wan Kenobi voice and my friends hate it."
   Photo context: Woman with friends
-  Bad Compliment: "I'd love to see your intelligence in real life."
+  Bad Hot Topic: "I want to know if you're always the life of the party firsthand."
   Analysis:
-  - Observable attribute: ✗ Focuses on a non-physical quality that isn't directly observable
+  - Interesting element: ✗ Makes assumptions about personality
+  - Story potential: ✗ Too generic and assumptive
   - Photo context: ✗ Doesn't reference specific photo context
-  - Wording: ✗ Uses wordy "I'd love to see" and "in real life" instead of "in person"
-  - Overall: ✗ Comments on an intellectual quality not visible in photos
+  - Overall: ✗ Makes assumptions without connecting to specific photo elements
 
 - Prompt: "A random fact I love is"
   Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight..."
   Photo context: Woman at a bookstore
-  Bad Compliment: "I'd love to see your knowledge of literary history in real life."
+  Bad Hot Topic: "I want to know your thoughts on the literary merits of fan fiction firsthand."
   Analysis:
-  - Observable attribute: ✗ Focuses on an intellectual quality that isn't directly observable
-  - Photo context: ✗ Vaguely references literary interest but not visual details
-  - Wording: ✗ Uses wordy "I'd love to see" and "in real life" instead of "in person"
-  - Overall: ✗ Comments on knowledge (not visible) and relates to prompt content
+  - Interesting element: ✗ Derived from prompt/response, not photo elements
+  - Story potential: ✗ Abstract topic not grounded in her visible experiences
+  - Photo context: ✗ Doesn't connect to specific elements in the photo
+  - Overall: ✗ Intellectual discussion not based on photo experiences
 
 - Prompt: "The quickest way to my heart is"
   Response: "Talking over ice cream/coffee"
   Photo context: Woman at a cafe
-  Bad Compliment: "I'd love to see your focused expression when you're listening."
+  Bad Hot Topic: "I want to know what you're thinking about in this moment firsthand."
   Analysis:
-  - Observable attribute: ✗ Uses subjective qualifier "focused" rather than describing what is visible
-  - Photo context: ✗ References the cafe but not specific visible details
-  - Wording: ✗ Uses wordy "I'd love to see" format
-  - Overall: ✗ Comments on a subjective quality using marketing-like language
+  - Interesting element: ✗ Focuses on internal thoughts, not visible elements
+  - Story potential: ✗ Vague question about mental state
+  - Photo context: ✗ Doesn't reference specific elements in photo
+  - Overall: ✗ Abstract question not grounded in visible experiences
 
 - Prompt: "I geek out on"
   Response: "NBA, specifically golden state warriors" 
   Photo context: Woman rock climbing at a gym
-  Bad Compliment: "I'd love to see how your impressive grip strength translates to handshakes."
+  Bad Hot Topic: "I want to hear about how skilled you are at climbing in person."
   Analysis:
-  - Observable attribute: ✗ Uses subjective qualifier "impressive" rather than describing what is visible
-  - Photo context: ✗ References climbing but uses subjective judgment
-  - Wording: ✗ Uses wordy "I'd love to see how" format
-  - Overall: ✗ Comments on a quality using unnecessary qualifiers
+  - Interesting element: ✗ Makes assumptions about skill level
+  - Story potential: ✗ Framed as compliment rather than story prompt
+  - Photo context: ✓ References specific photo context
+  - Overall: ✗ Focuses on evaluation rather than experience sharing
 
 - Prompt: "My biggest date fail"
   Response: "Going swimming in Lake Mendota and then cutting my foot on a piece of metal..."
   Photo context: Woman at a lake
-  Bad Compliment: "I'd love to see your genuine smile in person sometime."
+  Bad Hot Topic: "I want to know why you chose to take this photo firsthand."
   Analysis:
-  - Observable attribute: ✗ Uses subjective qualifier "genuine" rather than describing what is visible
-  - Photo context: ✗ Doesn't reference specific photo context
-  - Wording: ✗ Uses wordy "I'd love to see" format with "sometime"
-  - Overall: ✗ Uses marketing-like language with unnecessary qualifier
+  - Interesting element: ✗ Focuses on photo-taking rather than experience
+  - Story potential: ✗ Meta question about the photo itself
+  - Photo context: ✓ References photo but not specific elements
+  - Overall: ✗ Focuses on photo creation rather than experiences shown
 
 - Prompt: "What I order for the table"
   Response: "Carbs, cheese and wine"
   Photo context: Woman at a bar
-  Bad Compliment: "I'd love to see your colorful yoga mat on our next outing."
+  Bad Hot Topic: "I want to hear about what the other people at your table ordered in person."
   Analysis:
-  - Observable attribute: ✗ Focuses on an item (yoga mat) she won't bring on a date
-  - Photo context: ✗ Doesn't reference the actual photo context (bar)
-  - Wording: ✗ Uses wordy "I'd love to see" format
-  - Overall: ✗ Comments on an item that won't be present for the date
+  - Interesting element: ✗ Focuses on others, not her experience
+  - Story potential: ✗ Shifts focus away from her
+  - Photo context: ✓ References photo context
+  - Overall: ✗ Focuses on others rather than her experience
 
 - Prompt: "A non-negotiable for me is"
   Response: "Having a good book on the go at all times"
   Photo context: Woman reading at a cafe
-  Bad Compliment: "I'd love to see how being well-read influences your browsing."
+  Bad Hot Topic: "I want to know what kind of person spends time reading alone firsthand."
   Analysis:
-  - Observable attribute: ✗ Focuses on an intellectual quality that isn't directly observable
-  - Photo context: ✗ Vaguely references reading but not specific visual details
-  - Wording: ✗ Uses wordy "I'd love to see how" format
-  - Overall: ✗ Comments on being well-read (not visible) and relates to prompt and activity"""
+  - Interesting element: ✗ Frames question as judgment about personality
+  - Story potential: ✗ Potentially off-putting framing
+  - Photo context: ✓ References photo context
+  - Overall: ✗ Judgmental tone without positive conversation potential"""
 
 EVALUATE_CONVERSATION_STARTER_TUPLES = """STEP 9: EVALUATE DATE SUGGESTION TUPLES
 For each of the NINE tuples (3 per prompt/response pair):
@@ -1794,8 +1822,7 @@ For each of the NINE tuples (3 per prompt/response pair):
    - Respects the complexity of her personality
    - Creates positive imagery or stories in her mind
    Is between eight to ten words (wordy date suggestions are penalized).
-4. Select the single best conversation starter tuple ranked highest by you.
-5. Re-validate the location of the establishment and if it is responding to a poll prompt in your conversation starter tuple:
+4. Re-validate the location of the establishment and if it is responding to a poll prompt in your conversation starter tuple:
    - CRITICAL: Location validation - FOLLOW THESE STEPS CAREFULLY:
       * Carefully scan your conversation starter for ANY specific venue or business name (e.g., "Brocach", "Barriques", "Eno Vino")
       * If you find one, check if it appears EXACTLY as written in the locations.txt file
@@ -1810,44 +1837,49 @@ For each of the NINE tuples (3 per prompt/response pair):
       * If it does, this is a poll prompt and MUST NOT be used for conversation starters
       * If you selected a poll prompt, immediately disqualify it and select a different one from the three valid prompt/response pairs
       * A valid prompt must NOT be in hingePolls.txt
-      * There are always exactly three non-poll prompts in every profile - ensure you've selected one of these"""
+      * There are always exactly three non-poll prompts in every profile - ensure you've selected one of these
+5. Count the number of ratings you have. Are there nine? If not, you need to go back and rate all the conversation starter tuples you already have for a total of nine.
+6. Select the single best conversation starter tuple ranked highest by you.
+"""
 
-EVALUATE_COMPLIMENTS = """STEP 10: EVALUATE COMPLIMENTS
-For each of the 18 compliments (3 per photo):
+EVALUATE_HOT_TOPICS = """STEP 10: EVALUATE HOT TOPICS
+For each of the 18 hot topics (3 per photo):
 1. Conduct a simulated conversation:
-   a. Imagine adding this compliment to a standard date suggestion
-   b. Message 1: Her receiving the full message with this compliment
+   a. Imagine adding this hot topic to a standard date suggestion
+   b. Message 1: Her receiving the full message with this hot topic
    c. Message 2: Imagine her most likely reply based on profile characteristics
    d. Message 3: Your natural follow-up based on her reply
 2. Evaluate based on these criteria:
-   - Is the compliment easy to understand immediately?
-   - Is it flattering without being excessive?
-   - Is it unambiguous in meaning?
-   - Does it clearly reference something visible in her photos?
-   - Does it avoid sounding generic or like it could apply to anyone?
-   - Would it make her feel noticed for something specific about her?
-   - Does it avoid objectifying her inappropriately?
-   - Would it be received positively by most women?
-3. Rank each compliment on a scale of 1-10 for overall quality. Make sure that the compliment:
-   - Makes her feel genuinely noticed
-   - References something unique or distinctive about her
+   - Does the hot topic invite her to share a specific experience?
+   - Is it easy for her to respond to with a story or explanation?
+   - Does it clearly reference something specific in her photos?
+   - Does it focus on her rather than other people in the photo?
+   - Would it spark a natural conversation with back-and-forth potential?
+   - Does it show you paid attention to details in her photos?
+   - Does it avoid being too generic or applicable to anyone?
+   - Would it lead to an interesting exchange rather than a one-word answer?
+3. Rank each hot topic on a scale of 1-10 for overall quality. Make sure that the hot topic:
+   - Focuses on her real experiences shown in photos
+   - References something concrete and specific
    - Is direct and clear without requiring interpretation
    - Uses simple, straightforward language
-   - Avoids being overly sexual or inappropriate
-   - Creates a positive feeling when read
-   - Penalize compliments that are overly wordy/too long (more than twelve 15 words)
-4. Select the single best compliment ranked highest by you.
+   - Shows genuine interest in her experiences or activities
+   - Creates an opening for her to tell a story
+   - Penalize topics that focus on appearance rather than experiences
+   - Verify it ends with either "in person" or "firsthand"
+4. Count the number of ratings you have. Are there 18? If not, you need to go back and rate all the hot topics you already have for a total of 18.
+5. Select the single best hot topic ranked highest by you.
    """
 
-COMBINE_COMPONENTS = """STEP 11: COMBINE TUPLE AND COMPLIMENT
+COMBINE_COMPONENTS = """STEP 11: COMBINE TUPLE AND HOT TOPIC
 1. Take the winning tuple from Step 9
    - This includes the bridge, activity suggestion, and name with question mark
-2. Take the winning compliment from Step 10
-   - This includes the direct statement about something attractive in her photo
+2. Take the winning hot topic from Step 10
+   - This includes a direct question about something interesting in her photo
 3. Combine them in this exact format:
-   "[Bridge. Activity suggestion with me, NAME? [Compliment]."
+   "[Bridge. Activity suggestion with me, NAME? [Hot Topic]."
 4. Verify that the combined message flows naturally
-5. Ensure the compliment remains completely separate from the activity suggestion
+5. Ensure the hot topic remains completely separate from the activity suggestion
 6. The final conversation starter should be approximately 25-35 words in total"""
 
 IDENTIFY_SCREENSHOT = """STEP 12: IDENTIFY SCREENSHOT
@@ -1985,11 +2017,11 @@ def generate_bumble_reply_from_screenshots(screenshots, format_txt_path, prompts
 
     {CONVERSATION_STARTER_TUPLES_GENERATION}
 
-    {COMPLIMENT_GENERATION}
+    {HOT_TOPICS_GENERATION}
 
     {EVALUATE_CONVERSATION_STARTER_TUPLES}
 
-    {EVALUATE_COMPLIMENTS}
+    {EVALUATE_HOT_TOPICS}
 
     {COMBINE_COMPONENTS}
 
@@ -2164,11 +2196,11 @@ def generate_hinge_reply_from_screenshots(screenshots, format_txt_path, prompts_
 
     {CONVERSATION_STARTER_TUPLES_GENERATION}
 
-    {COMPLIMENT_GENERATION}
+    {HOT_TOPICS_GENERATION}
 
     {EVALUATE_CONVERSATION_STARTER_TUPLES}
 
-    {EVALUATE_COMPLIMENTS}
+    {EVALUATE_HOT_TOPICS}
 
     {COMBINE_COMPONENTS}
 
