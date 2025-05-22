@@ -1015,885 +1015,309 @@ COMPILE_CHARACTERISTICS = """STEP 6: COMPILE CHARACTERISTICS
    awkward? Focus on things that are highly likely to be true as a few good truths are 
    better than many assumptions."""
 
-CONVERSATION_STARTER_TUPLES_GENERATION = """STEP 7: GENERATE CONVERSATION STARTERS
-For each prompt/response pair:
-1. Use characteristics and stories as context
-2. Confirm that the prompt of the prompt/response pair is NOT a poll prompt:
-    a. CRITICAL: Immediately check if the prompt appears in hingePolls.txt
-    b. If the prompt is found in hingePolls.txt, it is a poll prompt and must be DISQUALIFIED for conversation starters
-    c. Only generate conversation starters for the three actual prompt/response pairs where the prompt is NOT in hingePolls.txt
-3. Generate three conversation starters per prompt/response pair (nine total) that follow this three-step approach:
-    a. First, think of a date activity (eight to ten words) that is relevant to her prompt/response.
-       - CRITICAL: While it's ideal to suggest activities you see her doing in photos, this isn't always possible
-       - You'll often need to base date activities on prompt/response pairs when photos don't show suitable activities
-       - When using information from her photos:
-         * Choose activities you've seen her actually doing
-         * Keep the suggestion simple and time-limited (30-90 minutes)
-       - When using information from prompt/response pairs:
-         * Focus on concrete preferences mentioned (foods, drinks, interests)
-         * Avoid using personal stories, goals, or aspirations
-       - CRITICAL: Always use this exact format for date suggestions:
-         * Start with the VERB + at venue + with me/together + question mark
-         * VERB must be the first word - no introductory phrases like "Want to" or "Would you like to"
-         * Examples: "Play monopoly at Role Play Lounge with me?" or "Drink at The Old Fashioned together?"
-         * Bad examples: "Do you want to play monopoly at Role Play Lounge?" or "Let's grab drinks downtown?"
-         * Use specific, direct verbs instead of generic ones like "try" or "sample" (e.g., "Eat", "Drink", "Climb", "Play", "Browse", "Hike")
-         * Must be a complete grammatical sentence
-         * Must include a specific action verb
-         * Must include the venue name
-         * Must end with "with me" or "together" followed by a comma and her name, then a question mark
-       - CRITICAL: The suggested activity MUST:
-         * Take between 30-90 minutes (half hour to hour and a half)
-         * Be fun, casual and low-stakes (avoid high-pressure or complex activities)
-         * Have no larger goals that overshadow the natural connection
-         * Allow conversation to flow naturally while doing something enjoyable
-         * Prioritize interactive experiences where you can do something together rather than just talking
-         * Be between eight to ten words in length
-         * Only suggest bowling/ice skating/climbing/kayaking if she shows specific interest in these activities
-         * Examples of poor date activities: full sporting events, multi-day projects, competitive activities, professional networking
-    b. Second, create a bridge (6-9 words) between her prompt/response and the suggested date activity
-       - CRITICAL: The bridge must create a logical connection that explains WHY this activity relates to her interests
-       - CRITICAL: The bridge should articulate a genuine reason why someone with her interest would enjoy this activity
-       - Reference something specific from her prompt or response
-       - Keep it concise but make the connection crystal clear
-       - This creates context for your suggestion and shows you paid attention
-       - IMPORTANT: If your date activity suggestion is based on an activity seen in her photos (preferred approach), create a bridge that connects from the prompt/response to that activity
-         * Example: If her prompt is about loving dogs but photos show her kayaking, you might say "Dog people love exploring nature together" to bridge to kayaking
-         * The connection should feel natural even when connecting different topics
-       CRITICAL: The bridge must be:
-       1. Specific to her prompt/response
-       2. Clear and obvious to understand
-       3. Natural lead-in to the date activity
-       4. Between 6-9 words exactly
-       5. Shows you paid attention to her profile
-       6. Explains WHY the activity is relevant to her interest
-       7. Suggests a genuine benefit or logical relationship
-    c. Third, add her name after a comma after the activity suggestion
-       - This personalizes the message and shows you paid attention to her profile
-       - For example: "... with me, Sarah?" or "... together, Jessica?"
-       - Always include her name at the end preceded by a comma
-       - Keep it natural and conversational
-    d. Verify the location of the establishment is in Madison, Wisconsin
-       - CRITICAL: When suggesting a specific location in Madison, Wisconsin:
-          * First check the locations.txt file to see if the type of establishment exists in Madison
-          * If suggesting a specific named establishment (e.g., "Barriques", "Eno Vino"), ONLY use establishments listed in locations.txt - READ THE ENTIRE LIST CAREFULLY
-          * If the specific type of establishment isn't in locations.txt, just use the generic type (e.g., "a cafe downtown" instead of naming one)
-          * NEVER suggest a specific named establishment that isn't in locations.txt
-          * ONLY mention establishments that are EXACTLY as they appear in locations.txt - no similar names or variations
-          * Double-check the spelling and exact name of any establishment you mention
-          * Do not suggest places that have permanently closed - if you're not 100% certain a place is still open, use a generic location instead
-          * It's always safe to suggest general areas like "downtown", "near the Capitol", or "by the lake" without naming a specific establishment
-    e. For each of the three prompt/response pairs, generate THREE distinct date activity suggestions:
-       * Each with a unique bridge connecting it to the prompt/response
-       * Each with a distinct activity that would be enjoyable based on her profile
-       * Each should use a different venue or location
-       * Each should follow all guidelines above
-
-    - The conversation starter tuples should follow these general guidelines:
-        * Aim to create inviting scenarios that feel natural, fun and time-limited
-        * Use natural, everyday language - how you'd actually talk to someone
-        * Avoid flowery metaphors or dramatic language
-        * Never use marketing-style words like "perfect", "amazing", "journey", "adventure"
-        * Show interest through specificity and shared experiences
-        * Aim for brevity - 6-9 words for the bridge, 8-10 words for the activity suggestion with name
-        * Keep it easy to respond to over text
-        * Create a pleasant shared experience
-   
-   This will result in 9 total conversation starter tuples (3 per prompt/response pair). Count the number of conversation starter tuples. Are there 9? If not, you need to go back and generate three conversation starters per prompt/response pair for a total of 9.
-
-    Examples of good vs bad DATE SUGGESTION TUPLES:
-
-    GOOD DATE SUGGESTION TUPLES:
-    - Prompt: "My Love Language is"
-      Response: "Words of affirmation and cheese"
-      Photo context: Playing board games in one photo
-      Good Tuple: "Cheese appreciation calls for proper tasting atmosphere. Eat the cheese board at Fromagination together, Emma?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Connects cheese interest to a tasting experience
-      - Activity (verb-first): ✓ Specific action verb "Eat" with proper venue
-      - Name: ✓ Name after "together" with comma and question mark
-      - Overall: ✓ Natural flow from bridge to activity suggestion
-      
-      Alternative Good Tuple: "Board games pair perfectly with specialty cheeses. Play Catan at Roll Play Lounge, Emma?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Connects both cheese interest and board game activity
-      - Activity (verb-first): ✓ Specific action verb "Play" with proper venue
-      - Name: ✓ Name after "together" with comma and question mark
-      - Overall: ✓ Incorporates both her interests in one cohesive suggestion
-
-    - Prompt: "I geek out on"
-      Response: "NBA, specifically golden state warriors" 
-      Photo context: Rock climbing at a gym
-      Good Tuple: "Sports fans understand physical challenges and competition. Climb some beginner routes at Boulders Climbing Gym with me, Jessica?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Links sports interest to physical activity challenges
-      - Activity (verb-first): ✓ Specific action verb "Climb" with proper venue
-      - Name: ✓ Name after "with me" with comma and question mark
-      - Overall: ✓ Natural flow connecting interest to relevant activity
-      
-      Alternative Good Tuple: "Basketball enthusiasts appreciate analysis. Watch the Bucks game at Sconnie Bar together, Jessica?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Links basketball interest to athletic appreciation
-      - Activity (verb-first): ✓ Specific action verb "Watch" with proper venue
-      - Name: ✓ Name after "together" with comma and question mark
-      - Overall: ✓ Focuses directly on her stated basketball interest
-
-    - Prompt: "Two truths and a lie..."
-      Response: "1) I have a scar on my hand from being bitten by a hamster 2) I wrote and directed a short film 3) I won a county-wide math competition in school"
-      Photo context: Kayaking on a lake
-      Good Tuple: "Creative people appreciate nature's peaceful inspiration too. Paddle a tandem kayak along Lake Mendota together, Sophia?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Connects creative identity to nature appreciation
-      - Activity (verb-first): ✓ Specific action verb "Paddle" with proper location
-      - Name: ✓ Name after "together" with comma and question mark
-      - Overall: ✓ Natural connection between creativity and peaceful outdoor activity
-      
-      Alternative Good Tuple: "Filmmaking requires observant eyes for detail. Explore film exhibits at Chazen Museum of Art with me, Sophia?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Connects to her filmmaking experience
-      - Activity (verb-first): ✓ Specific action verb "Explore" with proper venue
-      - Name: ✓ Name after "with me" with comma and question mark
-      - Overall: ✓ Focuses on her creative interest mentioned in her response
-
-    - Prompt: "What I order for the table"
-      Response: "Carbs, cheese and wine"
-      Photo context: Drinking at a bar
-      Good Tuple: "Wine enthusiasts deserve quality local venues for tasting. Drink a flight of reds at Eno Vino together, Mia?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Links wine interest to quality tasting experience
-      - Activity (verb-first): ✓ Specific action verb "Drink" with proper venue
-      - Name: ✓ Name after "together" with comma and question mark
-      - Overall: ✓ Direct connection between her preference and activity
-      
-      Alternative Good Tuple: "Cheese and wine create perfect flavor pairings. Sample charcuterie boards at Fromagination with me, Mia?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Links cheese and wine interests together
-      - Activity (verb-first): ✓ Specific action verb "Sample" with proper venue
-      - Name: ✓ Name after "with me" with comma and question mark
-      - Overall: ✓ Focuses on multiple aspects of her food preferences
-
-    - Prompt: "My simple pleasures"
-      Response: "Carbs, cheese, and wine"
-      Photo context: Playing board games
-      Good Tuple: "Wine perfectly complements friendly competition nights. Play Clue at Gamer's Library with me, Emily?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Connects wine to game night in logical way
-      - Activity (verb-first): ✓ Specific action verb "Play" with proper venue
-      - Name: ✓ Name after "with me" with comma and question mark
-      - Overall: ✓ Logical flow between interests and activity
-      
-      Alternative Good Tuple: "Carbs fuel long evenings of strategic thinking. Eat wood-fired pizza at Salvatore's Tomato Pies together, Emily?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Connects carb interest to strategic activities
-      - Activity (verb-first): ✓ Specific action verb "Eat" with proper venue
-      - Name: ✓ Name after "together" with comma and question mark
-      - Overall: ✓ Connects her food interest to a relevant dining experience
-
-    - Prompt: "The dorkiest thing about me is"
-      Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
-      Photo context: Hiking on a trail
-      Good Tuple: "History buffs need peaceful breaks from intensive studying. Hike at Picnic Point together, Ashley?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Connects history studying to need for breaks
-      - Activity (verb-first): ✓ Specific action verb "Hike" with proper location
-      - Name: ✓ Name after "together" with comma and question mark
-      - Overall: ✓ Logical connection between mental activity and physical break
-      
-      Alternative Good Tuple: "History comes alive through museum exhibits. Explore the Wisconsin Historical Museum with me, Ashley?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Connects history interest to interactive learning
-      - Activity (verb-first): ✓ Specific action verb "Explore" with proper venue
-      - Name: ✓ Name after "with me" with comma and question mark
-      - Overall: ✓ Directly relevant to her current studies in an engaging way
-
-    - Prompt: "The quickest way to my heart is"
-      Response: "Making me laugh and ice cream"
-      Photo context: At a park with friends
-      Good Tuple: "Ice cream is great for the summer. Taste different flavors at Chocolate Shoppe on State with me, Zoe?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Links ice cream interest to summer memory creation
-      - Activity (verb-first): ✓ Specific action verb "Taste" with proper venue
-      - Name: ✓ Name after "with me" with comma and question mark
-      - Overall: ✓ Direct connection to her mentioned interest
-      
-      Alternative Good Tuple: "Comedy shows guarantee laughter and good vibes. Watch standup at Comedy Club on State together, Zoe?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Connects to her interest in laughter
-      - Activity (verb-first): ✓ Specific action verb "Watch" with proper venue
-      - Name: ✓ Name after "together" with comma and question mark
-      - Overall: ✓ Focuses on her other stated interest effectively
-
-    - Prompt: "I'm weirdly attracted to"
-      Response: "Guys who can beat me at Mario Kart"
-      Photo context: At a party with friends
-      Good Tuple: "Gaming gets better with friendly competition and stakes. Race Mario Kart at Double Tap Beercade together, Megan?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Connects gaming to enhanced competition with stakes
-      - Activity (verb-first): ✓ Specific action verb "Race" with proper venue
-      - Name: ✓ Name after "together" with comma and question mark
-      - Overall: ✓ Perfect activity match for her stated interest
-      
-      Alternative Good Tuple: "Competitive gaming requires proper fuel and atmosphere. Drink craft beers at I/O Arcade Bar with me, Megan?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Links gaming competition to gaming venue atmosphere
-      - Activity (verb-first): ✓ Specific action verb "Drink" with proper venue
-      - Name: ✓ Name after "with me" with comma and question mark
-      - Overall: ✓ Gaming-adjacent activity that complements her interest
-
-    - Prompt: "A non-negotiable for me is"
-      Response: "Having a good book on the go at all times"
-      Photo context: Reading at a cafe
-      Good Tuple: "Book lovers love cozy literary spaces. Browse the fiction section at Lake City Books together, Lily?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Links reading interest to literary environment value
-      - Activity (verb-first): ✓ Specific action verb "Browse" with proper venue
-      - Name: ✓ Name after "together" with comma and question mark
-      - Overall: ✓ Natural extension of her reading interest
-      
-      Alternative Good Tuple: "Reading pairs perfectly with artisanal coffee flavors. Sip pour-overs at Colectivo Coffee with me, Lily?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Connects reading to complementary coffee experience
-      - Activity (verb-first): ✓ Specific action verb "Sip" with proper venue
-      - Name: ✓ Name after "with me" with comma and question mark
-      - Overall: ✓ Builds on context of reading at cafe from her photo
-
-    - Prompt: "The one thing I want to know about you is"
-      Response: "If you have a favorite hiking trail"
-      Photo context: Yoga on a beach
-      Good Tuple: "Nature lovers appreciate different outdoor experiences. Explore a trail at Devil's Lake State Park together, Hannah?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Connects hiking interest to broader outdoor experiences
-      - Activity (verb-first): ✓ Specific action verb "Explore" with proper location
-      - Name: ✓ Name after "together" with comma and question mark
-      - Overall: ✓ Direct response to her explicit interest in hiking trails
-      
-      Alternative Good Tuple: "Hiking enthusiasm translates well to yoga practice. Join outdoor yoga class at Olbrich Gardens with me, Hannah?"
-      Analysis:
-      - Bridge (6-9 words): ✓ Connects hiking interest to yoga activity
-      - Activity (verb-first): ✓ Specific action verb "Join" with proper venue
-      - Name: ✓ Name after "with me" with comma and question mark
-      - Overall: ✓ Incorporates both her stated interest and photo activity
-
-    BAD DATE SUGGESTION TUPLES:
-    - Prompt: "A random fact I love is"
-      Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight. And twilight is a fanfic of My Chemical Romance, and if 9/11 didn't happen, they wouldn't exist. It's weird I know"
-      Photo context: Woman at a bookstore
-      Bad Tuple: "Literary connections show your intellectual curiosity. Would you like to explore this fascinating domino effect at a bookstore with me, Kate?"
-      Analysis:
-      - Bridge: ✗ Too generic about "literary connections" without specificity
-      - Activity: ✗ Doesn't start with verb - uses "Would you like to" instead of direct verb
-      - Name: ✓ Name included with comma
-      - Overall: ✗ Vague connection and indirect verb structure
-
-    - Prompt: "A random fact I love is"
-      Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight. And twilight is a fanfic of My Chemical Romance, and if 9/11 didn't happen, they wouldn't exist. It's weird I know"
-      Photo context: Woman at a bookstore
-      Bad Tuple: "Literary connections show your intellectual curiosity. Let's explore this fascinating domino effect at a bookstore together, Kate?"
-      Analysis:
-      - Bridge: ✗ Too generic about "literary connections" without specificity
-      - Activity: ✗ Doesn't start with verb - uses "Let's" instead of direct verb
-      - Name: ✓ Name included with comma and question mark
-      - Overall: ✗ Vague connection and indirect verb structure
-
-    - Prompt: "The quickest way to my heart is"
-      Response: "Talking over ice cream/coffee"
-      Photo context: Woman at a cafe
-      Bad Tuple: "Deep conversations are better with sweet treats. Want to get some ice cream at Memorial Union and chat with me, Madison?"
-      Analysis:
-      - Bridge: ✓ Decent bridge connecting conversation and treats
-      - Activity: ✗ Doesn't start with verb - uses "Want to" instead of direct verb
-      - Name: ✓ Name included with comma
-      - Overall: ✗ Indirect verb structure makes it less concise and direct
-
-    - Prompt: "The quickest way to my heart is"
-      Response: "Talking over ice cream/coffee"
-      Photo context: Woman at a cafe
-      Bad Tuple: "Deep conversations are better with sweet treats. Let's get some ice cream at Memorial Union and chat, Madison?"
-      Analysis:
-      - Bridge: ✓ Decent bridge connecting conversation and treats
-      - Activity: ✗ Doesn't start with verb - uses "Let's" instead of direct verb
-      - Name: ✓ Name included with comma and question mark
-      - Overall: ✗ Indirect verb structure makes it less concise and direct
-
-    - Prompt: "My biggest date fail"
-      Response: "Going swimming in Lake Mendota and then cutting my foot on a piece of metal... the date ended because I had to go to Urgent Care for a tetanus shot 😜"
-      Photo context: Woman at a lake
-      Bad Tuple: "Adventure mishaps make for great stories to share. Would you like to try swimming in Lake Mendota again but safely together, Rachel?"
-      Analysis:
-      - Bridge: ✗ Frames negative experience as positive without clear justification
-      - Activity: ✗ Doesn't start with verb - uses "Would you like to" instead of direct verb
-      - Name: ✓ Name included with comma
-      - Overall: ✗ Suggests recreating a negative experience from her profile
-
-    - Prompt: "My best celebrity impression is..."
-      Response: "\"Why hello there,\" in my best Obi-Wan Kenobi voice and my friends hate it."
-      Photo context: Woman with friends
-      Bad Tuple: "Star Wars references reveal your fun pop culture side. Want to have a Star Wars marathon and practice impressions together, Sarah?"
-      Analysis:
-      - Bridge: ✗ Too generic about "pop culture" without specificity
-      - Activity: ✗ Doesn't start with verb - uses "Want to" instead of direct verb
-      - Name: ✓ Name included with comma
-      - Overall: ✗ Generic activity that's too long (movie marathon exceeds 90 minutes)
-
-    - Prompt: "My best celebrity impression is..."
-      Response: "\"Why hello there,\" in my best Obi-Wan Kenobi voice and my friends hate it."
-      Photo context: Woman with friends
-      Bad Tuple: "Star Wars references reveal your fun pop culture side. Let's have a Star Wars marathon and practice impressions together, Sarah?"
-      Analysis:
-      - Bridge: ✗ Too generic about "pop culture" without specificity
-      - Activity: ✗ Doesn't start with verb - uses "Let's" instead of direct verb
-      - Name: ✓ Name included with comma and question mark
-      - Overall: ✗ Activity is too long and non-specific
-
-    - Prompt: "A random fact I love is"
-      Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight. And twilight is a fanfic of My Chemical Romance, and if 9/11 didn't happen, they wouldn't exist. It's weird I know"
-      Photo context: Woman at a bookstore
-      Bad Tuple: "Literary connections show your intellectual curiosity. Would you like to explore this fascinating domino effect at a bookstore together, Kate?"
-      Analysis:
-      - Bridge: ✗ Too generic about "literary connections" without specificity
-      - Activity: ✗ Doesn't start with verb - uses "Would you like to" instead of direct verb
-      - Name: ✓ Name included with comma
-      - Overall: ✗ Vague connection and activity not well-defined
-
-    - Prompt: "The quickest way to my heart is"
-      Response: "Talking over ice cream/coffee"
-      Photo context: Woman at a cafe
-      Bad Tuple: "Deep conversations are better with sweet treats. Want to get some ice cream at Memorial Union together, Madison?"
-      Analysis:
-      - Bridge: ✓ Decent bridge between conversation and treats
-      - Activity: ✗ Doesn't start with verb - uses "Want to" instead of direct verb
-      - Name: ✓ Name included with comma
-      - Overall: ✗ Indirect verb structure makes it less concise
-
-    - Prompt: "I geek out on"
-      Response: "NBA, specifically golden state warriors" 
-      Photo context: Rock climbing at a gym
-      Bad Tuple: "Sports fans appreciate good competition and teamwork. Would you like to try some beginner routes at Boulders Climbing Gym with me, Jessica?"
-      Analysis:
-      - Bridge: ✓ Links sports interest to physical activity
-      - Activity: ✗ Doesn't start with verb - uses "Would you like to" instead of direct verb
-      - Name: ✓ Name included with comma
-      - Overall: ✗ Indirect verb structure makes it less concise and direct
-
-    - Prompt: "My biggest date fail"
-      Response: "Going swimming in Lake Mendota and then cutting my foot on a piece of metal... the date ended because I had to go to Urgent Care for a tetanus shot 😜"
-      Photo context: Woman at a lake
-      Bad Tuple: "Everyone has awkward date stories to share. Would you like to grab coffee at Colectivo together, Rachel?"
-      Analysis:
-      - Bridge: ✓ Reasonable bridge about shared experiences
-      - Activity: ✗ Doesn't start with verb - uses "Would you like to" instead of direct verb
-      - Name: ✓ Name included with comma
-      - Overall: ✗ Indirect verb structure and generic connection
-
-    - Prompt: "What I order for the table"
-      Response: "Carbs, cheese and wine"
-      Photo context: Woman at a bar
-      Bad Tuple: "Wine enthusiasts deserve quality local venues for tasting. Would you like to try a flight of reds at Eno Vino together, Mia?"
-      Analysis:
-      - Bridge: ✓ Links wine interest to quality tasting experience
-      - Activity: ✗ Doesn't start with verb - uses "Would you like to" instead of direct verb
-      - Name: ✓ Name included with comma
-      - Overall: ✗ Indirect verb structure makes it less concise
-
-    - Prompt: "A non-negotiable for me is"
-      Response: "Having a good book on the go at all times"
-      Photo context: Woman reading at a cafe
-      Bad Tuple: "Book lovers appreciate thoughtfully curated collections. Want to browse the fiction section at Lake City Books together, Lily?"
-      Analysis:
-      - Bridge: ✓ Links reading interest to literary environment value
-      - Activity: ✗ Doesn't start with verb - uses "Want to" instead of direct verb
-      - Name: ✓ Name included with comma
-      - Overall: ✗ Indirect verb structure makes it less direct and concise"""
-
-HOT_TOPICS_GENERATION = """STEP 8: GENERATE HOT TOPICS
-For each photo (there will be exactly 6 photos):
-1. Generate THREE unique hot topics (conversation starters) based on something interesting in each photo that could lead to a story:
-   a. First, identify concrete elements or activities in the photo that could lead to interesting conversation:
-      - Focus on elements that tell a story or suggest an experience:
-        * Activities she's engaged in
-           - Sporting events she's attending (e.g., a Packers game)
-           - Outdoor activities (hiking, kayaking, skiing)
-           - Travel destinations or landmarks
-           - Concerts or festivals
-           - Restaurants or food experiences
-        * Specific elements with story potential
-           - Unique locations or settings
-           - Interesting clothing items with potential context (team jerseys, event shirts)
-           - Seasonal activities (fall foliage hikes, winter sports)
-           - Cultural experiences (museums, international travel)
-           - Food or drinks that might have a story
-      - AVOID topics about:
-        * Other people in her photos - focus on HER experience
-        * Physical appearance compliments without story potential
-        * Vague personality traits like "adventurous" or "fun-loving"
-        * Generic questions that don't connect to specific photo elements
-        * Anything that focuses on how she looks rather than what she's doing
-      - The goal is to identify elements that could spark a story SHE would want to tell
-      - Focus on her real experiences visible in the photos, not abstract ideas
-      - Topics should be tangible things you can literally point to in the photo
-      - Each topic should have clear conversation potential beyond a simple answer
-   b. Turn these observations into direct conversation starters about specific topics
-      - Format: "I want to hear about [specific interesting element] from your [specific photo context] in person" or "I want to know [specific question about visible element] from your [specific photo context] firsthand"
+STORY_BASED_EXPLANATIONS = """STEP 7: GENERATE STORY-BASED EXPLANATIONS
+For each prompt/response pair (there will be exactly 3 pairs):
+1. For each of the 6 photos:
+   a. Identify THREE distinct elements in the photo:
+      - Setting/location (where the photo was taken)
+      - Activity/action (what she's doing in the photo)
+      - Notable items (specific clothes, accessories, equipment, etc.)
+   b. For each distinct element, create a story explanation that:
+      - Treats the prompt/response as representing a real story from her life
+      - Uses the photo element as a clue to understand this story
+      - Is phrased as a question or statement that invites her to elaborate
+      - Includes context explaining why you made this connection
+      - ALWAYS include her name immediately after referencing her photo (e.g., "I see in your hiking photo, Emma, that you enjoy...")
+      - Format: "[Question/statement about the story behind her prompt/response?] [Brief explanation connecting to the photo element, followed by her name]"
       - Examples:
-        * "I want to hear about that Packers game from your stadium photo in person"
-        * "I want to know where you got that vibrant team hat from your football photo firsthand"
-        * "I want to hear about how you handle cold outdoor sporting events from your bundled-up game photo in person"
-        * "I want to know which tattoo is your favorite from your beach photo firsthand"
-        * "I want to hear about why you chose that penguin costume from your Halloween photo in person"
-      - CRITICAL: The hot topic MUST be:
-        * Based on something specifically visible in the photo
-        * Focused on an experience or story she could elaborate on
-        * Simple and direct - no unnecessary words
-        * Always reference the specific photo context
-        * About HER experience, not about other people in the photo
-        * Something that would naturally lead to a back-and-forth conversation
-        * ALWAYS end with either "in person" or "firsthand"
+        * "Do you think certain drinks are for specific occasions? Like margaritas for parties and beer for casual nights? I see you tailor your drink to your night based on the beer in your bar photo, Sarah."
+        * "Do you think the key to a balanced weekend is both exercise and relaxation? I see you're running in one of your photos, Jessica, which suggests you value both activity and downtime."
+        * "Have you found that having the right gear makes all the difference in staying active? I spotted your running shoes in the photo, Emma - they look like they've seen some good miles."
+        * "Is the beach your go-to place to recharge, or do you have a different favorite spot? I noticed you seem comfortable at the beach in your photo, Alexis, wondering if that's your relaxation spot."
+        * Prompt: "I get along best with people who" 
+          Response: "Are kind and adventurous"
+          Photo element: Woman hiking on a mountain trail
+          Story explanation: "I think people who hike generally appreciate doing new things and are usually pretty nice. I see that you're hiking in one of your photos, Nicole, which explains why you value kindness and adventure in others."
+        * Prompt: "Typical Saturday" 
+          Response: "You can find me at a farmer's market"
+          Photo element: Woman dressed up for a night out
+          Story explanation: "I think you definitely have to make time for the special occasions in life. I see from your photo going out, Rachel, that you also make time for special occasions going out with friends, just like you do for farmers market Saturdays."
+
+2. This will result in 18 story explanations per prompt/response pair (3 elements × 6 photos), for a total of 54 story explanations (18 × 3 prompts).
    
-2. For each hot topic, make sure it's:
-   * COMPLETELY distinct from other hot topics for the same photo
-   * Based on different elements or activities in the same photo
-   * Focused on something she did or experienced (not just what she has)
-   * Easy for her to respond to with a story or explanation
-   * Natural and conversational
-   * Specific enough to show you paid attention to her photos
+3. Each story explanation MUST:
+   - Be based on a concrete, visible element in the photo (not assumptions about her personality)
+   - Connect logically to her prompt/response (not just random observations)
+   - Use natural, conversational language (avoid marketing-speak or overly formal language)
+   - Invite her to share more about her experiences or thoughts
+   - Include a specific reference to the photo element that inspired your question/statement
+   - ALWAYS include her name immediately after referencing her photo (this creates a personal connection and makes her more likely to engage)
+   - Be specific enough to show you paid attention to details
+   - Create a flattering but realistic image of her life
+   - Avoid making assumptions that aren't supported by the photos or prompt/response
 
-3. This will result in 18 total hot topics (3 for each of the 6 photos). Count the number of hot topics. Are there 18? If not, you need to go back and generate three hot topics per photo for a total of 18. Each hot topic MUST end with "in person" or "firsthand" - verify this for all 18.
+4. When creating story explanations:
+   - Focus on her real experiences visible in the photos
+   - Avoid generic personality traits like "adventurous" or "fun-loving"
+   - Don't focus on her appearance (focus on what she's doing, not how she looks)
+   - Create connections that feel natural, not forced
+   - Invite her to elaborate on the story behind her prompt/response
+   - Use the photo elements as clues to understand the context of her life
+   - Always use her name when referencing her photos (this psychologically increases her interest in the conversation)
+   - Imagine each prompt/response represents a real experience she's had
+   - Treat the conversation as a chance to learn more about her stories
+   - Make her feel understood and interesting, not analyzed or judged
 
-Examples of good vs bad HOT TOPICS:
+5. Count the number of story explanations you generate. Are there 54 total (18 per prompt)? If not, go back and generate more to reach this number."""
 
-GOOD HOT TOPICS:
-- Prompt: "My Love Language is"
-  Response: "Words of affirmation and cheese"
-  Photo context: Woman playing board games with friends
-  Good Hot Topic: "I want to hear about that board game from your game night photo in person."
-  Analysis:
-  - Interesting element: ✓ Focuses on a specific activity (board game)
-  - Story potential: ✓ Natural topic she can elaborate on
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Opens conversation about a real experience she had
-  
-  Alternative Good Hot Topic: "I want to know which board games you play most often from your game night photo firsthand."
-  Analysis:
-  - Interesting element: ✓ Focuses on her gaming preferences/experience
-  - Story potential: ✓ Invites her to share gaming preferences and experiences
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Centers on her interests rather than appearance
-
-- Prompt: "I geek out on"
-  Response: "NBA, specifically golden state warriors" 
-  Photo context: Woman rock climbing at a gym
-  Good Hot Topic: "I want to hear about your experience at that climbing gym from your photo in person."
-  Analysis:
-  - Interesting element: ✓ Focuses on a specific activity (climbing)
-  - Story potential: ✓ Natural topic she can elaborate on
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Opens conversation about a real experience she had
-  
-  Alternative Good Hot Topic: "I want to know how long you've been rock climbing from your gym photo firsthand."
-  Analysis:
-  - Interesting element: ✓ Focuses on her climbing experience/history
-  - Story potential: ✓ Invites her to share her journey with the activity
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Centers on her experiences rather than appearance
-
-- Prompt: "Two truths and a lie..."
-  Response: "1) I have a scar on my hand from being bitten by a hamster 2) I wrote and directed a short film 3) I won a county-wide math competition in school"
-  Photo context: Woman at the beach wearing a hat
-  Good Hot Topic: "I want to hear about that beach trip from your vacation photo in person."
-  Analysis:
-  - Interesting element: ✓ Focuses on a specific experience (beach trip)
-  - Story potential: ✓ Natural topic she can elaborate on
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Opens conversation about a real travel experience
-  
-  Alternative Good Hot Topic: "I want to know if that beach in your photo was local or somewhere you traveled to firsthand."
-  Analysis:
-  - Interesting element: ✓ Focuses on the location and travel aspect
-  - Story potential: ✓ Invites her to share travel experiences
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Centers on her experiences rather than appearance
-
-- Prompt: "What I order for the table"
-  Response: "Carbs, cheese and wine"
-  Photo context: Woman at a restaurant with food
-  Good Hot Topic: "I want to hear about that restaurant from your dining photo in person."
-  Analysis:
-  - Interesting element: ✓ Focuses on a specific location (restaurant)
-  - Story potential: ✓ Natural topic she can elaborate on
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Opens conversation about a real dining experience
-  
-  Alternative Good Hot Topic: "I want to know what dish you were eating in your restaurant photo firsthand."
-  Analysis:
-  - Interesting element: ✓ Focuses on food preferences/experiences
-  - Story potential: ✓ Invites her to share food experiences
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Centers on a concrete element in the photo
-
-- Prompt: "My simple pleasures"
-  Response: "Carbs, cheese, and wine"
-  Photo context: Woman at a vineyard/winery
-  Good Hot Topic: "I want to hear about that winery visit from your vineyard photo in person."
-  Analysis:
-  - Interesting element: ✓ Focuses on a specific experience (winery visit)
-  - Story potential: ✓ Natural topic she can elaborate on
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Opens conversation about a real experience she had
-  
-  Alternative Good Hot Topic: "I want to know if you've done many wine tastings from your vineyard photo firsthand."
-  Analysis:
-  - Interesting element: ✓ Focuses on her wine experiences
-  - Story potential: ✓ Invites her to share related experiences
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Centers on her experiences rather than appearance
-
-- Prompt: "The dorkiest thing about me is"
-  Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
-  Photo context: Woman hiking on a trail
-  Good Hot Topic: "I want to hear about that hiking trail from your outdoor photo in person."
-  Analysis:
-  - Interesting element: ✓ Focuses on a specific location (hiking trail)
-  - Story potential: ✓ Natural topic she can elaborate on
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Opens conversation about a real outdoor experience
-  
-  Alternative Good Hot Topic: "I want to know if that was a challenging hike from your trail photo firsthand."
-  Analysis:
-  - Interesting element: ✓ Focuses on the nature of the experience
-  - Story potential: ✓ Invites her to share details about the experience
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Centers on her experience rather than appearance
-
-- Prompt: "The quickest way to my heart is"
-  Response: "Making me laugh and ice cream"
-  Photo context: Woman at a sporting event
-  Good Hot Topic: "I want to hear about that game you attended in your stadium photo in person."
-  Analysis:
-  - Interesting element: ✓ Focuses on a specific event (sporting event)
-  - Story potential: ✓ Natural topic she can elaborate on
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Opens conversation about a real experience she had
-  
-  Alternative Good Hot Topic: "I want to know if you're a regular fan of that team from your stadium photo firsthand."
-  Analysis:
-  - Interesting element: ✓ Focuses on her sports interests/fandom
-  - Story potential: ✓ Invites her to share her connection to the team
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Centers on her interests rather than appearance
-
-- Prompt: "I'm weirdly attracted to"
-  Response: "Guys who can beat me at Mario Kart"
-  Photo context: Woman at a concert/music festival
-  Good Hot Topic: "I want to hear about that concert from your music venue photo in person."
-  Analysis:
-  - Interesting element: ✓ Focuses on a specific event (concert)
-  - Story potential: ✓ Natural topic she can elaborate on
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Opens conversation about a real music experience
-  
-  Alternative Good Hot Topic: "I want to know if that band is one of your favorites from your concert photo firsthand."
-  Analysis:
-  - Interesting element: ✓ Focuses on her music preferences
-  - Story potential: ✓ Invites her to share music interests
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Centers on her interests rather than appearance
-
-- Prompt: "Two truths and a lie..."
-  Response: "1) I have a scar on my hand from being bitten by a hamster 2) I wrote and directed a short film 3) I won a county-wide math competition in school"
-  Photo context: Woman with visible tattoo artwork on her arm
-  Good Hot Topic: "I want to hear about the story behind that artistic tattoo from your beach photo in person."
-  Analysis:
-  - Interesting element: ✓ Focuses on a distinctive personal choice (tattoo)
-  - Story potential: ✓ Natural topic with meaningful story potential
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Opens conversation about a deliberate choice she made
-  
-  Alternative Good Hot Topic: "I want to know which of your tattoos is your favorite from your beach photo firsthand."
-  Analysis:
-  - Interesting element: ✓ Focuses on her tattoo preferences/collection
-  - Story potential: ✓ Invites her to share meanings and choices
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Centers on her choices rather than appearance
-
-- Prompt: "The dorkiest thing about me is"
-  Response: "I'm currently studying all of world history to pass a teaching exam, help me out!"
-  Photo context: Woman in penguin costume at Halloween party
-  Good Hot Topic: "I want to hear about why you chose that penguin costume from your Halloween photo in person."
-  Analysis:
-  - Interesting element: ✓ Focuses on a fun costume choice with story potential
-  - Story potential: ✓ Natural topic she can elaborate on about her interests
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Opens conversation about a deliberate choice with personality
-  
-  Alternative Good Hot Topic: "I want to know if penguins are your favorite animal from your costume photo firsthand."
-  Analysis:
-  - Interesting element: ✓ Focuses on her preferences and interests
-  - Story potential: ✓ Invites her to share animal preferences and humor
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Centers on her choices that reflect personality
-
-- Prompt: "A non-negotiable for me is"
-  Response: "Having a good book on the go at all times"
-  Photo context: Woman at cafe with a book
-  Good Hot Topic: "I want to hear about that book you were reading in your cafe photo in person."
-  Analysis:
-  - Interesting element: ✓ Focuses on a specific item with story potential (book)
-  - Story potential: ✓ Natural topic she can elaborate on
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Opens conversation about her reading interests
-  
-  Alternative Good Hot Topic: "I want to know if that cafe is your favorite reading spot from your photo firsthand."
-  Analysis:
-  - Interesting element: ✓ Focuses on the location and activity
-  - Story potential: ✓ Invites her to share her reading habits
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Centers on her experiences rather than appearance
-
-- Prompt: "The one thing I want to know about you is"
-  Response: "If you have a favorite hiking trail"
-  Photo context: Woman at a festival or cultural event
-  Good Hot Topic: "I want to hear about that festival from your event photo in person."
-  Analysis:
-  - Interesting element: ✓ Focuses on a specific event (festival)
-  - Story potential: ✓ Natural topic she can elaborate on
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Opens conversation about a real cultural experience
-  
-  Alternative Good Hot Topic: "I want to know what was happening at that event in your festival photo firsthand."
-  Analysis:
-  - Interesting element: ✓ Focuses on the nature of the event
-  - Story potential: ✓ Invites her to share details about the experience
-  - Photo context: ✓ References specific photo context
-  - Overall: ✓ Centers on her experience rather than appearance
-
-BAD HOT TOPICS:
-- Prompt: "A random fact I love is"
-  Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight..."
-  Photo context: Woman at a bookstore
-  Bad Hot Topic: "I want to hear about your beautiful smile in your bookstore photo in person."
-  Analysis:
-  - Interesting element: ✗ Focuses on physical appearance, not an experience or story
-  - Story potential: ✗ Doesn't invite sharing of an experience
-  - Photo context: ✓ References specific photo context
-  - Overall: ✗ Focuses on appearance rather than something with story potential
-
-- Prompt: "A random fact I love is"
-  Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight..."
-  Photo context: Woman at a bookstore
-  Bad Hot Topic: "I want to know if you're always this photogenic in your photos firsthand."
-  Analysis:
-  - Interesting element: ✗ Focuses on general appearance, not specific elements
-  - Story potential: ✗ Generic compliment without conversation potential
-  - Photo context: ✗ Doesn't reference specific photo context
-  - Overall: ✗ Generic appearance comment without story potential
-
-- Prompt: "The quickest way to my heart is"
-  Response: "Talking over ice cream/coffee"
-  Photo context: Woman at a cafe
-  Bad Hot Topic: "I want to hear about your friend in the background of your cafe photo in person."
-  Analysis:
-  - Interesting element: ✗ Focuses on another person, not her experience
-  - Story potential: ✗ Shifts focus away from her
-  - Photo context: ✓ References specific photo context
-  - Overall: ✗ Focuses on other people rather than her experience
-
-- Prompt: "The quickest way to my heart is"
-  Response: "Talking over ice cream/coffee"
-  Photo context: Woman at a park with friends
-  Bad Hot Topic: "I want to hear about how adventurous you are from your park photo in person."
-  Analysis:
-  - Interesting element: ✗ Focuses on a vague personality trait
-  - Story potential: ✗ Too vague to spark specific conversation
-  - Photo context: ✓ References photo context but vaguely
-  - Overall: ✗ Vague personality assessment without specific story hook
-
-- Prompt: "My biggest date fail"
-  Response: "Going swimming in Lake Mendota and then cutting my foot on a piece of metal..."
-  Photo context: Woman at a lake
-  Bad Hot Topic: "I want to hear about how relaxed you are in your lake photo in person."
-  Analysis:
-  - Interesting element: ✗ Focuses on subjective state rather than concrete elements
-  - Story potential: ✗ Assumes emotional state without clear conversation path
-  - Photo context: ✓ References specific photo context
-  - Overall: ✗ Makes assumptions without specific story hook
-
-- Prompt: "My best celebrity impression is..."
-  Response: "\"Why hello there,\" in my best Obi-Wan Kenobi voice and my friends hate it."
-  Photo context: Woman with friends
-  Bad Hot Topic: "I want to hear about how fun and social you are from your friends photo in person."
-  Analysis:
-  - Interesting element: ✗ Focuses on vague personality trait
-  - Story potential: ✗ Too generic to spark interesting conversation
-  - Photo context: ✓ References photo context but vaguely
-  - Overall: ✗ Generic personality assessment without specific story hook
-
-- Prompt: "My best celebrity impression is..."
-  Response: "\"Why hello there,\" in my best Obi-Wan Kenobi voice and my friends hate it."
-  Photo context: Woman with friends
-  Bad Hot Topic: "I want to know if you're always the life of the party firsthand."
-  Analysis:
-  - Interesting element: ✗ Makes assumptions about personality
-  - Story potential: ✗ Too generic and assumptive
-  - Photo context: ✗ Doesn't reference specific photo context
-  - Overall: ✗ Makes assumptions without connecting to specific photo elements
-
-- Prompt: "A random fact I love is"
-  Response: "My favorite domino effect is that Fifty Shades of Grey is a fanfic of twilight..."
-  Photo context: Woman at a bookstore
-  Bad Hot Topic: "I want to know your thoughts on the literary merits of fan fiction firsthand."
-  Analysis:
-  - Interesting element: ✗ Derived from prompt/response, not photo elements
-  - Story potential: ✗ Abstract topic not grounded in her visible experiences
-  - Photo context: ✗ Doesn't connect to specific elements in the photo
-  - Overall: ✗ Intellectual discussion not based on photo experiences
-
-- Prompt: "The quickest way to my heart is"
-  Response: "Talking over ice cream/coffee"
-  Photo context: Woman at a cafe
-  Bad Hot Topic: "I want to know what you're thinking about in this moment firsthand."
-  Analysis:
-  - Interesting element: ✗ Focuses on internal thoughts, not visible elements
-  - Story potential: ✗ Vague question about mental state
-  - Photo context: ✗ Doesn't reference specific elements in photo
-  - Overall: ✗ Abstract question not grounded in visible experiences
-
-- Prompt: "I geek out on"
-  Response: "NBA, specifically golden state warriors" 
-  Photo context: Woman rock climbing at a gym
-  Bad Hot Topic: "I want to hear about how skilled you are at climbing in person."
-  Analysis:
-  - Interesting element: ✗ Makes assumptions about skill level
-  - Story potential: ✗ Framed as compliment rather than story prompt
-  - Photo context: ✓ References specific photo context
-  - Overall: ✗ Focuses on evaluation rather than experience sharing
-
-- Prompt: "My biggest date fail"
-  Response: "Going swimming in Lake Mendota and then cutting my foot on a piece of metal..."
-  Photo context: Woman at a lake
-  Bad Hot Topic: "I want to know why you chose to take this photo firsthand."
-  Analysis:
-  - Interesting element: ✗ Focuses on photo-taking rather than experience
-  - Story potential: ✗ Meta question about the photo itself
-  - Photo context: ✓ References photo but not specific elements
-  - Overall: ✗ Focuses on photo creation rather than experiences shown
-
-- Prompt: "What I order for the table"
-  Response: "Carbs, cheese and wine"
-  Photo context: Woman at a bar
-  Bad Hot Topic: "I want to hear about what the other people at your table ordered in person."
-  Analysis:
-  - Interesting element: ✗ Focuses on others, not her experience
-  - Story potential: ✗ Shifts focus away from her
-  - Photo context: ✓ References photo context
-  - Overall: ✗ Focuses on others rather than her experience
-
-- Prompt: "A non-negotiable for me is"
-  Response: "Having a good book on the go at all times"
-  Photo context: Woman reading at a cafe
-  Bad Hot Topic: "I want to know what kind of person spends time reading alone firsthand."
-  Analysis:
-  - Interesting element: ✗ Frames question as judgment about personality
-  - Story potential: ✗ Potentially off-putting framing
-  - Photo context: ✓ References photo context
-  - Overall: ✗ Judgmental tone without positive conversation potential"""
-
-EVALUATE_CONVERSATION_STARTER_TUPLES = """STEP 9: EVALUATE DATE SUGGESTION TUPLES
-For each of the NINE tuples (3 per prompt/response pair):
+EVALUATE_STORY_EXPLANATIONS = """STEP 8: EVALUATE STORY EXPLANATIONS
+For each of the 54 story explanations (18 per prompt/response pair):
 1. Conduct a simulated conversation:
    a. Message 1: Her prompt/response as the first message
-   b. Message 2: Your tuple (bridge + activity + name) as the response
+   b. Message 2: Your story explanation as the response
    c. Message 3: Imagine her most likely reply based on her profile characteristics
    d. Message 4: Your natural follow-up to continue the conversation
    e. Message 5: Her second response
 2. Evaluate based on these criteria:
    - How natural does this conversation flow?
    - Would this conversation be enjoyable for both parties?
-   - Does it offer a clear shared activity or experience?
+   - Does it invite her to share her experiences or thoughts?
    - Does it avoid sounding like marketing copy?
    - Is it free of unnecessary qualifiers and drama?
    - Is it easy for her to respond without requiring complex thinking?
-   - Does it show genuine interest in shared experiences?
+   - Does it show genuine interest in her stories?
    - Does it respect her intelligence without being pretentious?
-3. Rank each conversation on a scale of 1-10 for overall quality. Keep in mind if the conversation starter:
+   - Does it include her name after referencing her photo?
+3. Rank each conversation on a scale of 1-10 for overall quality. Keep in mind if the story explanation:
    - Uses the most natural, everyday language
    - Gets straight to the point
    - Shows interest through specificity, not enthusiasm
    - Creates easy conversation flow
    - Respects the complexity of her personality
    - Creates positive imagery or stories in her mind
-   Is between eight to ten words (wordy date suggestions are penalized).
-4. Re-validate the location of the establishment and if it is responding to a poll prompt in your conversation starter tuple:
-   - CRITICAL: Location validation - FOLLOW THESE STEPS CAREFULLY:
-      * Carefully scan your conversation starter for ANY specific venue or business name (e.g., "Brocach", "Barriques", "Eno Vino")
-      * If you find one, check if it appears EXACTLY as written in the locations.txt file
-      * Search through the ENTIRE locations.txt file - check every category
-      * If the exact name is not in locations.txt, IMMEDIATELY DISQUALIFY this starter
-      * Replace it with a starter that either uses a generic venue type (e.g., "coffee shop downtown") or uses a venue from locations.txt
-      * Do NOT use similar spellings or variations - match EXACTLY what's in locations.txt
-      * This validation is MANDATORY - never return a starter with an unverified location
-   - CRITICAL: POLL VALIDATION CHECK - FOLLOW THESE STEPS CAREFULLY:
-      * Review the prompt you selected for your best conversation starter
-      * Check if this prompt appears in hingePolls.txt
-      * If it does, this is a poll prompt and MUST NOT be used for conversation starters
-      * If you selected a poll prompt, immediately disqualify it and select a different one from the three valid prompt/response pairs
-      * A valid prompt must NOT be in hingePolls.txt
-      * There are always exactly three non-poll prompts in every profile - ensure you've selected one of these
-5. Count the number of ratings you have. Are there nine? If not, you need to go back and rate all the conversation starter tuples you already have for a total of nine.
-6. Select the single best conversation starter tuple ranked highest by you.
-"""
+   - Feels like a natural reaction to her prompt/response
+   - Makes a connection that feels genuine, not forced
+   - Includes her name after photo references
+   - Avoids sounding "sales-y" or overly enthusiastic
+   - Avoids making unfounded assumptions about her
+4. Count the number of ratings you have. Are there 54? If not, you need to go back and rate all the story explanations you already have.
+5. For each prompt/response pair, select the single best story explanation ranked highest by you (3 total, 1 per prompt).
 
-EVALUATE_HOT_TOPICS = """STEP 10: EVALUATE HOT TOPICS
-For each of the 18 hot topics (3 per photo):
-1. Conduct a simulated conversation:
-   a. Imagine adding this hot topic to a standard date suggestion
-   b. Message 1: Her receiving the full message with this hot topic
-   c. Message 2: Imagine her most likely reply based on profile characteristics
-   d. Message 3: Your natural follow-up based on her reply
-2. Evaluate based on these criteria:
-   - Does the hot topic invite her to share a specific experience?
-   - Is it easy for her to respond to with a story or explanation?
-   - Does it clearly reference something specific in her photos?
-   - Does it focus on her rather than other people in the photo?
-   - Would it spark a natural conversation with back-and-forth potential?
-   - Does it show you paid attention to details in her photos?
-   - Does it avoid being too generic or applicable to anyone?
-   - Would it lead to an interesting exchange rather than a one-word answer?
-3. Rank each hot topic on a scale of 1-10 for overall quality. Make sure that the hot topic:
-   - Focuses on her real experiences shown in photos
-   - References something concrete and specific
-   - Is direct and clear without requiring interpretation
-   - Uses simple, straightforward language
-   - Shows genuine interest in her experiences or activities
-   - Creates an opening for her to tell a story
-   - Penalize topics that focus on appearance rather than experiences
-   - Verify it ends with either "in person" or "firsthand"
-4. Count the number of ratings you have. Are there 18? If not, you need to go back and rate all the hot topics you already have for a total of 18.
-5. Select the single best hot topic ranked highest by you.
-   """
+Examples of good story explanation evaluations:
 
-COMBINE_COMPONENTS = """STEP 11: COMBINE TUPLE AND HOT TOPIC
-1. Take the winning tuple from Step 9
-   - This includes the bridge, activity suggestion, and name with question mark
-2. Take the winning hot topic from Step 10
-   - This includes a direct question about something interesting in her photo
-3. Combine them in this exact format:
-   "[Bridge. Activity suggestion with me, NAME? [Hot Topic]."
-4. Verify that the combined message flows naturally
-5. Ensure the hot topic remains completely separate from the activity suggestion
-6. The final conversation starter should be approximately 25-35 words in total"""
+GOOD STORY EXPLANATION EVALUATION:
+- Prompt: "What I order for the table"
+  Response: "Margaritas"
+  Photo element: Woman drinking a beer at a bar
+  Story explanation: "Do you think certain drinks are for specific occasions? Like margaritas for parties and beer for casual nights? I see you tailor your drink to your night based on the beer in your bar photo, Emma."
+  Simulated conversation:
+  * Her: "What I order for the table: Margaritas"
+  * You: "Do you think certain drinks are for specific occasions? Like margaritas for parties and beer for casual nights? I see you tailor your drink to your night based on the beer in your bar photo, Emma."
+  * Her: "Haha yeah, definitely! Margaritas are for when I'm out with the girls, beer is for casual hangouts."
+  * You: "I'm the same way! What's your go-to spot for margaritas in Madison?"
+  * Her: "I love Canteen for margaritas! Their spicy ones are amazing. Have you been there?"
+  Analysis:
+  - Natural flow: ✓ Conversation develops organically
+  - Enjoyable: ✓ Light-hearted topic about preferences
+  - Invites sharing: ✓ She elaborates on her drinking habits
+  - Language: ✓ Casual, everyday speech patterns
+  - Name usage: ✓ Includes her name after photo reference
+  - Ease of response: ✓ Simple topic she can easily engage with
+  - Genuine interest: ✓ Shows interest in her preferences
+  - Overall: 9/10 - Creates a natural conversation about her real habits
 
-IDENTIFY_SCREENSHOT = """STEP 12: IDENTIFY SCREENSHOT
-1. Note which screenshot contains the prompt/response pair text of the woman's profile that matches the chosen starter
+- Prompt: "Typical Sunday"
+  Response: "Coffee, then run, then couch"
+  Photo element: Woman running in a race
+  Story explanation: "Do you think the key to a balanced weekend is both exercise and relaxation? I see you're running in one of your photos, Sarah, which suggests you value both activity and downtime."
+  Simulated conversation:
+  * Her: "Typical Sunday: Coffee, then run, then couch"
+  * You: "Do you think the key to a balanced weekend is both exercise and relaxation? I see you're running in one of your photos, Sarah, which suggests you value both activity and downtime."
+  * Her: "Absolutely! I need that balance - the run gives me energy and the couch time helps me recharge for the week."
+  * You: "I find that balance important too. Do you have a favorite running route in Madison?"
+  * Her: "I love running around the Arboretum! It's beautiful year-round. Do you run too?"
+  Analysis:
+  - Natural flow: ✓ Builds on her routine in a thoughtful way
+  - Enjoyable: ✓ Positive topic about lifestyle choices
+  - Invites sharing: ✓ She explains her philosophy about balance
+  - Language: ✓ Conversational and relatable
+  - Name usage: ✓ Includes her name after photo reference
+  - Ease of response: ✓ Connects to something she clearly values
+  - Genuine interest: ✓ Shows understanding of her lifestyle
+  - Overall: 8/10 - Creates meaningful conversation about her routine
+
+- Prompt: "I get along best with people who" 
+  Response: "Are kind and adventurous"
+  Photo element: Woman hiking on a mountain trail
+  Story explanation: "I think people who hike generally appreciate doing new things and are usually pretty nice. I see that you're hiking in one of your photos, Jessica, which explains why you value kindness and adventure in others."
+  Simulated conversation:
+  * Her: "I get along best with people who: Are kind and adventurous"
+  * You: "I think people who hike generally appreciate doing new things and are usually pretty nice. I see that you're hiking in one of your photos, Jessica, which explains why you value kindness and adventure in others."
+  * Her: "That's actually spot on! Most of my hiking friends are the kindest people I know, and we're always planning new adventures together."
+  * You: "Have you done any hiking around Madison? I've heard Devil's Lake has some great trails."
+  * Her: "Yes! Devil's Lake is one of my favorites - I try to go at least once each season. The East Bluff trail has the best views. Do you hike too?"
+  Analysis:
+  - Natural flow: ✓ Makes a concrete observation without exaggeration
+  - Enjoyable: ✓ Positive but realistic connection between activities and values
+  - Invites sharing: ✓ She confirms the observation and adds personal context
+  - Language: ✓ Simple, everyday speech without marketing terms
+  - Name usage: ✓ Includes her name after photo reference
+  - Ease of response: ✓ Straightforward observation she can easily respond to
+  - Genuine interest: ✓ Shows understanding of how activities reflect values
+  - Overall: 9/10 - Creates natural conversation about real interests and values
+
+- Prompt: "Typical Saturday" 
+  Response: "You can find me at a farmer's market"
+  Photo element: Woman dressed up for a night out
+  Story explanation: "I think you definitely have to make time for the special occasions in life. I see from your photo going out, Alexis, that you also make time for special occasions going out with friends, just like you do for farmers market Saturdays."
+  Simulated conversation:
+  * Her: "Typical Saturday: You can find me at a farmer's market"
+  * You: "I think you definitely have to make time for the special occasions in life. I see from your photo going out, Alexis, that you also make time for special occasions going out with friends, just like you do for farmers market Saturdays."
+  * Her: "Yes! I'm big on having regular things to look forward to - whether it's picking up fresh produce or getting dressed up for dinner with friends."
+  * You: "Which farmer's market do you usually go to? I've been to the one on the Square a few times."
+  * Her: "The Capitol Square one is my favorite! I love getting Stella's spicy cheese bread first thing - have you tried it? It's a Madison must-have."
+  Analysis:
+  - Natural flow: ✓ Makes a direct observation about her activities
+  - Enjoyable: ✓ Positive focus on her lifestyle choices without exaggeration
+  - Invites sharing: ✓ She elaborates on her philosophy about special occasions
+  - Language: ✓ Straightforward and conversational
+  - Name usage: ✓ Includes her name after photo reference
+  - Ease of response: ✓ Simple observation she can easily confirm or add to
+  - Genuine interest: ✓ Shows understanding of her priorities
+  - Overall: 8/10 - Creates meaningful conversation about her regular activities
+
+BAD STORY EXPLANATION EVALUATION:
+- Prompt: "What I order for the table"
+  Response: "Margaritas"
+  Photo element: Woman at a bar
+  Story explanation: "I can tell you're the life of the party with amazing taste in drinks! Your vibrant personality must make you the perfect host!"
+  Simulated conversation:
+  * Her: "What I order for the table: Margaritas"
+  * You: "I can tell you're the life of the party with amazing taste in drinks! Your vibrant personality must make you the perfect host!"
+  * Her: "Haha thanks"
+  * You: "So do you host a lot of parties? You seem like someone who knows how to have a good time!"
+  * Her: "Sometimes I guess"
+  Analysis:
+  - Natural flow: ✗ Overly enthusiastic and assumptive
+  - Enjoyable: ✗ Makes unfounded assumptions about her personality
+  - Invites sharing: ✗ Leads to short, uncomfortable responses
+  - Language: ✗ Uses marketing-style language ("amazing," "perfect")
+  - Name usage: ✗ Fails to include her name after mentioning her personality
+  - Ease of response: ✗ Puts her in position of confirming/denying assumptions
+  - Genuine interest: ✗ Focuses on imagined traits, not real experiences
+  - Overall: 3/10 - Creates awkward conversation based on assumptions
+
+- Prompt: "Typical Sunday"
+  Response: "Coffee, then run, then couch"
+  Photo element: Woman running
+  Story explanation: "Wow, I'm so impressed by your dedication to fitness! You must be incredibly disciplined to maintain such a perfect balance in life!"
+  Simulated conversation:
+  * Her: "Typical Sunday: Coffee, then run, then couch"
+  * You: "Wow, I'm so impressed by your dedication to fitness! You must be incredibly disciplined to maintain such a perfect balance in life!"
+  * Her: "Thanks, I just enjoy running."
+  * You: "That's amazing! What other fitness activities are you passionate about?"
+  * Her: "Just running mostly."
+  Analysis:
+  - Natural flow: ✗ Overly enthusiastic and assumptive
+  - Enjoyable: ✗ Puts her on a pedestal rather than connecting
+  - Invites sharing: ✗ Leads to short, defensive responses
+  - Language: ✗ Uses marketing-style language ("impressed," "perfect")
+  - Name usage: ✗ Doesn't reference her photo specifically or include her name
+  - Ease of response: ✗ Creates awkward dynamic
+  - Genuine interest: ✗ Focuses on admiration, not understanding
+  - Overall: 2/10 - Creates uncomfortable conversation with poor flow
+
+- Prompt: "I get along best with people who" 
+  Response: "Are kind and adventurous"
+  Photo element: Woman hiking on a mountain trail
+  Story explanation: "Wow! You must be such an incredibly adventurous spirit with a heart of gold! Your amazing hiking photo shows you're someone who truly embodies the perfect balance of daring and compassion!"
+  Simulated conversation:
+  * Her: "I get along best with people who: Are kind and adventurous"
+  * You: "Wow! You must be such an incredibly adventurous spirit with a heart of gold! Your amazing hiking photo shows you're someone who truly embodies the perfect balance of daring and compassion!"
+  * Her: "Haha, thanks. I just enjoy hiking and try to be nice to people."
+  * You: "That's so amazing! What other absolutely incredible adventures have you conquered? I bet you have the most inspirational stories!"
+  * Her: "Just normal stuff really. Some camping, occasional day hikes."
+  Analysis:
+  - Natural flow: ✗ Overly enthusiastic and exaggerated
+  - Enjoyable: ✗ Creates discomfort through excessive praise
+  - Invites sharing: ✗ Leads to downplaying and short responses
+  - Language: ✗ Marketing-speak ("incredibly," "amazing," "perfect balance")
+  - Name usage: ✗ Mentions photo but fails to include her name
+  - Ease of response: ✗ Creates pressure to live up to exaggerated image
+  - Genuine interest: ✗ Focuses on admiration, not understanding
+  - Overall: 2/10 - Creates uncomfortable conversation through excessive enthusiasm
+
+- Prompt: "Typical Saturday" 
+  Response: "You can find me at a farmer's market"
+  Photo element: Woman dressed up for a night out
+  Story explanation: "Do you use your sophisticated taste from fancy nights out to select the finest produce? Your elegant photo suggests you bring a refined palate to everything you do!"
+  Simulated conversation:
+  * Her: "Typical Saturday: You can find me at a farmer's market"
+  * You: "Do you use your sophisticated taste from fancy nights out to select the finest produce? Your elegant photo suggests you bring a refined palate to everything you do!"
+  * Her: "I just like fresh vegetables and supporting local farms."
+  * You: "That's fantastic! I bet you create the most gourmet farm-to-table cuisine with your carefully curated selections!"
+  * Her: "Not really. I just make simple meals with fresh ingredients."
+  Analysis:
+  - Natural flow: ✗ Makes assumptions that don't match her actual interests
+  - Enjoyable: ✗ Creates a pretentious image she doesn't identify with
+  - Invites sharing: ✗ Leads to corrections rather than elaboration
+  - Language: ✗ Formal and pretentious ("sophisticated taste," "refined palate")
+  - Name usage: ✗ References photo but doesn't include her name
+  - Ease of response: ✗ Forces her to correct inaccurate assumptions
+  - Genuine interest: ✗ Focuses on imagined traits, not her actual values
+  - Overall: 3/10 - Creates awkward conversation based on mismatched assumptions"""
+
+SELECT_BEST_STORY_EXPLANATION = """STEP 9: SELECT BEST OVERALL STORY EXPLANATION
+1. Take the three best story explanations (one for each prompt/response pair) from Step 8
+2. Compare them based on these additional criteria:
+   - Which creates the most natural conversation flow?
+   - Which feels most like a genuine response to her prompt?
+   - Which creates the best opportunity for her to share a real story?
+   - Which has the most balanced, conversational tone?
+   - Which makes the most authentic connection between her prompt and photos?
+   - Which avoids assumptions while still being perceptive?
+   - Which would make her feel most understood?
+   - Which uses her name effectively after referencing her photo?
+3. Select the single best story explanation from the three finalists
+4. This will be your final conversation starter
+
+Example of good final selection analysis:
+
+FINAL SELECTION ANALYSIS:
+- Finalist 1: "Do you think certain drinks are for specific occasions? Like margaritas for parties and beer for casual nights? I see you tailor your drink to your night based on the beer in your bar photo, Melissa."
+  - Strengths: Natural question, concrete observation, easy to respond to, includes name after photo reference
+  - Weaknesses: Slightly more surface-level than other options
+  - Conversation quality: 9/10
+
+- Finalist 2: "Do you think the key to a balanced weekend is both exercise and relaxation? I see you're running in one of your photos, Taylor, which suggests you value both activity and downtime."
+  - Strengths: Thoughtful observation, shows understanding of her values, includes name after photo reference
+  - Weaknesses: Slightly more generic than other options
+  - Conversation quality: 8/10
+
+- Finalist 3: "I think people who hike generally appreciate doing new things and are usually pretty nice. I see that you're hiking in one of your photos, Madison, which explains why you value kindness and adventure in others."
+  - Strengths: Direct observation, connects photo to stated values, authentic tone, includes name after photo reference
+  - Weaknesses: None significant
+  - Conversation quality: 9/10
+
+Selected finalist: #3 - This story explanation creates an authentic connection between her values and visible activities. It's straightforward but insightful, inviting her to share more about her hiking experiences and how they connect to her preference for kind and adventurous people. The natural inclusion of her name after mentioning her photo creates a personal touch that will increase her engagement."""
+
+IDENTIFY_SCREENSHOT = """STEP 10: IDENTIFY SCREENSHOT
+1. Note which screenshot contains the prompt/response pair text of the woman's profile that matches the chosen story explanation
 2. If prompt/response pair is cut off or spans multiple screenshots, note which screenshot contains the majority of the prompt/response pair text"""
 
-FINAL_VALIDATION_CHECK = """STEP 13: FINAL VALIDATION CHECK
+FINAL_VALIDATION_CHECK = """STEP 11: FINAL VALIDATION CHECK
 Before returning your result, perform one last critical check:
-1. Review your conversation_starter one more time
-2. If it mentions ANY specific venue name:
-   - Verify that this EXACT venue name appears in locations.txt
-   - If it doesn't match EXACTLY (including spelling), modify your starter to use a generic venue type instead
-   - This is your LAST chance to avoid mentioning venues not in locations.txt
-3. Double-check that your selected starter follows all the guidelines and passes all validation checks"""
+1. Review your story explanation one more time
+2. Ensure it:
+   - Is based on a concrete, visible element in her photo
+   - Makes a logical connection to her prompt/response
+   - Uses natural, conversational language
+   - Invites her to share more about her experiences or thoughts
+   - Includes a specific reference to the photo element
+   - Creates a flattering but realistic image of her life
+   - Avoids making assumptions not supported by her photos or prompt
+   - Feels like a genuine response to her prompt
+3. This is your LAST chance to ensure your story explanation is authentic and engaging"""
 
 # New shared prompt component for desirability-only path
 ENDING_DESIREABILITY_ONLY = """If the woman is desirable (doesn't meet any undesirable traits in Step 4), return the following JSON exactly, where prompt, response, and conversation_starter are empty strings, and screenshot_index is 0:
@@ -2015,15 +1439,11 @@ def generate_bumble_reply_from_screenshots(screenshots, format_txt_path, prompts
 
     {COMPILE_CHARACTERISTICS}
 
-    {CONVERSATION_STARTER_TUPLES_GENERATION}
+    {STORY_BASED_EXPLANATIONS}
 
-    {HOT_TOPICS_GENERATION}
+    {EVALUATE_STORY_EXPLANATIONS}
 
-    {EVALUATE_CONVERSATION_STARTER_TUPLES}
-
-    {EVALUATE_HOT_TOPICS}
-
-    {COMBINE_COMPONENTS}
+    {SELECT_BEST_STORY_EXPLANATION}
 
     {IDENTIFY_SCREENSHOT}
 
@@ -2194,15 +1614,11 @@ def generate_hinge_reply_from_screenshots(screenshots, format_txt_path, prompts_
 
     {COMPILE_CHARACTERISTICS}
 
-    {CONVERSATION_STARTER_TUPLES_GENERATION}
+    {STORY_BASED_EXPLANATIONS}
 
-    {HOT_TOPICS_GENERATION}
+    {EVALUATE_STORY_EXPLANATIONS}
 
-    {EVALUATE_CONVERSATION_STARTER_TUPLES}
-
-    {EVALUATE_HOT_TOPICS}
-
-    {COMBINE_COMPONENTS}
+    {SELECT_BEST_STORY_EXPLANATION}
 
     {IDENTIFY_SCREENSHOT}
 
