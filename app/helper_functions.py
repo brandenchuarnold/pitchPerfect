@@ -1031,17 +1031,28 @@ For each prompt/response pair (there will be exactly 3 pairs):
       - Format: "[Question/statement about the story behind her prompt/response?] [Brief explanation connecting to the photo element, followed by her name]"
       - Examples:
         * "Do you think certain drinks are for specific occasions? Like margaritas for parties and beer for casual nights? I see you tailor your drink to your night based on the beer in your bar photo, Sarah."
+          WHY THIS WORKS: This makes a thoughtful connection between two different drink choices (beer in the photo vs. margaritas in the prompt). It creates a story where she consciously chooses different drinks for different occasions - margaritas when ordering for a group because they're festive, but beer for more casual settings as seen in her photo. The connection feels natural because many people do have different "go-to" drinks for different social contexts.
+        
         * "Do you think the key to a balanced weekend is both exercise and relaxation? I see you're running in one of your photos, Jessica, which suggests you value both activity and downtime."
+          WHY THIS WORKS: This takes the concrete element of her running in the photo and connects it to her prompt about a Sunday routine involving exercise and relaxation. It suggests her routine isn't random but a deliberate lifestyle choice reflecting her understanding that balance is important. The photo provides evidence that she actually does run regularly, making this a genuine rather than assumed connection.
+        
         * "Have you found that having the right gear makes all the difference in staying active? I spotted your running shoes in the photo, Emma - they look like they've seen some good miles."
+          WHY THIS WORKS: This focuses on a specific item (running shoes) and connects it to her routine that includes running. Instead of making generic assumptions about her personality, it creates a story where she's thoughtful about her equipment choices, suggesting she's experienced enough as a runner to care about proper gear. The worn shoes indicate this isn't just a casual hobby but something she does regularly.
+        
         * "Is the beach your go-to place to recharge, or do you have a different favorite spot? I noticed you seem comfortable at the beach in your photo, Alexis, wondering if that's your relaxation spot."
+          WHY THIS WORKS: This observation connects the setting of her photo (beach) with the concept of relaxation/recharging, which ties to many prompt responses about personal time or self-care. Rather than assuming she loves beaches, it frames it as a genuine question about whether this is one of multiple places she goes to unwind, creating space for her to share more about her relaxation preferences.
+        
         * Prompt: "I get along best with people who" 
           Response: "Are kind and adventurous"
           Photo element: Woman hiking on a mountain trail
           Story explanation: "I think people who hike generally appreciate doing new things and are usually pretty nice. I see that you're hiking in one of your photos, Nicole, which explains why you value kindness and adventure in others."
+          WHY THIS WORKS: This makes a logical connection between her stated values (kindness and adventure) and her visible activity (hiking). It suggests her preference for these traits in others stems from her own experiences in hiking communities, where people tend to help each other and embrace new experiences. Instead of making abstract assumptions about her personality, it ties her stated values to concrete experiences visible in her photos.
+        
         * Prompt: "Typical Saturday" 
           Response: "You can find me at a farmer's market"
           Photo element: Woman dressed up for a night out
           Story explanation: "I think you definitely have to make time for the special occasions in life. I see from your photo going out, Rachel, that you also make time for special occasions going out with friends, just like you do for farmers market Saturdays."
+          WHY THIS WORKS: This creates a thoughtful connection between two seemingly different activities - regular farmer's market visits and getting dressed up for nights out. Instead of focusing just on one or the other, it identifies a pattern of making time for different types of enjoyable experiences, suggesting she's someone who creates balance in her social life. The observation about "making time" for different activities creates a story about how she deliberately structures her lifestyle.
 
 2. This will result in 18 story explanations per prompt/response pair (3 elements × 6 photos), for a total of 54 story explanations (18 × 3 prompts).
    
@@ -1067,8 +1078,19 @@ For each prompt/response pair (there will be exactly 3 pairs):
    - Imagine each prompt/response represents a real experience she's had
    - Treat the conversation as a chance to learn more about her stories
    - Make her feel understood and interesting, not analyzed or judged
+   - Draw connections that show insight without overreaching - connect what you can actually see to what she's actually said
 
-5. Count the number of story explanations you generate. Are there 54 total (18 per prompt)? If not, go back and generate more to reach this number."""
+5. CRITICAL: Understanding the creative process behind good story explanations:
+   - The best story explanations identify patterns between the prompt and photo element that reveal something about her real life
+   - For example, connecting beer in a bar photo with a prompt about ordering margaritas reveals that she likely tailors her drink choices to different occasions
+   - Look for contrasts that tell a story: if she mentions running on Sundays but is dressed up in a photo, this suggests she balances different aspects of her life
+   - Notice specific items (running shoes, specific clothing, equipment) that indicate regular participation in activities mentioned in her prompts
+   - The goal is to imagine the actual story behind each prompt - not just what she wrote, but the real-life experiences that led her to write it
+   - Use visible elements in photos as evidence to support your interpretation of these stories
+   - Create explanations that feel like natural observations rather than reaching or forced connections
+   - When you connect photo elements to prompts, explain why that connection makes sense in a way that feels conversational and insightful
+
+6. Count the number of story explanations you generate. Are there 54 total (18 per prompt)? If not, go back and generate more to reach this number."""
 
 EVALUATE_STORY_EXPLANATIONS = """STEP 8: EVALUATE STORY EXPLANATIONS
 For each of the 54 story explanations (18 per prompt/response pair):
