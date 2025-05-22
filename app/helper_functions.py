@@ -1025,47 +1025,58 @@ For each prompt/response pair (there will be exactly 3 pairs):
    b. For each distinct element, create a story explanation that:
       - Treats the prompt/response as representing a real story from her life
       - Uses the photo element as a clue to understand this story
-      - Is phrased as a question or statement that invites her to elaborate
-      - Includes context explaining why you made this connection
-      - ALWAYS include her name immediately after referencing her photo (e.g., "I see in your hiking photo, Emma, that you enjoy...")
+      - CONSISTS OF TWO PARTS: 
+         1. A QUESTION/STATEMENT (8-10 WORDS ONLY)
+         2. CONTEXT EXPLANATION (10-15 WORDS ONLY)
+      - ALWAYS include her name immediately after referencing her photo in the context explanation (e.g., "I see in your hiking photo, Emma, that you enjoy...")
+      - IMPORTANT: The question/statement MUST COME FIRST, followed by the context explanation
       - Format: "[Question/statement about the story behind her prompt/response?] [Brief explanation connecting to the photo element, followed by her name]"
+      - CRITICAL: The question/statement MUST be able to stand completely on its own without requiring the context explanation to be understood
+      - CRITICAL: NEVER use information from one prompt to explain another prompt - each prompt is a completely separate story
       - Examples:
-        * "Do you think certain drinks are for specific occasions? Like margaritas for parties and beer for casual nights? I see you tailor your drink to your night based on the beer in your bar photo, Sarah."
-          WHY THIS WORKS: This makes a thoughtful connection between two different drink choices (beer in the photo vs. margaritas in the prompt). It creates a story where she consciously chooses different drinks for different occasions - margaritas when ordering for a group because they're festive, but beer for more casual settings as seen in her photo. The connection feels natural because many people do have different "go-to" drinks for different social contexts.
+        * Prompt: "Together we could"
+          Response: "Play Civ6 although not good at it" 
+          Photo element: Woman at a concert
+          Story explanation: "Do you agree that gaming and concerts both hype you up? I see that you went to a concert in your photo, Sarah."
+          WHY THIS WORKS: This makes a thoughtful connection between gaming (Civ6 from her prompt) and concerts (from her photo) by identifying the shared element of "hype" or excitement they both generate. Rather than just noting indoor vs. outdoor activities, it identifies a specific emotional experience common to both. The question stands on its own and would make sense even without context, while the second part simply provides evidence that you've looked at her photos. The statement is 10 words, and the context is 12 words, making it concise yet meaningful.
         
-        * "Do you think the key to a balanced weekend is both exercise and relaxation? I see you're running in one of your photos, Jessica, which suggests you value both activity and downtime."
-          WHY THIS WORKS: This takes the concrete element of her running in the photo and connects it to her prompt about a Sunday routine involving exercise and relaxation. It suggests her routine isn't random but a deliberate lifestyle choice reflecting her understanding that balance is important. The photo provides evidence that she actually does run regularly, making this a genuine rather than assumed connection.
+        * "Do exercise and relaxation create perfect weekends? I notice you're running in your beach photo, Jessica, which creates nice balance."
+          WHY THIS WORKS: This takes the concrete element of her running in the photo and connects it to her prompt about a Sunday routine involving exercise and relaxation. It suggests her routine isn't random but a deliberate lifestyle choice reflecting her understanding that balance is important. The photo provides evidence that she actually does run regularly, making this a genuine rather than assumed connection. The statement is 7 words, and the context is 13 words.
         
-        * "Have you found that having the right gear makes all the difference in staying active? I spotted your running shoes in the photo, Emma - they look like they've seen some good miles."
-          WHY THIS WORKS: This focuses on a specific item (running shoes) and connects it to her routine that includes running. Instead of making generic assumptions about her personality, it creates a story where she's thoughtful about her equipment choices, suggesting she's experienced enough as a runner to care about proper gear. The worn shoes indicate this isn't just a casual hobby but something she does regularly.
+        * "Does proper gear make all outdoor activities better? I spotted quality running shoes in your photo, Emma, they look well-used."
+          WHY THIS WORKS: This focuses on a specific item (running shoes) and connects it to her routine that includes running. Instead of making generic assumptions about her personality, it creates a story where she's thoughtful about her equipment choices, suggesting she's experienced enough as a runner to care about proper gear. The worn shoes indicate this isn't just a casual hobby but something she does regularly. The statement is 8 words, and the context is 13 words.
         
-        * "Is the beach your go-to place to recharge, or do you have a different favorite spot? I noticed you seem comfortable at the beach in your photo, Alexis, wondering if that's your relaxation spot."
-          WHY THIS WORKS: This observation connects the setting of her photo (beach) with the concept of relaxation/recharging, which ties to many prompt responses about personal time or self-care. Rather than assuming she loves beaches, it frames it as a genuine question about whether this is one of multiple places she goes to unwind, creating space for her to share more about her relaxation preferences.
+        * "Is the beach your favorite recharging spot? You seem comfortable by the ocean in your photos, Alexis."
+          WHY THIS WORKS: This observation connects the setting of her photo (beach) with the concept of relaxation/recharging, which ties to many prompt responses about personal time or self-care. Rather than assuming she loves beaches, it frames it as a genuine question about whether this is one of multiple places she goes to unwind, creating space for her to share more about her relaxation preferences. The statement is 6 words, and the context is 11 words.
         
         * Prompt: "I get along best with people who" 
           Response: "Are kind and adventurous"
           Photo element: Woman hiking on a mountain trail
-          Story explanation: "I think people who hike generally appreciate doing new things and are usually pretty nice. I see that you're hiking in one of your photos, Nicole, which explains why you value kindness and adventure in others."
-          WHY THIS WORKS: This makes a logical connection between her stated values (kindness and adventure) and her visible activity (hiking). It suggests her preference for these traits in others stems from her own experiences in hiking communities, where people tend to help each other and embrace new experiences. Instead of making abstract assumptions about her personality, it ties her stated values to concrete experiences visible in her photos.
+          Story explanation: "Do hikers value kindness and new experiences? You're hiking on trails in your mountain photos, Nicole."
+          WHY THIS WORKS: This makes a logical connection between her stated values (kindness and adventure) and her visible activity (hiking). It suggests her preference for these traits in others stems from her own experiences in hiking communities, where people tend to help each other and embrace new experiences. Instead of making abstract assumptions about her personality, it ties her stated values to concrete experiences visible in her photos. The statement is 7 words, and the context is 12 words.
         
         * Prompt: "Typical Saturday" 
           Response: "You can find me at a farmer's market"
           Photo element: Woman dressed up for a night out
-          Story explanation: "I think you definitely have to make time for the special occasions in life. I see from your photo going out, Rachel, that you also make time for special occasions going out with friends, just like you do for farmers market Saturdays."
-          WHY THIS WORKS: This creates a thoughtful connection between two seemingly different activities - regular farmer's market visits and getting dressed up for nights out. Instead of focusing just on one or the other, it identifies a pattern of making time for different types of enjoyable experiences, suggesting she's someone who creates balance in her social life. The observation about "making time" for different activities creates a story about how she deliberately structures her lifestyle.
+          Story explanation: "Are farmers markets and nights out both special occasions? You make time for dressing up to go out in your photo, Rachel."
+          WHY THIS WORKS: This creates a thoughtful connection between two activities - farmer's market visits and getting dressed up for nights out - viewing both as special occasions she values. Instead of contrasting them, it identifies a pattern of making time for different types of enjoyable experiences, suggesting she's someone who deliberately structures her lifestyle around meaningful activities. The observation about "special occasions" creates a story about how she prioritizes experiences in her life. The statement is 9 words, and the context is 14 words.
 
-2. This will result in 18 story explanations per prompt/response pair (3 elements × 6 photos), for a total of 54 story explanations (18 × 3 prompts).
+2. For each prompt/response pair, you will need to generate story explanations based on elements identified in her photos.
    
 3. Each story explanation MUST:
+   - FOLLOW THE EXACT STRUCTURE: Question/statement (8-10 words) FIRST, then context explanation (10-15 words)
+   - Ensure the question/statement STANDS COMPLETELY ON ITS OWN - it must be fully understandable without the context explanation
+   - The context explanation should only provide background on how you connected to the photo, not essential information needed to understand the question
    - Be based on a concrete, visible element in the photo (not assumptions about her personality)
-   - Connect logically to her prompt/response (not just random observations)
+   - Connect logically to her prompt/response for THIS PROMPT ONLY (never use other prompts as context)
    - Use natural, conversational language (avoid marketing-speak or overly formal language)
    - Invite her to share more about her experiences or thoughts
    - Include a specific reference to the photo element that inspired your question/statement
-   - ALWAYS include her name immediately after referencing her photo (this creates a personal connection and makes her more likely to engage)
+   - ALWAYS include her name immediately after referencing her photo (this creates a personal connection)
    - Be specific enough to show you paid attention to details
    - Create a flattering but realistic image of her life
    - Avoid making assumptions that aren't supported by the photos or prompt/response
+   - CONTAIN GENUINE CONTRAST when discussing "balance" (e.g., indoor/outdoor, work/play, active/relaxing)
 
 4. When creating story explanations:
    - Focus on her real experiences visible in the photos
@@ -1074,11 +1085,11 @@ For each prompt/response pair (there will be exactly 3 pairs):
    - Create connections that feel natural, not forced
    - Invite her to elaborate on the story behind her prompt/response
    - Use the photo elements as clues to understand the context of her life
-   - Always use her name when referencing her photos (this psychologically increases her interest in the conversation)
+   - Always use her name when referencing her photos (this psychologically increases her interest)
    - Imagine each prompt/response represents a real experience she's had
    - Treat the conversation as a chance to learn more about her stories
    - Make her feel understood and interesting, not analyzed or judged
-   - Draw connections that show insight without overreaching - connect what you can actually see to what she's actually said
+   - NEVER use information from one prompt to explain another prompt
 
 5. CRITICAL: Understanding the creative process behind good story explanations:
    - The best story explanations identify patterns between the prompt and photo element that reveal something about her real life
@@ -1089,8 +1100,40 @@ For each prompt/response pair (there will be exactly 3 pairs):
    - Use visible elements in photos as evidence to support your interpretation of these stories
    - Create explanations that feel like natural observations rather than reaching or forced connections
    - When you connect photo elements to prompts, explain why that connection makes sense in a way that feels conversational and insightful
+   - BAD EXAMPLE: "I notice you're into gaming based on your Sunday routine and Civ6 mention." - This is bad because it combines information from multiple prompts instead of treating each prompt as its own story
 
-6. Count the number of story explanations you generate. Are there 54 total (18 per prompt)? If not, go back and generate more to reach this number."""
+6. FOR THE FIRST PROMPT/RESPONSE PAIR:
+   a. For each of the 6 photos, identify 3 DISTINCT ELEMENTS (distinct from each other within this photo)
+   b. For each element, create a story explanation following the format above
+   c. This will generate 18 story explanations for this prompt (3 elements × 6 photos = 18)
+   d. Count the number of story explanations for this first prompt. Do you have 18? If not, go back and continue finding elements and creating story explanations until you reach 18.
+
+7. FOR THE SECOND PROMPT/RESPONSE PAIR:
+   a. For each of the 6 photos, identify 3 DISTINCT ELEMENTS (distinct from each other within this photo)
+   b. NOTE: These elements CAN be the same ones you used for the first prompt - they only need to be distinct within each photo's analysis for this prompt
+   c. For each element, create a story explanation following the format above
+   d. This will generate 18 story explanations for this prompt (3 elements × 6 photos = 18)
+   e. Count the number of story explanations for this second prompt. Do you have 18? If not, go back and continue finding elements and creating story explanations until you reach 18.
+
+8. FOR THE THIRD PROMPT/RESPONSE PAIR:
+   a. For each of the 6 photos, identify 3 DISTINCT ELEMENTS (distinct from each other within this photo)
+   b. NOTE: These elements CAN be the same ones you used for the first or second prompts - they only need to be distinct within each photo's analysis for this prompt
+   c. For each element, create a story explanation following the format above
+   d. This will generate 18 story explanations for this prompt (3 elements × 6 photos = 18)
+   e. Count the number of story explanations for this third prompt. Do you have 18? If not, go back and continue finding elements and creating story explanations until you reach 18.
+
+9. You should now have:
+   - 18 story explanations for the first prompt
+   - 18 story explanations for the second prompt
+   - 18 story explanations for the third prompt
+   - TOTAL: 54 story explanations
+
+10. Review all story explanations to ensure:
+   - Each one is exactly 8-10 words for the question/statement
+   - Each one is exactly 10-15 words for the context explanation
+   - The question/statement ALWAYS comes FIRST
+   - The context explanation ALWAYS comes SECOND
+   - No information from other prompts is used to explain the current prompt"""
 
 EVALUATE_STORY_EXPLANATIONS = """STEP 8: EVALUATE STORY EXPLANATIONS
 For each of the 54 story explanations (18 per prompt/response pair):
@@ -1101,6 +1144,12 @@ For each of the 54 story explanations (18 per prompt/response pair):
    d. Message 4: Your natural follow-up to continue the conversation
    e. Message 5: Her second response
 2. Evaluate based on these criteria:
+   - Is the structure correct? (Question/statement FIRST, context explanation SECOND)
+   - Can the question/statement STAND COMPLETELY ON ITS OWN without requiring the context explanation?
+   - Is the question/statement exactly 8-10 words?
+   - Is the context explanation exactly 10-15 words?
+   - Does the context explanation only provide background, not essential information?
+   - Does it avoid using information from other prompts?
    - How natural does this conversation flow?
    - Would this conversation be enjoyable for both parties?
    - Does it invite her to share her experiences or thoughts?
@@ -1110,7 +1159,9 @@ For each of the 54 story explanations (18 per prompt/response pair):
    - Does it show genuine interest in her stories?
    - Does it respect her intelligence without being pretentious?
    - Does it include her name after referencing her photo?
+   - Does it present genuine contrast when discussing balance (e.g., indoor/outdoor activities)?
 3. Rank each conversation on a scale of 1-10 for overall quality. Keep in mind if the story explanation:
+   - Has a question/statement that STANDS COMPLETELY ON ITS OWN without requiring context
    - Uses the most natural, everyday language
    - Gets straight to the point
    - Shows interest through specificity, not enthusiasm
@@ -1122,6 +1173,9 @@ For each of the 54 story explanations (18 per prompt/response pair):
    - Includes her name after photo references
    - Avoids sounding "sales-y" or overly enthusiastic
    - Avoids making unfounded assumptions about her
+   - Has the CORRECT STRUCTURE (question/statement first, context second)
+   - Has the CORRECT WORD COUNT (8-10 words for question/statement, 10-15 words for context)
+   - DOES NOT use information from other prompts
 4. Count the number of ratings you have. Are there 54? If not, you need to go back and rate all the story explanations you already have.
 5. For each prompt/response pair, select the single best story explanation ranked highest by you (3 total, 1 per prompt).
 
@@ -1131,34 +1185,41 @@ GOOD STORY EXPLANATION EVALUATION:
 - Prompt: "What I order for the table"
   Response: "Margaritas"
   Photo element: Woman drinking a beer at a bar
-  Story explanation: "Do you think certain drinks are for specific occasions? Like margaritas for parties and beer for casual nights? I see you tailor your drink to your night based on the beer in your bar photo, Emma."
+  Story explanation: "Do you enjoy different drinks for different occasions? I see you enjoying a beer in your bar photo, Emma."
   Simulated conversation:
   * Her: "What I order for the table: Margaritas"
-  * You: "Do you think certain drinks are for specific occasions? Like margaritas for parties and beer for casual nights? I see you tailor your drink to your night based on the beer in your bar photo, Emma."
-  * Her: "Haha yeah, definitely! Margaritas are for when I'm out with the girls, beer is for casual hangouts."
+  * You: "Do you enjoy different drinks for different occasions? I see you enjoying a beer in your bar photo, Emma."
+  * Her: "Absolutely! Margaritas when I'm out with friends, beer for casual nights."
   * You: "I'm the same way! What's your go-to spot for margaritas in Madison?"
   * Her: "I love Canteen for margaritas! Their spicy ones are amazing. Have you been there?"
   Analysis:
+  - Structure: ✓ Question first (8 words), context second (10 words)
+  - Word count: ✓ Question within 8-10 word limit, context within 10-15 word limit
+  - No cross-prompt info: ✓ Only uses information from this prompt
   - Natural flow: ✓ Conversation develops organically
   - Enjoyable: ✓ Light-hearted topic about preferences
   - Invites sharing: ✓ She elaborates on her drinking habits
   - Language: ✓ Casual, everyday speech patterns
   - Name usage: ✓ Includes her name after photo reference
   - Ease of response: ✓ Simple topic she can easily engage with
+  - Question stands alone: ✓ The question about enjoying different drinks makes complete sense without the context
   - Genuine interest: ✓ Shows interest in her preferences
   - Overall: 9/10 - Creates a natural conversation about her real habits
 
 - Prompt: "Typical Sunday"
   Response: "Coffee, then run, then couch"
   Photo element: Woman running in a race
-  Story explanation: "Do you think the key to a balanced weekend is both exercise and relaxation? I see you're running in one of your photos, Sarah, which suggests you value both activity and downtime."
+  Story explanation: "Do exercise and relaxation create perfect weekends? I notice you're running in your race photo, Sarah, which creates nice balance."
   Simulated conversation:
   * Her: "Typical Sunday: Coffee, then run, then couch"
-  * You: "Do you think the key to a balanced weekend is both exercise and relaxation? I see you're running in one of your photos, Sarah, which suggests you value both activity and downtime."
+  * You: "Do exercise and relaxation create perfect weekends? I notice you're running in your race photo, Sarah, which creates nice balance."
   * Her: "Absolutely! I need that balance - the run gives me energy and the couch time helps me recharge for the week."
   * You: "I find that balance important too. Do you have a favorite running route in Madison?"
   * Her: "I love running around the Arboretum! It's beautiful year-round. Do you run too?"
   Analysis:
+  - Structure: ✓ Question first (7 words), context second (13 words)
+  - Word count: ✓ Question within 8-10 word limit, context within 10-15 word limit
+  - No cross-prompt info: ✓ Only uses information from this prompt
   - Natural flow: ✓ Builds on her routine in a thoughtful way
   - Enjoyable: ✓ Positive topic about lifestyle choices
   - Invites sharing: ✓ She explains her philosophy about balance
@@ -1171,14 +1232,17 @@ GOOD STORY EXPLANATION EVALUATION:
 - Prompt: "I get along best with people who" 
   Response: "Are kind and adventurous"
   Photo element: Woman hiking on a mountain trail
-  Story explanation: "I think people who hike generally appreciate doing new things and are usually pretty nice. I see that you're hiking in one of your photos, Jessica, which explains why you value kindness and adventure in others."
+  Story explanation: "Do hikers value kindness and new experiences? You're hiking on trails in your mountain photos, Nicole."
   Simulated conversation:
   * Her: "I get along best with people who: Are kind and adventurous"
-  * You: "I think people who hike generally appreciate doing new things and are usually pretty nice. I see that you're hiking in one of your photos, Jessica, which explains why you value kindness and adventure in others."
+  * You: "Do hikers value kindness and new experiences? You're hiking on trails in your mountain photos, Nicole."
   * Her: "That's actually spot on! Most of my hiking friends are the kindest people I know, and we're always planning new adventures together."
   * You: "Have you done any hiking around Madison? I've heard Devil's Lake has some great trails."
   * Her: "Yes! Devil's Lake is one of my favorites - I try to go at least once each season. The East Bluff trail has the best views. Do you hike too?"
   Analysis:
+  - Structure: ✓ Question first (7 words), context second (12 words)
+  - Word count: ✓ Question within 8-10 word limit, context within 10-15 word limit
+  - No cross-prompt info: ✓ Only uses information from this prompt
   - Natural flow: ✓ Makes a concrete observation without exaggeration
   - Enjoyable: ✓ Positive but realistic connection between activities and values
   - Invites sharing: ✓ She confirms the observation and adds personal context
@@ -1191,14 +1255,17 @@ GOOD STORY EXPLANATION EVALUATION:
 - Prompt: "Typical Saturday" 
   Response: "You can find me at a farmer's market"
   Photo element: Woman dressed up for a night out
-  Story explanation: "I think you definitely have to make time for the special occasions in life. I see from your photo going out, Alexis, that you also make time for special occasions going out with friends, just like you do for farmers market Saturdays."
+  Story explanation: "Are farmers markets and nights out both special occasions? You make time for dressing up to go out in your photo, Rachel."
   Simulated conversation:
   * Her: "Typical Saturday: You can find me at a farmer's market"
-  * You: "I think you definitely have to make time for the special occasions in life. I see from your photo going out, Alexis, that you also make time for special occasions going out with friends, just like you do for farmers market Saturdays."
+  * You: "Are farmers markets and nights out both special occasions? You make time for dressing up to go out in your photo, Rachel."
   * Her: "Yes! I'm big on having regular things to look forward to - whether it's picking up fresh produce or getting dressed up for dinner with friends."
   * You: "Which farmer's market do you usually go to? I've been to the one on the Square a few times."
   * Her: "The Capitol Square one is my favorite! I love getting Stella's spicy cheese bread first thing - have you tried it? It's a Madison must-have."
   Analysis:
+  - Structure: ✓ Question first (9 words), context second (13 words)
+  - Word count: ✓ Question within 8-10 word limit, context within 10-15 word limit
+  - No cross-prompt info: ✓ Only uses information from this prompt
   - Natural flow: ✓ Makes a direct observation about her activities
   - Enjoyable: ✓ Positive focus on her lifestyle choices without exaggeration
   - Invites sharing: ✓ She elaborates on her philosophy about special occasions
@@ -1209,25 +1276,25 @@ GOOD STORY EXPLANATION EVALUATION:
   - Overall: 8/10 - Creates meaningful conversation about her regular activities
 
 BAD STORY EXPLANATION EVALUATION:
-- Prompt: "What I order for the table"
-  Response: "Margaritas"
-  Photo element: Woman at a bar
-  Story explanation: "I can tell you're the life of the party with amazing taste in drinks! Your vibrant personality must make you the perfect host!"
+- Prompt: "Together we could"
+  Response: "Play Civ6 although not good at it"
+  Photo element: Woman at a concert
+  Story explanation: "I notice you're into gaming based on your Sunday routine and Civ6 mention. I see in your concert photo, Shuying, that you enjoy going out for music events too. Is that the perfect balance - gaming at home and occasional outings for special events?"
   Simulated conversation:
-  * Her: "What I order for the table: Margaritas"
-  * You: "I can tell you're the life of the party with amazing taste in drinks! Your vibrant personality must make you the perfect host!"
-  * Her: "Haha thanks"
-  * You: "So do you host a lot of parties? You seem like someone who knows how to have a good time!"
-  * Her: "Sometimes I guess"
+  * Her: "Together we could: Play Civ6 although not good at it"
+  * You: "I notice you're into gaming based on your Sunday routine and Civ6 mention. I see in your concert photo, Shuying, that you enjoy going out for music events too. Is that the perfect balance - gaming at home and occasional outings for special events?"
+  * Her: "Um, yeah I guess so..."
+  * You: "What other games do you enjoy besides Civ6?"
+  * Her: "Just that one really. I'm still learning."
   Analysis:
-  - Natural flow: ✗ Overly enthusiastic and assumptive
-  - Enjoyable: ✗ Makes unfounded assumptions about her personality
-  - Invites sharing: ✗ Leads to short, uncomfortable responses
-  - Language: ✗ Uses marketing-style language ("amazing," "perfect")
-  - Name usage: ✗ Fails to include her name after mentioning her personality
-  - Ease of response: ✗ Puts her in position of confirming/denying assumptions
-  - Genuine interest: ✗ Focuses on imagined traits, not real experiences
-  - Overall: 3/10 - Creates awkward conversation based on assumptions
+  - Structure: ✗ Question comes last instead of first
+  - Word count: ✗ Far exceeds word limits for both parts
+  - No cross-prompt info: ✗ References "Sunday routine" from a different prompt
+  - Natural flow: ✗ Conversation feels awkward due to too much information
+  - Enjoyable: ✗ Too much analysis makes it feel like an interrogation
+  - Invites sharing: ✗ She gives short replies due to overwhelm
+  - Language: ✗ Too analytical rather than conversational
+  - Overall: 2/10 - Creates awkward conversation based on mismatched assumptions
 
 - Prompt: "Typical Sunday"
   Response: "Coffee, then run, then couch"
@@ -1240,6 +1307,9 @@ BAD STORY EXPLANATION EVALUATION:
   * You: "That's amazing! What other fitness activities are you passionate about?"
   * Her: "Just running mostly."
   Analysis:
+  - Structure: ✗ No clear question/statement first, just enthusiastic reactions
+  - Word count: ✗ Doesn't follow the required structure or word count
+  - No cross-prompt info: ✓ Only uses information from this prompt
   - Natural flow: ✗ Overly enthusiastic and assumptive
   - Enjoyable: ✗ Puts her on a pedestal rather than connecting
   - Invites sharing: ✗ Leads to short, defensive responses
@@ -1260,6 +1330,9 @@ BAD STORY EXPLANATION EVALUATION:
   * You: "That's so amazing! What other absolutely incredible adventures have you conquered? I bet you have the most inspirational stories!"
   * Her: "Just normal stuff really. Some camping, occasional day hikes."
   Analysis:
+  - Structure: ✗ No clear question/statement first, just enthusiastic reactions
+  - Word count: ✗ Doesn't follow the required structure or word count
+  - No cross-prompt info: ✓ Only uses information from this prompt
   - Natural flow: ✗ Overly enthusiastic and exaggerated
   - Enjoyable: ✗ Creates discomfort through excessive praise
   - Invites sharing: ✗ Leads to downplaying and short responses
@@ -1272,26 +1345,34 @@ BAD STORY EXPLANATION EVALUATION:
 - Prompt: "Typical Saturday" 
   Response: "You can find me at a farmer's market"
   Photo element: Woman dressed up for a night out
-  Story explanation: "Do you use your sophisticated taste from fancy nights out to select the finest produce? Your elegant photo suggests you bring a refined palate to everything you do!"
+  Story explanation: "Do you find farmers markets good for meeting different people? Your elegant photo shows you appreciate connecting at various venues, Natalie."
   Simulated conversation:
   * Her: "Typical Saturday: You can find me at a farmer's market"
-  * You: "Do you use your sophisticated taste from fancy nights out to select the finest produce? Your elegant photo suggests you bring a refined palate to everything you do!"
-  * Her: "I just like fresh vegetables and supporting local farms."
-  * You: "That's fantastic! I bet you create the most gourmet farm-to-table cuisine with your carefully curated selections!"
-  * Her: "Not really. I just make simple meals with fresh ingredients."
+  * You: "Do you find farmers markets good for meeting different people? Your elegant photo shows you appreciate connecting at various venues, Natalie."
+  * Her: "I just like fresh vegetables and supporting local farms. I don't really go to meet people."
+  * You: "That's great! Which farmer's market do you usually visit? I love the one downtown for their local honey."
+  * Her: "I go to the Capitol Square market. The produce selection is amazing."
   Analysis:
+  - Structure: ✓ Question first, context second
+  - Word count: ✓ Question (9 words), context (12 words)
+  - Question stands alone: ✗ Makes an assumption about her intention for going to farmers markets (meeting people)
+  - No cross-prompt info: ✓ Only uses information from this prompt
   - Natural flow: ✗ Makes assumptions that don't match her actual interests
-  - Enjoyable: ✗ Creates a pretentious image she doesn't identify with
+  - Enjoyable: ✗ Creates a social butterfly image she doesn't identify with
   - Invites sharing: ✗ Leads to corrections rather than elaboration
-  - Language: ✗ Formal and pretentious ("sophisticated taste," "refined palate")
-  - Name usage: ✗ References photo but doesn't include her name
-  - Ease of response: ✗ Forces her to correct inaccurate assumptions
-  - Genuine interest: ✗ Focuses on imagined traits, not her actual values
-  - Overall: 3/10 - Creates awkward conversation based on mismatched assumptions"""
+  - Language: ✓ More natural than previous example
+  - Name usage: ✓ Includes her name after photo reference
+  - Ease of response: ✗ Forces her to correct incorrect assumptions about her intentions
+  - Genuine interest: ✗ Focuses on assumed social motivations, not her actual values
+  - Overall: 4/10 - Creates conversation based on mismatched assumptions about her motivations"""
 
 SELECT_BEST_STORY_EXPLANATION = """STEP 9: SELECT BEST OVERALL STORY EXPLANATION
 1. Take the three best story explanations (one for each prompt/response pair) from Step 8
 2. Compare them based on these additional criteria:
+   - Which has a question/statement that STANDS COMPLETELY ON ITS OWN without requiring context?
+   - Which follows the correct structure (question/statement first, context second)?
+   - Which has the correct word count (8-10 words for question/statement, 10-15 words for context)?
+   - Which avoids using information from other prompts?
    - Which creates the most natural conversation flow?
    - Which feels most like a genuine response to her prompt?
    - Which creates the best opportunity for her to share a real story?
@@ -1300,28 +1381,39 @@ SELECT_BEST_STORY_EXPLANATION = """STEP 9: SELECT BEST OVERALL STORY EXPLANATION
    - Which avoids assumptions while still being perceptive?
    - Which would make her feel most understood?
    - Which uses her name effectively after referencing her photo?
+   - Which presents genuine contrast when discussing balance (indoor/outdoor, work/play)?
 3. Select the single best story explanation from the three finalists
 4. This will be your final conversation starter
 
 Example of good final selection analysis:
 
 FINAL SELECTION ANALYSIS:
-- Finalist 1: "Do you think certain drinks are for specific occasions? Like margaritas for parties and beer for casual nights? I see you tailor your drink to your night based on the beer in your bar photo, Melissa."
+- Finalist 1: "Do you enjoy different drinks for different occasions? I see you enjoying a beer in your bar photo, Emma."
+  - Structure: ✓ Question first (8 words), context second (10 words)
+  - Word count: ✓ Question within 8-10 word limit, context within 10-15 word limit
+  - Question stands alone: ✓ Question is completely understandable without context
+  - No cross-prompt info: ✓ Only uses information from this prompt
   - Strengths: Natural question, concrete observation, easy to respond to, includes name after photo reference
   - Weaknesses: Slightly more surface-level than other options
   - Conversation quality: 9/10
 
-- Finalist 2: "Do you think the key to a balanced weekend is both exercise and relaxation? I see you're running in one of your photos, Taylor, which suggests you value both activity and downtime."
+- Finalist 2: "Is balance the key to a perfect weekend? Your photos show both exercise and relaxation time, Taylor."
+  - Structure: ✓ Question first (8 words), context second (10 words)
+  - Word count: ✓ Question within 8-10 word limit, context within 10-15 word limit
+  - No cross-prompt info: ✓ Only uses information from this prompt
   - Strengths: Thoughtful observation, shows understanding of her values, includes name after photo reference
   - Weaknesses: Slightly more generic than other options
   - Conversation quality: 8/10
 
-- Finalist 3: "I think people who hike generally appreciate doing new things and are usually pretty nice. I see that you're hiking in one of your photos, Madison, which explains why you value kindness and adventure in others."
+- Finalist 3: "Do hikers value kindness and new experiences? You're hiking on trails in your mountain photos, Madison."
+  - Structure: ✓ Question first (7 words), context second (12 words)
+  - Word count: ✓ Question within 8-10 word limit, context within 10-15 word limit
+  - No cross-prompt info: ✓ Only uses information from this prompt
   - Strengths: Direct observation, connects photo to stated values, authentic tone, includes name after photo reference
   - Weaknesses: None significant
   - Conversation quality: 9/10
 
-Selected finalist: #3 - This story explanation creates an authentic connection between her values and visible activities. It's straightforward but insightful, inviting her to share more about her hiking experiences and how they connect to her preference for kind and adventurous people. The natural inclusion of her name after mentioning her photo creates a personal touch that will increase her engagement."""
+Selected finalist: #3 - This story explanation creates an authentic connection between her values and visible activities. It's straightforward but insightful, inviting her to share more about her hiking experiences and how they connect to her preference for kind and adventurous people. The natural inclusion of her name after mentioning her photo creates a personal touch that will increase her engagement. It also perfectly follows the required structure and word count."""
 
 IDENTIFY_SCREENSHOT = """STEP 10: IDENTIFY SCREENSHOT
 1. Note which screenshot contains the prompt/response pair text of the woman's profile that matches the chosen story explanation
