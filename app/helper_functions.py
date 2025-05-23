@@ -918,27 +918,14 @@ UNDESIRABLE_TRAITS_CHECK = """STEP 4: CHECK FOR UNDESIRABLE TRAITS
 Analyze ONLY the main person (not other people in photos) for these traits:
 
 1. Body Type Analysis (CRITICAL - Mark as undesirable if ANY of these are true):
-   a. Body Shape Indicators:
-      - Body width appears wider than typical fit/skinny woman
-      - Visible stomach protrusion that extends beyond the waistline (bulging out)
-      - Face shape is rounder with less defined jawline
-      - Full-body photos show larger body size than average fit/skinny woman
-      - Arms/legs show significant fat accumulation compared to wrists/ankles
-      - No visible muscle or bone definition in arms/legs
-      - Only face/high angle photos (hiding body)
+   a. Specific Measurements (if visible):
+      - Arms appear wider than wrists by more than 5x. Take a measurement of the wrists and then take a measurement of the arms at their widest point. Can you fit exactly five wrist lengths within the measurement of the arms? If so, then the arm is five times wider than the wrist. If you cannot do this, then it is not.
+      - Legs appear wider than ankles by more than 5x. Take a measurement of the ankles and then take a measurement of the legs at their widest point. Can you fit exactly five ankle lengths within the measurement of the legs? If so, then the leg is five times wider than the ankle. If you cannot do this, then it is not.
+      - Face width appears greater than 2x face height. Take a measurement of the face width and then take a measurement of the face height. Can you fit exactly two face heights within the measurement of the face width? If so, then the face is two times wider than the height. If you cannot do this, then it is not.
 
-   b. Specific Measurements (if visible):
-      - Waist-to-hip ratio appears greater than 1.0
-      - Arms appear wider than wrists by more than 2.2x
-      - Legs appear wider than ankles by more than 2.2x
-      - Face width appears greater than 1.5x face height
-
-   c. Photo Analysis Guidelines:
-      - If ANY full-body photo shows these traits, mark as undesirable
+   b. traits across all photos:
       - If only face photos, assume undesirable unless face shows very defined jawline
-      - If all photos are at angles that hide body shape, assume undesirable
       - If wearing baggy clothes in all photos, assume undesirable
-      - If any photo shows clear stomach protrusion that extends beyond the waistline (bulging out), mark as undesirable
       - If arms/legs show no muscle definition, mark as undesirable
 
 2. Low Quality Photos:
@@ -955,21 +942,27 @@ Analyze ONLY the main person (not other people in photos) for these traits:
 
 4. Advertisement Profile:
    - Any ONE of these indicates the profile is actually an advertisement:
-     * Multiple photos showing the same exact image/scene repeatedly
      * Text in the profile containing words like "Ad", "Advertisement", or "Sponsored"
-     * Product promotion is evident in photos or bio text (showing specific products with branding)
-     * Profile seems focused on promoting a service, product, or business rather than dating
-     * Profile contains website URLs or social media handles to follow
 
-If ANY of these trait categories are met, return the below response exactly, where prompt, response, and conversation_starter are empty strings, and screenshot_index is -1:
+If a profile is undesirable based on the criteria above, identify WHICH specific category and sub-category was matched and return exactly:
 {
     "prompt": "",
     "response": "",
-    "conversation_starter": "",
+    "conversation_starter": "UNDESIRABLE: [Category number]. [Category name] - [specific trait matched]",
     "screenshot_index": -1
 }
 
-Otherwise, continue with the following steps."""
+Examples of proper conversation_starter values:
+- "UNDESIRABLE: 1a. Body Shape Indicators - five distinct chin layers were seen on a single face photo."
+- "UNDESIRABLE: 1b. Specific Measurements - legs appear wider than ankles by more than 2.2x."
+- "UNDESIRABLE: 1c. Photo Analysis - only wearing baggy clothing in every single photo."
+- "UNDESIRABLE: 2. Low Quality Photos - Heavy filters or editing in majority of photos"
+- "UNDESIRABLE: 3. Male Features - Facial hair (mustache or beard)"
+- "UNDESIRABLE: 4. Advertisement Profile - Text in the profile containing words like "Ad", "Advertisement", or "Sponsored""
+
+Be specific about which exact trait within the category was matched. If multiple traits were matched, include the most obvious/prominent one.
+
+If the profile is NOT undesirable, continue with the following steps."""
 
 STORY_ANALYSIS_STEPS = """STEP 5: ANALYZE EACH STORY'S IMPLICATIONS
 For each story (element), determine what it reveals about the main person:
@@ -1440,6 +1433,14 @@ ENDING_DESIREABILITY_ONLY = """If the woman is desirable (doesn't meet any undes
     "response": "",
     "conversation_starter": "",
     "screenshot_index": 0
+}
+
+If the woman is undesirable (meets any traits in Step 4), identify WHICH specific category and sub-category was matched and include it in the conversation_starter field:
+{
+    "prompt": "",
+    "response": "",
+    "conversation_starter": "UNDESIRABLE: [Category number]. [Category name] - [specific trait matched]",
+    "screenshot_index": -1
 }"""
 
 

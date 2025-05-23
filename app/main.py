@@ -330,8 +330,15 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
     logger.info(f"Saved profile results to: {results_dir}")
 
     # Check if profile is undesirable (empty response)
-    if not ai_response or not ai_response.get('prompt') or not ai_response.get('response') or not ai_response.get('conversation_starter') or ai_response.get('screenshot_index') == -1:
-        logger.info("Profile marked as undesirable - disliking")
+    if not ai_response or not ai_response.get('prompt') or not ai_response.get('response') or ai_response.get('screenshot_index') == -1:
+        # Check if we have an undesirability reason in the conversation_starter field
+        if ai_response and ai_response.get('conversation_starter', '').startswith('UNDESIRABLE:'):
+            reason = ai_response.get('conversation_starter')
+            logger.info(f"Profile marked as undesirable - reason: {reason}")
+        else:
+            logger.info(
+                "Profile marked as undesirable - no specific reason provided")
+
         dislike_profile(device, dating_app='hinge')
         disliked_profiles += 1
         return disliked_profiles, total_likes, False
@@ -488,7 +495,14 @@ def process_bumble_profile(device, width, height, profile_num, target_likes_befo
 
     # Check if profile is undesirable based on AI response
     if not ai_response or ai_response.get('screenshot_index', -1) < 0:
-        logger.info("Profile marked as undesirable - disliking")
+        # Check if we have an undesirability reason in the conversation_starter field
+        if ai_response and ai_response.get('conversation_starter', '').startswith('UNDESIRABLE:'):
+            reason = ai_response.get('conversation_starter')
+            logger.info(f"Profile marked as undesirable - reason: {reason}")
+        else:
+            logger.info(
+                "Profile marked as undesirable - no specific reason provided")
+
         # Use the dislike_profile function with 'bumble' parameter
         dislike_profile(device, dating_app='bumble')
         disliked_profiles += 1
@@ -663,8 +677,14 @@ def process_tinder_profile(device, width, height, profile_num, target_likes_befo
             logger.info("No AI response received - treating as undesirable")
             is_undesirable = True
         elif ai_response.get('screenshot_index', -1) == -1:
-            logger.info(
-                "Profile marked as undesirable by AI (screenshot_index = -1)")
+            # Check if we have an undesirability reason in the conversation_starter field
+            if ai_response.get('conversation_starter', '').startswith('UNDESIRABLE:'):
+                reason = ai_response.get('conversation_starter')
+                logger.info(
+                    f"Profile marked as undesirable by AI - reason: {reason}")
+            else:
+                logger.info(
+                    "Profile marked as undesirable by AI (screenshot_index = -1)")
             is_undesirable = True
 
         if is_undesirable:
