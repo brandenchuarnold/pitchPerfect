@@ -741,7 +741,7 @@ def prepare_screenshots_for_api(screenshots):
     return screenshot_data
 
 
-def call_claude_api(system_prompt, user_message, screenshots_data, model="claude-4-sonnet-latest", max_tokens=1000, temperature=1):
+def call_claude_api(system_prompt, user_message, screenshots_data, model="claude-sonnet-4-20250514", max_tokens=1000, temperature=1):
     """
     Make an API call to Claude with retry logic.
 
