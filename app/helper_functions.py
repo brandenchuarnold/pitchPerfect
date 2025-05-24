@@ -1463,6 +1463,8 @@ def generate_bumble_reply_from_screenshots(screenshots, format_txt_path, prompts
     """
     Generate a contextually appropriate reply for a Bumble profile based on screenshots.
 
+    NOTE: This function now skips AI analysis and always assumes profiles are desirable.
+
     Args:
         screenshots: List of paths to screenshot images in order
         format_txt_path: Path to bumbleFormat.txt describing profile structure
@@ -1472,154 +1474,25 @@ def generate_bumble_reply_from_screenshots(screenshots, format_txt_path, prompts
         compliments_available: Whether "send a compliment" is available on this profile
 
     Returns:
-        dict: Contains the prompt-response pair, generated response, explanation, and screenshot index:
+        dict: Contains empty response indicating desirable profile:
         {
-            "prompt": str,      # The exact prompt text being responded to
-            "response": str,    # The user's response to the prompt
-            "conversation_starter": str,  # The generated conversation starter
-            "explanation_for_conversation_starter": str,  # The detailed explanation for how the conversation starter was created
-            "screenshot_index": int,  # 0-based index of screenshot containing prompt/response
+            "prompt": str,      # Empty string for desirable profiles
+            "response": str,    # Empty string for desirable profiles
+            "conversation_starter": str,  # Empty string for desirable profiles
+            "explanation_for_conversation_starter": str,  # Empty string for desirable profiles
+            "screenshot_index": int,  # 0 for desirable profiles
         }
     """
-    # Read the content of our context files
-    context_files = read_context_files({
-        'format': format_txt_path,
-        'prompts': prompts_txt_path,
-        'interests': interests_txt_path,
-        'metadata': metadata_txt_path
-    })
+    logger.info(
+        "Bumble profile analysis: Skipping AI analysis, assuming profile is desirable")
 
-    if not context_files:
-        return None
-
-    # Convert screenshots to base64 for API transmission
-    screenshot_data = prepare_screenshots_for_api(screenshots)
-    if not screenshot_data:
-        return None
-
-    # System prompt containing all the structural information
-    system_prompt = f"""{DATING_APP_INTRO}
-
-    PROFILE STRUCTURE:
-    You will analyze 3 screenshots of a Bumble profile. Each profile may contain the following elements (following the exact order described in bumbleFormat.txt):
-    1. Photos (0-7 total)
-    2. About Me section (optional)
-    3. Basic Information attributes (optional)
-    4. "I'm looking for" section (optional)
-    5. "My interests" section (optional, 0-5 selections)
-    6. Prompt/Response pairs (optional, 0-3 total)
-    7. "My causes and communities" section (optional, 0-3 selections)
-    8. Location information
-    
-    Each of these elements tells you something about the woman. Your goal is to analyze her profile comprehensively to see if she is desireable/undesireable.
-
-    REFERENCE FILES CONTENT:
-    format.txt:
-    {context_files['format']}
-
-    prompts.txt:
-    {context_files['prompts']}
-
-    interests.txt:
-    {context_files['interests']}
-
-    metadata.txt:
-    {context_files['metadata']}
-
-    STEP 1: READ AND UNDERSTAND THE CONTEXT
-    1. Read format.txt to understand the profile layout
-    2. Consult prompts.txt to understand available prompts
-    3. Examine interests.txt to understand interest categories
-    4. Review metadata.txt to understand profile attribute meanings
-    5. Examine each screenshot to identify all profile elements
-
-    {IDENTIFY_MAIN_PERSON}
-
-    STEP 3: ORGANIZE ELEMENTS INTO BUCKETS
-    For each screenshot, group elements into these buckets:
-    a. Photos
-       - Is the main person in this photo?
-       - What is she doing? With whom?
-       - What does this reveal about her?
-    b. About Me text
-       - What does she explicitly state about herself?
-       - What does she value enough to mention?
-    c. Attributes (basic info)
-       - What factual information does she share?
-       - How do these fit together to create a lifestyle?
-    d. Looking For
-       - What relationship type is she seeking?
-       - What qualities matter to her?
-    e. Interests
-       - What activities does she enjoy?
-       - Are there themes among interests?
-    f. Prompt/Response pairs
-       - Which prompts did she choose?
-       - What do her responses reveal?
-    g. Causes
-       - What societal issues matter to her?
-       - How important are these to her identity?
-
-    {UNDESIRABLE_TRAITS_CHECK}
-    """
-
-    # Add different paths based on compliments_available
-    if compliments_available:
-        system_prompt += f"""
-    {STORY_ANALYSIS_STEPS}
-
-    {COMPILE_CHARACTERISTICS}
-
-    {STORY_BASED_EXPLANATIONS}
-
-    {EVALUATE_STORY_EXPLANATIONS}
-
-    {SELECT_BEST_STORY_EXPLANATION}
-
-    {IDENTIFY_SCREENSHOT}
-
-    {FINAL_VALIDATION_CHECK}
-    
-    {GENERATE_EXPLANATION}
-    
-    Return the chosen prompt, response, your conversation starter, the explanation for your conversation starter, and the screenshot index in this JSON format exactly. Do not return any other text or comments beyond the JSON.
-    {{
-        "prompt": "The exact prompt text the woman chose",
-        "response": "The woman's response to the prompt",
-        "conversation_starter": "Your natural conversation starter",
-        "explanation_for_conversation_starter": "Your detailed explanation for how and why you created this conversation starter",
-        "screenshot_index": index_of_screenshot_containing_prompt_response  # 0-based index (0-6)
-    }}"""
-    else:
-        system_prompt += f"""
-    {ENDING_DESIREABILITY_ONLY}"""
-
-    # User message - just the specific task
-    user_message = """Please analyze these Bumble profile screenshots and return the requested data as instructed."""
-
-    # Make the API call to Claude
-    logger.info("Making API call to Claude...")
-
-    response = call_claude_api(
-        system_prompt=system_prompt,
-        user_message=user_message,
-        screenshots_data=screenshot_data
-    )
-
-    if not response:
-        return None
-
-    # Parse the response
-    result = parse_claude_json_response(response)
-    if not result:
-        return None
-
+    # Always return "desirable" response format without AI analysis
     return {
-        "prompt": result.get("prompt", ""),
-        "response": result.get("response", ""),
-        "conversation_starter": result.get("conversation_starter", ""),
-        "explanation_for_conversation_starter": result.get("explanation_for_conversation_starter", ""),
-        "screenshot_index": result.get("screenshot_index", 0)
+        "prompt": "",
+        "response": "",
+        "conversation_starter": "",
+        "explanation_for_conversation_starter": "",
+        "screenshot_index": 0
     }
 
 
@@ -2843,105 +2716,32 @@ def generate_tinder_reply_from_screenshots(screenshots, format_txt_path):
     """
     Generate a contextually appropriate analysis for a Tinder profile based on screenshots.
 
+    NOTE: This function now skips AI analysis and always assumes profiles are desirable.
+
     Args:
         screenshots: List of paths to screenshot images in order
         format_txt_path: Path to tinderFormat.txt describing profile structure
 
     Returns:
-        dict: Contains the prompt-response pair, generated response, explanation, and screenshot index:
+        dict: Contains empty response indicating desirable profile:
         {
-            "prompt": str,      # The exact prompt text being responded to
-            "response": str,    # The user's response to the prompt
-            "conversation_starter": str,  # The generated conversation starter
-            "explanation_for_conversation_starter": str,  # The detailed explanation for how the conversation starter was created
-            "screenshot_index": int,  # 0-based index of screenshot containing prompt/response
+            "prompt": str,      # Empty string for desirable profiles
+            "response": str,    # Empty string for desirable profiles  
+            "conversation_starter": str,  # Empty string for desirable profiles
+            "explanation_for_conversation_starter": str,  # Empty string for desirable profiles
+            "screenshot_index": int,  # 0 for desirable profiles
         }
     """
-    # Read the content of our context files
-    context_files = read_context_files({
-        'format': format_txt_path
-    })
+    logger.info(
+        "Tinder profile analysis: Skipping AI analysis, assuming profile is desirable")
 
-    if not context_files:
-        return None
-
-    # Convert screenshots to base64 for API transmission
-    screenshot_data = prepare_screenshots_for_api(screenshots)
-    if not screenshot_data:
-        return None
-
-    system_prompt = f"""{DATING_APP_INTRO}
-    You are analyzing a set of 9 screenshots of a Tinder dating profile which can contain:
-    - Profile photos
-    - Name and age
-    - Location information
-    - Bio text
-    - Interests/passions
-    - Other optional profile information
-    
-    Each of these elements tells you something about the woman. Your goal is to analyze her profile comprehensively to see if she is desirable or undesirable.
-
-    REFERENCE FILES CONTENT:
-    format.txt:
-    {context_files['format']}
-
-    STEP 1: READ AND UNDERSTAND THE CONTEXT
-    Read format.txt to understand the profile layout
-
-    {IDENTIFY_MAIN_PERSON}
-
-    STEP 3: ORGANIZE ELEMENTS INTO BUCKETS
-    For each screenshot, group elements into these buckets:
-    a. Photos
-       - Is the main person in this photo?
-       - What is she doing? With whom?
-       - What does this reveal about her?
-    b. About Me text
-       - What does she explicitly state about herself?
-       
-    c. Attributes (basic info)
-       - What factual information does she share?
-       - How do these fit together to create a lifestyle?
-    d. Looking For
-       - What relationship type is she seeking?
-       - What qualities matter to her?
-    e. Interests
-       - What activities does she enjoy?
-       - Are there themes among interests?
-    f. Prompt/Response pairs
-       - Which prompts did she choose?
-       - What do her responses reveal?
-
-    {UNDESIRABLE_TRAITS_CHECK}
-    
-    {ENDING_DESIREABILITY_ONLY}"""
-
-    # User message - just the specific task
-    user_message = """Please analyze these Tinder profile screenshots and return the requested data as instructed."""
-
-    # Make the API call to Claude
-    logger.info("Making API call to Claude...")
-
-    response = call_claude_api(
-        system_prompt=system_prompt,
-        user_message=user_message,
-        screenshots_data=screenshot_data
-    )
-
-    if not response:
-        return None
-
-    # Parse the response
-    result = parse_claude_json_response(response)
-    if not result:
-        return None
-
+    # Always return "desirable" response format without AI analysis
     return {
-        "prompt": result.get("prompt", ""),
-        "response": result.get("response", ""),
-        "conversation_starter": result.get("conversation_starter", ""),
-        "explanation_for_conversation_starter": result.get("explanation_for_conversation_starter", ""),
-        "screenshot_index": result.get("screenshot_index", 0)
+        "prompt": "",
+        "response": "",
+        "conversation_starter": "",
+        "explanation_for_conversation_starter": "",
+        "screenshot_index": 0
     }
 
 
