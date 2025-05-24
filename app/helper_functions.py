@@ -919,8 +919,8 @@ Analyze ONLY the main person (not other people in photos) for these traits:
 
 1. Body Type Analysis (CRITICAL - Mark as undesirable if ANY of these are true):
    a. Specific Measurements (if visible):
-      - Arms appear wider than wrists by more than 5x. Take a measurement of the wrists and then take a measurement of the arms at their widest point. Can you fit exactly five wrist lengths within the measurement of the arms? If so, then the arm is five times wider than the wrist. If you cannot do this, then it is not.
-      - Legs appear wider than ankles by more than 5x. Take a measurement of the ankles and then take a measurement of the legs at their widest point. Can you fit exactly five ankle lengths within the measurement of the legs? If so, then the leg is five times wider than the ankle. If you cannot do this, then it is not.
+      - Arms appear wider than wrists by more than 7x. Take a measurement of the wrists and then take a measurement of the arms at their widest point. Can you fit exactly seven wrist lengths within the measurement of the arms? If so, then the arm is seven times wider than the wrist. If you cannot do this, then it is not.
+      - Legs appear wider than ankles by more than 7x. Take a measurement of the ankles and then take a measurement of the legs at their widest point. Can you fit exactly seven ankle lengths within the measurement of the legs? If so, then the leg is seven times wider than the ankle. If you cannot do this, then it is not.
       - Face width appears greater than 2x face height. Take a measurement of the face width and then take a measurement of the face height. Can you fit exactly two face heights within the measurement of the face width? If so, then the face is two times wider than the height. If you cannot do this, then it is not.
 
    b. traits across all photos:
@@ -953,9 +953,8 @@ If a profile is undesirable based on the criteria above, identify WHICH specific
 }
 
 Examples of proper conversation_starter values:
-- "UNDESIRABLE: 1a. Body Shape Indicators - five distinct chin layers were seen on a single face photo."
-- "UNDESIRABLE: 1b. Specific Measurements - legs appear wider than ankles by more than 2.2x."
-- "UNDESIRABLE: 1c. Photo Analysis - only wearing baggy clothing in every single photo."
+- "UNDESIRABLE: 1a. Specific Measurements - legs appear wider than ankles by more than 7x. I took a measurement of the legs at their widest point and the ankles and I could fit at least seven ankle lengths within the leg length."
+- "UNDESIRABLE: 1b. Photo Analysis - only wearing baggy clothing in every single photo."
 - "UNDESIRABLE: 2. Low Quality Photos - Heavy filters or editing in majority of photos"
 - "UNDESIRABLE: 3. Male Features - Facial hair (mustache or beard)"
 - "UNDESIRABLE: 4. Advertisement Profile - Text in the profile containing words like "Ad", "Advertisement", or "Sponsored""
@@ -1169,6 +1168,8 @@ For each of the 54 story explanations (18 per prompt/response pair):
    - Has the CORRECT STRUCTURE (question/statement first, context second)
    - Has the CORRECT WORD COUNT (8-10 words for question/statement, 10-15 words for context)
    - DOES NOT use information from other prompts
+   - PRIORITIZES FUN, engaging topics over career-focused elements (avoid topics like jobs, professions, work uniforms - instead focus on hobbies, interests, activities, entertainment preferences, lifestyle choices, travel, food, music, sports, etc.)
+   - Creates opportunities for light-hearted, enjoyable conversations rather than serious work discussions
 4. Count the number of ratings you have. Are there 54? If not, you need to go back and rate all the story explanations you already have.
 5. For each prompt/response pair, select the single best story explanation ranked highest by you (3 total, 1 per prompt).
 
@@ -1375,6 +1376,8 @@ SELECT_BEST_STORY_EXPLANATION = """STEP 9: SELECT BEST OVERALL STORY EXPLANATION
    - Which would make her feel most understood?
    - Which uses her name effectively after referencing her photo?
    - Which presents genuine contrast when discussing balance (indoor/outdoor, work/play)?
+   - Which focuses on FUN, light-hearted topics rather than career/work-related elements?
+   - Which creates the most engaging, enjoyable conversation opportunity?
 3. Select the single best story explanation from the three finalists
 4. This will be your final conversation starter
 
@@ -1426,12 +1429,36 @@ Before returning your result, perform one last critical check:
    - Feels like a genuine response to her prompt
 3. This is your LAST chance to ensure your story explanation is authentic and engaging"""
 
+GENERATE_EXPLANATION = """STEP 12: GENERATE EXPLANATION FOR CONVERSATION STARTER
+Now generate a detailed explanation for how you created the conversation starter:
+
+1. First Part Explanation (How the question/statement was generated):
+   - Identify the specific photo element you focused on (e.g., "concert venue", "gaming setup", "hiking gear")
+   - Explain how this photo element connects to the prompt/response content
+   - Describe the logical reasoning behind the question/statement you formulated
+   - Example: "I noticed she was at a concert venue in one of her photos. Since her prompt response mentioned wanting to play Civ6 together, I connected her enjoyment of live music events with her interest in gaming. This led me to ask about how both concerts and gaming create excitement and hype, as they both offer immersive experiences that can be thrilling in different ways."
+
+2. Second Part Explanation (Why this specific photo context was selected):
+   - Explain why you chose this particular photo context over other possible options
+   - Describe what made this photo element the most relevant and FUN to mention
+   - Explain how referencing this specific photo shows attention to her FUN, personality-driven interests
+   - Example: "I selected the concert photo specifically because it represents her enjoyment of high-energy, immersive experiences, which creates a natural parallel with gaming. This photo context was ideal because it's concrete evidence of her seeking out exciting experiences, making the conversation starter feel grounded in her actual fun interests rather than assumptions about her personality."
+
+3. Expected Response Explanation (What response you expect and why):
+   - Describe what kind of response you anticipate from her
+   - Explain how the conversation starter is designed to make her feel understood as someone who enjoys fun activities
+   - Describe how it invites her to share more about her entertainment preferences and fun experiences
+   - Example: "I expect her to respond by either confirming that both concerts and gaming give her similar rushes of excitement, or by explaining what she loves about each type of experience. The conversation starter is designed to make her feel seen as someone who actively seeks out fun, engaging activities rather than someone who's defined by work or obligations. It invites her to elaborate on what makes these experiences exciting for her and share more about her entertainment preferences and how she likes to have fun."
+
+Format your explanation as a single paragraph that flows naturally and covers all three aspects. Start with "Photo element focus:" and explain the reasoning in a conversational, insightful tone that demonstrates deep understanding of human psychology and conversation dynamics."""
+
 # New shared prompt component for desirability-only path
-ENDING_DESIREABILITY_ONLY = """If the woman is desirable (doesn't meet any undesirable traits in Step 4), return the following JSON exactly, where prompt, response, and conversation_starter are empty strings, and screenshot_index is 0:
+ENDING_DESIREABILITY_ONLY = """If the woman is desirable (doesn't meet any undesirable traits in Step 4), return the following JSON exactly, where prompt, response, conversation_starter, and explanation_for_conversation_starter are empty strings, and screenshot_index is 0:
 {
     "prompt": "",
     "response": "",
     "conversation_starter": "",
+    "explanation_for_conversation_starter": "",
     "screenshot_index": 0
 }
 
@@ -1440,6 +1467,7 @@ If the woman is undesirable (meets any traits in Step 4), identify WHICH specifi
     "prompt": "",
     "response": "",
     "conversation_starter": "UNDESIRABLE: [Category number]. [Category name] - [specific trait matched]",
+    "explanation_for_conversation_starter": "",
     "screenshot_index": -1
 }"""
 
@@ -1457,11 +1485,12 @@ def generate_bumble_reply_from_screenshots(screenshots, format_txt_path, prompts
         compliments_available: Whether "send a compliment" is available on this profile
 
     Returns:
-        dict: Contains the prompt-response pair, generated response, and screenshot index:
+        dict: Contains the prompt-response pair, generated response, explanation, and screenshot index:
         {
             "prompt": str,      # The exact prompt text being responded to
             "response": str,    # The user's response to the prompt
             "conversation_starter": str,  # The generated conversation starter
+            "explanation_for_conversation_starter": str,  # The detailed explanation for how the conversation starter was created
             "screenshot_index": int,  # 0-based index of screenshot containing prompt/response
         }
     """
@@ -1564,12 +1593,15 @@ def generate_bumble_reply_from_screenshots(screenshots, format_txt_path, prompts
 
     {FINAL_VALIDATION_CHECK}
     
-    Return the chosen prompt (if applicable), response (if applicable), your conversation starter, and the screenshot index in this JSON format exactly. Do not include any other message.
+    {GENERATE_EXPLANATION}
+    
+    Return the chosen prompt, response, your conversation starter, the explanation for your conversation starter, and the screenshot index in this JSON format exactly. Do not return any other text or comments beyond the JSON.
     {{
-        "prompt": "The exact prompt text if replying to a prompt, otherwise empty string",
-        "response": "The user's response to the prompt if replying to a prompt, otherwise empty string",
+        "prompt": "The exact prompt text the woman chose",
+        "response": "The woman's response to the prompt",
         "conversation_starter": "Your natural conversation starter",
-        "screenshot_index": index_of_screenshot_containing_target_element  # 0-based index
+        "explanation_for_conversation_starter": "Your detailed explanation for how and why you created this conversation starter",
+        "screenshot_index": index_of_screenshot_containing_prompt_response  # 0-based index (0-6)
     }}"""
     else:
         system_prompt += f"""
@@ -1599,6 +1631,7 @@ def generate_bumble_reply_from_screenshots(screenshots, format_txt_path, prompts
         "prompt": result.get("prompt", ""),
         "response": result.get("response", ""),
         "conversation_starter": result.get("conversation_starter", ""),
+        "explanation_for_conversation_starter": result.get("explanation_for_conversation_starter", ""),
         "screenshot_index": result.get("screenshot_index", 0)
     }
 
@@ -1616,11 +1649,12 @@ def generate_hinge_reply_from_screenshots(screenshots, format_txt_path, prompts_
         locations_txt_path: Path to locations.txt containing Madison, WI establishments
 
     Returns:
-        dict: Contains the prompt-response pair, generated conversation starter, and screenshot index:
+        dict: Contains the prompt-response pair, generated conversation starter, explanation, and screenshot index:
         {
             "prompt": str,      # The exact prompt text being responded to
             "response": str,    # The user's response to the prompt
             "conversation_starter": str,  # The generated conversation starter
+            "explanation_for_conversation_starter": str,  # The detailed explanation for how the conversation starter was created
             "screenshot_index": int,  # 0-based index of screenshot containing prompt/response
         }
     """
@@ -1739,11 +1773,14 @@ def generate_hinge_reply_from_screenshots(screenshots, format_txt_path, prompts_
 
     {FINAL_VALIDATION_CHECK}
     
-    Return the chosen prompt, response, your conversation starter, and the screenshot index in this JSON format exactly. Do not return any other text or comments beyond the JSON.
+    {GENERATE_EXPLANATION}
+    
+    Return the chosen prompt, response, your conversation starter, the explanation for your conversation starter, and the screenshot index in this JSON format exactly. Do not return any other text or comments beyond the JSON.
     {{
         "prompt": "The exact prompt text the woman chose",
         "response": "The woman's response to the prompt",
         "conversation_starter": "Your natural conversation starter",
+        "explanation_for_conversation_starter": "Your detailed explanation for how and why you created this conversation starter",
         "screenshot_index": index_of_screenshot_containing_prompt_response  # 0-based index (0-6)
     }}"""
 
@@ -1771,6 +1808,7 @@ def generate_hinge_reply_from_screenshots(screenshots, format_txt_path, prompts_
         "prompt": result.get("prompt", ""),
         "response": result.get("response", ""),
         "conversation_starter": result.get("conversation_starter", ""),
+        "explanation_for_conversation_starter": result.get("explanation_for_conversation_starter", ""),
         "screenshot_index": result.get("screenshot_index", 0)
     }
 
@@ -2823,11 +2861,12 @@ def generate_tinder_reply_from_screenshots(screenshots, format_txt_path):
         format_txt_path: Path to tinderFormat.txt describing profile structure
 
     Returns:
-        dict: Contains the prompt-response pair, generated response, and screenshot index:
+        dict: Contains the prompt-response pair, generated response, explanation, and screenshot index:
         {
             "prompt": str,      # The exact prompt text being responded to
             "response": str,    # The user's response to the prompt
             "conversation_starter": str,  # The generated conversation starter
+            "explanation_for_conversation_starter": str,  # The detailed explanation for how the conversation starter was created
             "screenshot_index": int,  # 0-based index of screenshot containing prompt/response
         }
     """
@@ -2914,6 +2953,7 @@ def generate_tinder_reply_from_screenshots(screenshots, format_txt_path):
         "prompt": result.get("prompt", ""),
         "response": result.get("response", ""),
         "conversation_starter": result.get("conversation_starter", ""),
+        "explanation_for_conversation_starter": result.get("explanation_for_conversation_starter", ""),
         "screenshot_index": result.get("screenshot_index", 0)
     }
 

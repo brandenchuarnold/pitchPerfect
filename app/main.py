@@ -343,6 +343,18 @@ def process_hinge_profile(device, width, height, profile_num, target_likes_befor
         disliked_profiles += 1
         return disliked_profiles, total_likes, False
 
+    # Log AI response details for analysis
+    logger.info("AI Response Analysis:")
+    logger.info(f"  Prompt: '{ai_response.get('prompt', '')}'")
+    logger.info(f"  Response: '{ai_response.get('response', '')}'")
+    logger.info(
+        f"  Conversation Starter: '{ai_response.get('conversation_starter', '')}'")
+    logger.info(
+        f"  Screenshot Index: {ai_response.get('screenshot_index', 0)}")
+    if ai_response.get('explanation_for_conversation_starter'):
+        logger.info(
+            f"  Explanation: {ai_response.get('explanation_for_conversation_starter')}")
+
     # Match prompt against authoritative list
     matched_prompt, confidence = match_prompt_against_authoritative(
         ai_response['prompt'], prompts_txt_path)
