@@ -917,30 +917,19 @@ IDENTIFY_MAIN_PERSON = """STEP 2: IDENTIFY THE MAIN PERSON
 UNDESIRABLE_TRAITS_CHECK = """STEP 4: CHECK FOR UNDESIRABLE TRAITS
 Analyze ONLY the main person (not other people in photos) for these traits:
 
-1. Body Type Analysis (CRITICAL - Mark as undesirable if ANY of these are true):
-   a. Specific Measurements (if visible):
-      - Arms appear wider than wrists by more than 7x. Take a measurement of the wrists and then take a measurement of the arms at their widest point. Can you fit exactly seven wrist lengths within the measurement of the arms? If so, then the arm is seven times wider than the wrist. If you cannot do this, then it is not.
-      - Legs appear wider than ankles by more than 7x. Take a measurement of the ankles and then take a measurement of the legs at their widest point. Can you fit exactly seven ankle lengths within the measurement of the legs? If so, then the leg is seven times wider than the ankle. If you cannot do this, then it is not.
-      - Face width appears greater than 2x face height. Take a measurement of the face width and then take a measurement of the face height. Can you fit exactly two face heights within the measurement of the face width? If so, then the face is two times wider than the height. If you cannot do this, then it is not.
-
-   b. traits across all photos:
-      - If only face photos, assume undesirable unless face shows very defined jawline
-      - If wearing baggy clothes in all photos, assume undesirable
-      - If arms/legs show no muscle definition, mark as undesirable
-
-2. Low Quality Photos:
+1. Low Quality Photos:
    - Any ONE of these qualifies as low quality photos:
      * Majority of photos are blurry/pixelated
      * Heavy filters or editing in majority of photos
      * Screenshots or reposts in multiple photos
 
-3. Male Features:
+2. Male Features:
    - Any of these qualifies as male features:
      * Adam's apple visible in the throat
      * Facial hair (mustache or beard)
      * Flat chest with no boob growth visible
 
-4. Advertisement Profile:
+3. Advertisement Profile:
    - Any ONE of these indicates the profile is actually an advertisement:
      * Text in the profile containing words like "Ad", "Advertisement", or "Sponsored"
 
@@ -952,12 +941,10 @@ If a profile is undesirable based on the criteria above, identify WHICH specific
     "screenshot_index": -1
 }
 
-Examples of proper conversation_starter values:
-- "UNDESIRABLE: 1a. Specific Measurements - legs appear wider than ankles by more than 7x. I took a measurement of the legs at their widest point and the ankles and I could fit at least seven ankle lengths within the leg length."
-- "UNDESIRABLE: 1b. Photo Analysis - only wearing baggy clothing in every single photo."
-- "UNDESIRABLE: 2. Low Quality Photos - Heavy filters or editing in majority of photos"
-- "UNDESIRABLE: 3. Male Features - Facial hair (mustache or beard)"
-- "UNDESIRABLE: 4. Advertisement Profile - Text in the profile containing words like "Ad", "Advertisement", or "Sponsored""
+Examples of proper conversation_starter values if a profile is undesirable.:
+- "UNDESIRABLE: 1. Low Quality Photos - Heavy filters or editing in majority of photos"
+- "UNDESIRABLE: 2. Male Features - Facial hair (mustache or beard)"
+- "UNDESIRABLE: 3. Advertisement Profile - Text in the profile containing words like "Ad", "Advertisement", or "Sponsored""
 
 Be specific about which exact trait within the category was matched. If multiple traits were matched, include the most obvious/prominent one.
 
