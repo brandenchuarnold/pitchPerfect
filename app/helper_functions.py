@@ -919,9 +919,7 @@ Analyze ONLY the main person (not other people in photos) for these traits:
 
 1. Low Quality Photos:
    - Any ONE of these qualifies as low quality photos:
-     * Majority of photos are blurry/pixelated
      * Heavy filters or editing in majority of photos
-     * Screenshots or reposts in multiple photos
 
 2. Male Features:
    - Any of these qualifies as male features:
@@ -1019,7 +1017,7 @@ For each prompt/response pair (there will be exactly 3 pairs):
           Story explanation: "Do you agree that gaming and concerts both hype you up? I see that you went to a concert in your photo, Sarah."
           WHY THIS WORKS: This makes a thoughtful connection between gaming (Civ6 from her prompt) and concerts (from her photo) by identifying the shared element of "hype" or excitement they both generate. Rather than just noting indoor vs. outdoor activities, it identifies a specific emotional experience common to both. The question stands on its own and would make sense even without context, while the second part simply provides evidence that you've looked at her photos. The statement is 10 words, and the context is 12 words, making it concise yet meaningful.
         
-        * "Do exercise and relaxation create perfect weekends? I notice you're running in your beach photo, Jessica, which creates nice balance."
+        * "Do exercise and relaxation create perfect weekends? I notice you're running in your beach photo, Jessica."
           WHY THIS WORKS: This takes the concrete element of her running in the photo and connects it to her prompt about a Sunday routine involving exercise and relaxation. It suggests her routine isn't random but a deliberate lifestyle choice reflecting her understanding that balance is important. The photo provides evidence that she actually does run regularly, making this a genuine rather than assumed connection. The statement is 7 words, and the context is 13 words.
         
         * "Does proper gear make all outdoor activities better? I spotted quality running shoes in your photo, Emma, they look well-used."
@@ -1190,10 +1188,10 @@ GOOD STORY EXPLANATION EVALUATION:
 - Prompt: "Typical Sunday"
   Response: "Coffee, then run, then couch"
   Photo element: Woman running in a race
-  Story explanation: "Do exercise and relaxation create perfect weekends? I notice you're running in your race photo, Sarah, which creates nice balance."
+  Story explanation: "Do exercise and relaxation create perfect weekends? I notice you're running in your race photo, Sarah."
   Simulated conversation:
   * Her: "Typical Sunday: Coffee, then run, then couch"
-  * You: "Do exercise and relaxation create perfect weekends? I notice you're running in your race photo, Sarah, which creates nice balance."
+  * You: "Do exercise and relaxation create perfect weekends? I notice you're running in your race photo, Sarah."
   * Her: "Absolutely! I need that balance - the run gives me energy and the couch time helps me recharge for the week."
   * You: "I find that balance important too. Do you have a favorite running route in Madison?"
   * Her: "I love running around the Arboretum! It's beautiful year-round. Do you run too?"
