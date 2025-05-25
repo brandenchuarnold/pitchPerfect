@@ -1077,6 +1077,10 @@ For each prompt/response pair (there will be exactly 3 pairs):
    - Use visible elements in photos as evidence to support your interpretation of these stories
    - Create explanations that feel like natural observations rather than reaching or forced connections
    - When you connect photo elements to prompts, explain why that connection makes sense in a way that feels conversational and insightful
+   - CRITICAL: ENSURE THEMATIC CONSISTENCY - The underlying theme must apply to both elements in the same logical way
+     * GOOD: "Do you enjoy different drinks for different occasions?" (both beer and margaritas are drinks chosen for specific occasions)
+     * BAD: "Do early bedtimes and colorful drinks both deserve celebration?" (early bedtimes might deserve celebration as healthy choices, but colorful drinks don't inherently deserve celebration - they're used during celebrations)
+     * Test your theme by stating it as: "Both X and Y are [theme]" - if one element doesn't truly fit the theme in the same way, find a different connection
    - BAD EXAMPLE: "I notice you're into gaming based on your Sunday routine and Civ6 mention." - This is bad because it combines information from multiple prompts instead of treating each prompt as its own story
 
 6. FOR THE FIRST PROMPT/RESPONSE PAIR:
@@ -1343,7 +1347,34 @@ BAD STORY EXPLANATION EVALUATION:
   - Name usage: ✓ Includes her name after photo reference
   - Ease of response: ✗ Forces her to correct incorrect assumptions about her intentions
   - Genuine interest: ✗ Focuses on assumed social motivations, not her actual values
-  - Overall: 4/10 - Creates conversation based on mismatched assumptions about her motivations"""
+  - Overall: 4/10 - Creates conversation based on mismatched assumptions about her motivations
+
+- Prompt: "Don't hate me if I"
+  Response: "prefer to be in bed at 9pm on a Saturday night instead of downtown 🤷‍♀️"
+  Photo element: Woman enjoying colorful cocktails
+  Story explanation: "Do early bedtimes and colorful drinks both deserve celebration? I see you enjoying cocktails in your photo, Maddie."
+  Simulated conversation:
+  * Her: "Don't hate me if I: prefer to be in bed at 9pm on a Saturday night instead of downtown 🤷‍♀️"
+  * You: "Do early bedtimes and colorful drinks both deserve celebration? I see you enjoying cocktails in your photo, Maddie."
+  * Her: "Um, what do you mean by colorful drinks deserving celebration? That's kind of a weird way to put it."
+  * You: "I just meant that you seem to enjoy both relaxing early and going out for drinks sometimes."
+  * Her: "I guess? I mean, I do go out occasionally, but I prefer staying in most weekends."
+  Analysis:
+  - Structure: ✓ Question first (8 words), context second (10 words)
+  - Word count: ✓ Question within 8-10 word limit, context within 10-15 word limit
+  - No cross-prompt info: ✓ Only uses information from this prompt
+  - Thematic consistency: ✗ MAJOR FLAW - "deserve celebration" doesn't apply equally to both elements
+    * Early bedtimes might deserve celebration as healthy choices
+    * Colorful drinks don't inherently deserve celebration - they're used during celebrations
+    * The theme fails the test: "Both early bedtimes and colorful drinks deserve celebration" - only one actually fits
+  - Natural flow: ✗ Creates confusion about what "deserve celebration" means for drinks
+  - Enjoyable: ✗ Forces her to question the logic of the connection
+  - Invites sharing: ✗ Leads to clarification requests rather than elaboration
+  - Language: ✗ Uses forced thematic language that doesn't make sense
+  - Name usage: ✓ Includes her name after photo reference
+  - Ease of response: ✗ Creates confusion about the underlying logic
+  - Genuine interest: ✗ Focuses on a forced theme rather than understanding her preferences
+  - Overall: 3/10 - Creates awkward conversation due to poor thematic consistency"""
 
 SELECT_BEST_STORY_EXPLANATION = """STEP 9: SELECT BEST OVERALL STORY EXPLANATION
 1. Take the three best story explanations (one for each prompt/response pair) from Step 8
