@@ -1371,34 +1371,7 @@ GOOD STORY EXPLANATION EVALUATIONS:
   - Name usage: ✓ Includes her name after photo reference
   - Ease of response: ✓ Easy to confirm and expand on the connection
   - Genuine interest: ✓ Shows understanding of her personality pattern
-  - Overall: 9/10 - Creates engaging conversation with explicit, logical connection
-
-- Prompt: "Together, we could"
-  Response: "Shoot the moon, stop the rain, even ride a hurricane -The Cheetah Girls"
-  Photo element: Woman celebrating birthday with sparkler and dessert
-  Story explanation: "Do you bring movie inspiration into real celebrations? I see you creating magical moments with sparklers in your birthday photo, Kylie."
-  Simulated conversation:
-  * Her: "Together, we could: Shoot the moon, stop the rain, even ride a hurricane -The Cheetah Girls"
-  * You: "Do you bring movie inspiration into real celebrations? I see you creating magical moments with sparklers in your birthday photo, Kylie."
-  * Her: "Actually, yes! I love quotes like that because they remind me to make ordinary moments feel special, like using sparklers for birthdays or planning fun themed parties."
-  * You: "That's so cool! The Cheetah Girls definitely knew how to make everything feel epic. What other ways do you make celebrations special?"
-  * Her: "I'm big on little details - like custom playlists, themed decorations, or surprise elements. Life's too short for boring parties!"
-  Analysis:
-  - Structure: ✓ Question first (8 words), context second (12 words)
-  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
-  - No cross-prompt info: ✓ Only uses information from this prompt
-  - Thematic consistency: ✓ EXCELLENT - Explicitly connects movie inspiration to real celebrations
-    * Makes the connection clear: bringing inspirational energy into actual events
-    * Both movie quotes and sparkler moments involve creating magic/special feelings
-    * She immediately understands and confirms this pattern in her life
-  - Natural flow: ✓ Creates smooth conversation about her approach to celebrations
-  - Enjoyable: ✓ Celebrates her creativity and positive energy
-  - Invites sharing: ✓ She elaborates on her celebration philosophy and methods
-  - Language: ✓ Natural, conversational tone
-  - Name usage: ✓ Includes her name after photo reference
-  - Ease of response: ✓ Easy to confirm and expand on her approach
-  - Genuine interest: ✓ Shows understanding of how she creates special moments
-  - Overall: 9/10 - Creates engaging conversation with clear, meaningful connection
+  - Overall: 7/10 - Creates engaging conversation with explicit, logical connection
 
 - Prompt: "Dating me is like"
   Response: "Watching your favorite team winning a natty - I'll be your biggest fan and I'm always ready to travel (especially for a sporting event)"
@@ -1425,7 +1398,7 @@ GOOD STORY EXPLANATION EVALUATIONS:
   - Name usage: ✓ Includes her name after photo reference
   - Ease of response: ✓ Easy to confirm and expand on her supportive personality
   - Genuine interest: ✓ Shows understanding of her consistent approach to relationships
-  - Overall: 9/10 - Creates engaging conversation with clear, logical connection
+  - Overall: 7/10 - Creates engaging conversation with clear, logical connection
 
 BAD STORY EXPLANATION EVALUATIONS:
 - Prompt: "Together we could"
