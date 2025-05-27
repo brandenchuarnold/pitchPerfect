@@ -1003,13 +1003,14 @@ For each prompt/response pair (there will be exactly 3 pairs):
       - Treats the prompt/response as representing a real story from her life
       - Uses the photo element as a clue to understand this story
       - CONSISTS OF TWO PARTS: 
-         1. A QUESTION/STATEMENT (8-10 WORDS ONLY)
+           1. A QUESTION/STATEMENT (8-12 WORDS ONLY)
          2. CONTEXT EXPLANATION (10-15 WORDS ONLY)
       - ALWAYS include her name immediately after referencing her photo in the context explanation (e.g., "I see in your hiking photo, Emma, that you enjoy...")
       - IMPORTANT: The question/statement MUST COME FIRST, followed by the context explanation
       - Format: "[Question/statement about the story behind her prompt/response?] [Brief explanation connecting to the photo element, followed by her name]"
       - CRITICAL: The question/statement MUST be able to stand completely on its own without requiring the context explanation to be understood
       - CRITICAL: NEVER use information from one prompt to explain another prompt - each prompt is a completely separate story
+         - WORD COUNT: Question/statement must be exactly 8-12 words, context explanation must be exactly 10-15 words
       - Examples:
         * Prompt: "Together we could"
           Response: "Play Civ6 although not good at it" 
@@ -1041,7 +1042,7 @@ For each prompt/response pair (there will be exactly 3 pairs):
 2. For each prompt/response pair, you will need to generate story explanations based on elements identified in her photos.
    
 3. Each story explanation MUST:
-   - FOLLOW THE EXACT STRUCTURE: Question/statement (8-10 words) FIRST, then context explanation (10-15 words)
+   - FOLLOW THE EXACT STRUCTURE: Question/statement (8-12 words) FIRST, then context explanation (10-15 words)
    - Ensure the question/statement STANDS COMPLETELY ON ITS OWN - it must be fully understandable without the context explanation
    - The context explanation should only provide background on how you connected to the photo, not essential information needed to understand the question
    - Be based on a concrete, visible element in the photo (not assumptions about her personality)
@@ -1110,14 +1111,44 @@ For each prompt/response pair (there will be exactly 3 pairs):
    - TOTAL: 54 story explanations
 
 10. Review all story explanations to ensure:
-   - Each one is exactly 8-10 words for the question/statement
+   - Each one is exactly 8-12 words for the question/statement
    - Each one is exactly 10-15 words for the context explanation
    - The question/statement ALWAYS comes FIRST
    - The context explanation ALWAYS comes SECOND
    - No information from other prompts is used to explain the current prompt"""
 
-EVALUATE_STORY_EXPLANATIONS = """STEP 8: EVALUATE STORY EXPLANATIONS
+GENERATE_EXPLANATIONS_FOR_STORY_EXPLANATIONS = """STEP 8: GENERATE EXPLANATIONS FOR STORY EXPLANATIONS
 For each of the 54 story explanations (18 per prompt/response pair):
+1. Generate a detailed explanation for how you created each story explanation:
+   a. First Part Explanation (How the question/statement was generated):
+      - Identify the specific photo element you focused on (e.g., "concert venue", "gaming setup", "hiking gear")
+      - Explain how this photo element connects to the prompt/response content
+      - Describe the logical reasoning behind the question/statement you formulated
+   b. Second Part Explanation (Why this specific photo context was selected):
+      - Explain why you chose this particular photo context over other possible options
+      - Describe what made this photo element the most relevant and FUN to mention
+      - Explain how referencing this specific photo shows attention to her FUN, personality-driven interests
+   c. Expected Response Explanation (What response you expect and why):
+      - Describe what kind of response you anticipate from her
+      - Explain how the conversation starter is designed to make her feel understood as someone who enjoys fun activities
+      - Describe how it invites her to share more about her entertainment preferences and fun experiences
+2. Format each explanation as a single paragraph that flows naturally and covers all three aspects
+3. Start each explanation with "Photo element focus:" and explain the reasoning in a conversational, insightful tone
+4. CRITICAL REWRITING STEP: After generating the explanation, review the conversation starter and rewrite it if necessary to make the connection explicit:
+   a. Read the explanation you just created - it likely describes a clever, logical connection between the photo element and her prompt/response
+   b. Now look at your conversation starter - does it explicitly state this connection, or does it leave the reader to figure it out?
+   c. If the connection is not obvious from the conversation starter alone, REWRITE the conversation starter to explicitly include the connecting theme
+   d. Remember: Although you have created a clever relationship in your explanation, it's clever, which means it requires explicit relating in your conversation starter
+   e. The conversation starter must make the connection clear to someone who has no context from your explanation
+   f. Examples of making connections explicit:
+      * BAD: "Do new recipes make cooking more exciting?" (obvious question, no connection to photo)
+      * GOOD: "Do you enjoy discovering new experiences through both cooking and travel?" (explicitly states the connection)
+      * BAD: "Are movie quotes your go-to for inspiration?" (no connection to birthday photo)
+      * GOOD: "Do you bring movie inspiration into real celebrations?" (explicitly connects quotes to celebrations)
+   g. After rewriting, ensure the conversation starter still follows the 8-12 word limit for the question/statement"""
+
+EVALUATE_STORY_EXPLANATIONS = """STEP 9: EVALUATE STORY EXPLANATIONS
+For each of the 54 story explanations(18 per prompt/response pair):
 1. Conduct a simulated conversation:
    a. Message 1: Her prompt/response as the first message
    b. Message 2: Your story explanation as the response
@@ -1127,7 +1158,7 @@ For each of the 54 story explanations (18 per prompt/response pair):
 2. Evaluate based on these criteria:
    - Is the structure correct? (Question/statement FIRST, context explanation SECOND)
    - Can the question/statement STAND COMPLETELY ON ITS OWN without requiring the context explanation?
-   - Is the question/statement exactly 8-10 words?
+   - Is the question/statement exactly 8-12 words?
    - Is the context explanation exactly 10-15 words?
    - Does the context explanation only provide background, not essential information?
    - Does it avoid using information from other prompts?
@@ -1140,7 +1171,9 @@ For each of the 54 story explanations (18 per prompt/response pair):
    - Does it show genuine interest in her stories?
    - Does it respect her intelligence without being pretentious?
    - Does it include her name after referencing her photo?
-   - Does it present genuine contrast when discussing balance (e.g., indoor/outdoor activities)?
+   - Does it present genuine contrast when discussing balance(e.g., indoor/outdoor activities)?
+   - Does the explanation from Step 8 make logical sense and support the conversation starter?
+   - Does the conversation starter accurately reflect the reasoning in the explanation?
 3. Rank each conversation on a scale of 1-10 for overall quality. Keep in mind if the story explanation:
    - Has a question/statement that STANDS COMPLETELY ON ITS OWN without requiring context
    - Uses the most natural, everyday language
@@ -1154,17 +1187,18 @@ For each of the 54 story explanations (18 per prompt/response pair):
    - Includes her name after photo references
    - Avoids sounding "sales-y" or overly enthusiastic
    - Avoids making unfounded assumptions about her
-   - Has the CORRECT STRUCTURE (question/statement first, context second)
-   - Has the CORRECT WORD COUNT (8-10 words for question/statement, 10-15 words for context)
+   - Has the CORRECT STRUCTURE(question/statement first, context second)
+   - Has the CORRECT WORD COUNT(8-12 words for question/statement, 10-15 words for context)
    - DOES NOT use information from other prompts
-   - PRIORITIZES FUN, engaging topics over career-focused elements (avoid topics like jobs, professions, work uniforms - instead focus on hobbies, interests, activities, entertainment preferences, lifestyle choices, travel, food, music, sports, etc.)
+   - PRIORITIZES FUN, engaging topics over career-focused elements(avoid topics like jobs, professions, work uniforms - instead focus on hobbies, interests, activities, entertainment preferences, lifestyle choices, travel, food, music, sports, etc.)
    - Creates opportunities for light-hearted, enjoyable conversations rather than serious work discussions
 4. Count the number of ratings you have. Are there 54? If not, you need to go back and rate all the story explanations you already have.
-5. For each prompt/response pair, select the single best story explanation ranked highest by you (3 total, 1 per prompt).
+5. For each prompt/response pair, select the single best story explanation ranked highest by you(3 total, 1 per prompt).
 
-Examples of good story explanation evaluations:
+Examples of story explanation evaluations:
 
-GOOD STORY EXPLANATION EVALUATION:
+GOOD STORY EXPLANATION EVALUATIONS:
+
 - Prompt: "What I order for the table"
   Response: "Margaritas"
   Photo element: Woman drinking a beer at a bar
@@ -1176,8 +1210,8 @@ GOOD STORY EXPLANATION EVALUATION:
   * You: "I'm the same way! What's your go-to spot for margaritas in Madison?"
   * Her: "I love Canteen for margaritas! Their spicy ones are amazing. Have you been there?"
   Analysis:
-  - Structure: ✓ Question first (8 words), context second (10 words)
-  - Word count: ✓ Question within 8-10 word limit, context within 10-15 word limit
+  - Structure: ✓ Question first(8 words), context second(10 words)
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
   - No cross-prompt info: ✓ Only uses information from this prompt
   - Natural flow: ✓ Conversation develops organically
   - Enjoyable: ✓ Light-hearted topic about preferences
@@ -1200,8 +1234,8 @@ GOOD STORY EXPLANATION EVALUATION:
   * You: "I find that balance important too. Do you have a favorite running route in Madison?"
   * Her: "I love running around the Arboretum! It's beautiful year-round. Do you run too?"
   Analysis:
-  - Structure: ✓ Question first (7 words), context second (13 words)
-  - Word count: ✓ Question within 8-10 word limit, context within 10-15 word limit
+  - Structure: ✓ Question first(7 words), context second(13 words)
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
   - No cross-prompt info: ✓ Only uses information from this prompt
   - Natural flow: ✓ Builds on her routine in a thoughtful way
   - Enjoyable: ✓ Positive topic about lifestyle choices
@@ -1223,8 +1257,8 @@ GOOD STORY EXPLANATION EVALUATION:
   * You: "Have you done any hiking around Madison? I've heard Devil's Lake has some great trails."
   * Her: "Yes! Devil's Lake is one of my favorites - I try to go at least once each season. The East Bluff trail has the best views. Do you hike too?"
   Analysis:
-  - Structure: ✓ Question first (7 words), context second (12 words)
-  - Word count: ✓ Question within 8-10 word limit, context within 10-15 word limit
+  - Structure: ✓ Question first(7 words), context second(12 words)
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
   - No cross-prompt info: ✓ Only uses information from this prompt
   - Natural flow: ✓ Makes a concrete observation without exaggeration
   - Enjoyable: ✓ Positive but realistic connection between activities and values
@@ -1246,8 +1280,8 @@ GOOD STORY EXPLANATION EVALUATION:
   * You: "Which farmer's market do you usually go to? I've been to the one on the Square a few times."
   * Her: "The Capitol Square one is my favorite! I love getting Stella's spicy cheese bread first thing - have you tried it? It's a Madison must-have."
   Analysis:
-  - Structure: ✓ Question first (9 words), context second (13 words)
-  - Word count: ✓ Question within 8-10 word limit, context within 10-15 word limit
+  - Structure: ✓ Question first(9 words), context second(13 words)
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
   - No cross-prompt info: ✓ Only uses information from this prompt
   - Natural flow: ✓ Makes a direct observation about her activities
   - Enjoyable: ✓ Positive focus on her lifestyle choices without exaggeration
@@ -1258,7 +1292,142 @@ GOOD STORY EXPLANATION EVALUATION:
   - Genuine interest: ✓ Shows understanding of her priorities
   - Overall: 8/10 - Creates meaningful conversation about her regular activities
 
-BAD STORY EXPLANATION EVALUATION:
+- Prompt: "A random fact I love is"
+  Response: "Defenestrate (meaning to throw someone out of a window) was derived nearly straight from Latin"
+  Photo element: Woman with friends in mountainous, forested hiking area
+  Story explanation: "Do you enjoy discovering word origins through both research and travel? I see you exploring different countries in your hiking photo, Claire."
+  Simulated conversation:
+  * Her: "A random fact I love is: Defenestrate (meaning to throw someone out of a window) was derived nearly straight from Latin"
+  * You: "Do you enjoy discovering word origins through both research and travel? I see you exploring different countries in your hiking photo, Claire."
+  * Her: "Yes! I love etymology and I do think traveling helps you understand how languages evolved. Like seeing Latin influences in different European countries makes word origins come alive."
+  * You: "That's so cool! Have you noticed any interesting language patterns during your travels?"
+  * Her: "Definitely! When I was hiking in the Alps, I could see how German, Italian, and French all influenced each other in the border regions. It's like etymology in real life!"
+  Analysis:
+  - Structure: ✓ Question first (9 words), context second (11 words)
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
+  - No cross-prompt info: ✓ Only uses information from this prompt
+  - Thematic consistency: ✓ EXCELLENT - Explicitly connects word origins research to travel exploration
+    * Makes the connection clear: both involve discovering how cultures and histories connect
+    * Both etymology and travel reveal how different influences shaped our current world
+    * She immediately understands and confirms this pattern in her interests
+  - Natural flow: ✓ Creates smooth conversation about her intellectual curiosity and adventures
+  - Enjoyable: ✓ Celebrates both her academic interests and adventurous spirit
+  - Invites sharing: ✓ She elaborates on how travel enhances her language interests
+  - Language: ✓ Natural, conversational tone
+  - Name usage: ✓ Includes her name after photo reference
+  - Ease of response: ✓ Easy to confirm and expand on the connection
+  - Genuine interest: ✓ Shows understanding of how her interests complement each other
+  - Overall: 9/10 - Creates engaging conversation with explicit, meaningful connection
+
+- Prompt: "I'm looking for"
+  Response: "My debit card"
+  Photo element: Woman crossing Kansas City Marathon finish line with arms raised
+  Story explanation: "Does marathon training help with everyday frustrations? I see you finished Kansas City Marathon, Mary Katherine."
+  Simulated conversation:
+  * Her: "I'm looking for: My debit card"
+  * You: "Does marathon training help with everyday frustrations? I see you finished Kansas City Marathon, Mary Katherine."
+  * Her: "Actually, yes! Running definitely teaches you patience and perspective. Losing my debit card is annoying but it's nothing compared to mile 20 of a marathon."
+  * You: "That's such a great way to look at it! What was the toughest part of training for Kansas City?"
+  * Her: "Definitely the long runs in the summer heat. But crossing that finish line made it all worth it. Have you ever run a marathon?"
+  Analysis:
+  - Structure: ✓ Question first (7 words), context second (10 words)
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
+  - No cross-prompt info: ✓ Only uses information from this prompt
+  - Thematic consistency: ✓ EXCELLENT - Correctly suggests marathon experience helps with smaller stresses
+    * Logical connection: marathon training builds mental resilience
+    * Question aligns with the explanation's reasoning
+    * Creates opportunity to discuss both her achievement and stress management
+  - Natural flow: ✓ Creates smooth conversation about her accomplishment and mindset
+  - Enjoyable: ✓ Celebrates her achievement while connecting to relatable everyday experience
+  - Invites sharing: ✓ She elaborates on both her marathon experience and life philosophy
+  - Language: ✓ Natural, conversational tone
+  - Name usage: ✓ Includes her name after photo reference
+  - Ease of response: ✓ Easy to confirm and expand on the connection
+  - Genuine interest: ✓ Shows understanding of how achievements translate to life skills
+  - Overall: 9/10 - Creates engaging conversation with correct logical connection
+
+- Prompt: "My simple pleasures"
+  Response: "Cooking a new recipe every week"
+  Photo element: Woman sitting in wooden boat on mountain lake with turquoise water
+  Story explanation: "Do you enjoy discovering new experiences through both cooking and travel? I see you exploring beautiful lake scenery in your photo, Morgan."
+  Simulated conversation:
+  * Her: "My simple pleasures: Cooking a new recipe every week"
+  * You: "Do you enjoy discovering new experiences through both cooking and travel? I see you exploring beautiful lake scenery in your photo, Morgan."
+  * Her: "Yes! I love trying new recipes and exploring new places. Both give me that same excitement of discovering something fresh and different."
+  * You: "That's such a great way to keep life interesting! What's the most adventurous recipe you've tried recently?"
+  * Her: "I just made Korean corn dogs for the first time - they were amazing! And that lake photo is from my trip to Banff last summer. Do you like to travel and cook too?"
+  Analysis:
+  - Structure: ✓ Question first (10 words), context second (12 words)
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
+  - No cross-prompt info: ✓ Only uses information from this prompt
+  - Thematic consistency: ✓ EXCELLENT - Explicitly states the connection (discovering new experiences)
+    * Makes the logical connection clear in the question itself
+    * Both cooking new recipes and traveling to scenic places involve discovery
+    * She immediately understands and confirms the connection
+  - Natural flow: ✓ Creates smooth conversation about her love of discovery
+  - Enjoyable: ✓ Celebrates her adventurous spirit in multiple areas
+  - Invites sharing: ✓ She elaborates on both cooking and travel experiences
+  - Language: ✓ Natural, conversational tone
+  - Name usage: ✓ Includes her name after photo reference
+  - Ease of response: ✓ Easy to confirm and expand on the connection
+  - Genuine interest: ✓ Shows understanding of her personality pattern
+  - Overall: 9/10 - Creates engaging conversation with explicit, logical connection
+
+- Prompt: "Together, we could"
+  Response: "Shoot the moon, stop the rain, even ride a hurricane -The Cheetah Girls"
+  Photo element: Woman celebrating birthday with sparkler and dessert
+  Story explanation: "Do you bring movie inspiration into real celebrations? I see you creating magical moments with sparklers in your birthday photo, Kylie."
+  Simulated conversation:
+  * Her: "Together, we could: Shoot the moon, stop the rain, even ride a hurricane -The Cheetah Girls"
+  * You: "Do you bring movie inspiration into real celebrations? I see you creating magical moments with sparklers in your birthday photo, Kylie."
+  * Her: "Actually, yes! I love quotes like that because they remind me to make ordinary moments feel special, like using sparklers for birthdays or planning fun themed parties."
+  * You: "That's so cool! The Cheetah Girls definitely knew how to make everything feel epic. What other ways do you make celebrations special?"
+  * Her: "I'm big on little details - like custom playlists, themed decorations, or surprise elements. Life's too short for boring parties!"
+  Analysis:
+  - Structure: ✓ Question first (8 words), context second (12 words)
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
+  - No cross-prompt info: ✓ Only uses information from this prompt
+  - Thematic consistency: ✓ EXCELLENT - Explicitly connects movie inspiration to real celebrations
+    * Makes the connection clear: bringing inspirational energy into actual events
+    * Both movie quotes and sparkler moments involve creating magic/special feelings
+    * She immediately understands and confirms this pattern in her life
+  - Natural flow: ✓ Creates smooth conversation about her approach to celebrations
+  - Enjoyable: ✓ Celebrates her creativity and positive energy
+  - Invites sharing: ✓ She elaborates on her celebration philosophy and methods
+  - Language: ✓ Natural, conversational tone
+  - Name usage: ✓ Includes her name after photo reference
+  - Ease of response: ✓ Easy to confirm and expand on her approach
+  - Genuine interest: ✓ Shows understanding of how she creates special moments
+  - Overall: 9/10 - Creates engaging conversation with clear, meaningful connection
+
+- Prompt: "Dating me is like"
+  Response: "Watching your favorite team winning a natty - I'll be your biggest fan and I'm always ready to travel (especially for a sporting event)"
+  Photo element: Woman enjoying cocktails with friends in a bar setting
+  Story explanation: "Do you bring that same celebratory energy to friendships and relationships? I see you enjoying celebratory cocktails with friends in your bar photo, Caitlyn."
+  Simulated conversation:
+  * Her: "Dating me is like: Watching your favorite team winning a natty - I'll be your biggest fan and I'm always ready to travel (especially for a sporting event)"
+  * You: "Do you bring that same celebratory energy to friendships and relationships? I see you enjoying celebratory cocktails with friends in your bar photo, Caitlyn."
+  * Her: "Absolutely! I'm definitely the type who shows up with enthusiasm whether it's for my team, my friends, or someone I'm dating. I love celebrating the wins, big and small."
+  * You: "That's such an amazing quality! What's the most memorable celebration you've organized or been part of?"
+  * Her: "Last year when my friend got promoted, I surprised her with a whole group dinner and custom cocktails. And when my team made the playoffs, I organized a watch party with themed drinks. I just love making moments special!"
+  Analysis:
+  - Structure: ✓ Question first (10 words), context second (12 words)
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
+  - No cross-prompt info: ✓ Only uses information from this prompt
+  - Thematic consistency: ✓ EXCELLENT - Explicitly connects celebratory energy across different contexts
+    * Makes the connection clear: bringing enthusiastic support to both friendships and relationships
+    * Both sports fandom and bar celebrations involve showing up with positive energy
+    * She immediately understands and confirms this pattern in her personality
+  - Natural flow: ✓ Creates smooth conversation about her supportive nature
+  - Enjoyable: ✓ Celebrates her loyalty and enthusiasm across different relationships
+  - Invites sharing: ✓ She elaborates on specific examples of her celebratory approach
+  - Language: ✓ Natural, conversational tone
+  - Name usage: ✓ Includes her name after photo reference
+  - Ease of response: ✓ Easy to confirm and expand on her supportive personality
+  - Genuine interest: ✓ Shows understanding of her consistent approach to relationships
+  - Overall: 9/10 - Creates engaging conversation with clear, logical connection
+
+BAD STORY EXPLANATION EVALUATIONS:
 - Prompt: "Together we could"
   Response: "Play Civ6 although not good at it"
   Photo element: Woman at a concert
@@ -1361,7 +1530,7 @@ BAD STORY EXPLANATION EVALUATION:
   * Her: "I guess? I mean, I do go out occasionally, but I prefer staying in most weekends."
   Analysis:
   - Structure: ✓ Question first (8 words), context second (10 words)
-  - Word count: ✓ Question within 8-10 word limit, context within 10-15 word limit
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
   - No cross-prompt info: ✓ Only uses information from this prompt
   - Thematic consistency: ✗ MAJOR FLAW - "deserve celebration" doesn't apply equally to both elements
     * Early bedtimes might deserve celebration as healthy choices
@@ -1374,14 +1543,122 @@ BAD STORY EXPLANATION EVALUATION:
   - Name usage: ✓ Includes her name after photo reference
   - Ease of response: ✗ Creates confusion about the underlying logic
   - Genuine interest: ✗ Focuses on a forced theme rather than understanding her preferences
-  - Overall: 3/10 - Creates awkward conversation due to poor thematic consistency"""
+  - Overall: 3/10 - Creates awkward conversation due to poor thematic consistency
 
-SELECT_BEST_STORY_EXPLANATION = """STEP 9: SELECT BEST OVERALL STORY EXPLANATION
-1. Take the three best story explanations (one for each prompt/response pair) from Step 8
+- Prompt: "I'm looking for"
+  Response: "My debit card"
+  Photo element: Woman crossing Kansas City Marathon finish line with arms raised
+  Story explanation: "Does running marathons make losing things more stressful? I see you finished Kansas City Marathon, Mary Katherine."
+  Simulated conversation:
+  * Her: "I'm looking for: My debit card"
+  * You: "Does running marathons make losing things more stressful? I see you finished Kansas City Marathon, Mary Katherine."
+  * Her: "That's a weird question... I mean, losing my debit card is annoying but it has nothing to do with running."
+  * You: "I just meant that you seem to handle both big challenges and small frustrations well."
+  * Her: "I guess? I'm still looking for my card though."
+  Analysis:
+  - Structure: ✓ Question first (7 words), context second (10 words)
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
+  - No cross-prompt info: ✓ Only uses information from this prompt
+  - Thematic consistency: ✗ MAJOR FLAW - The question suggests marathons make losing things MORE stressful, but logically someone who can handle marathon stress would handle small stresses BETTER
+    * The underlying logic is sound: marathon training builds stress resilience
+    * But the question asks the opposite of what makes sense
+    * Should ask if marathon experience helps with small stresses, not makes them worse
+  - Natural flow: ✗ Creates confusion about the logical connection
+  - Enjoyable: ✗ Forces her to question the reasoning behind the question
+  - Invites sharing: ✗ Leads to defensive responses rather than elaboration
+  - Language: ✓ Natural conversational tone
+  - Name usage: ✓ Includes her name after photo reference
+  - Ease of response: ✗ Creates confusion about the underlying logic
+  - Genuine interest: ✗ The backwards logic makes the interest seem forced
+  - Overall: 3/10 - Good explanation logic but conversation starter asks the wrong question
+
+- Prompt: "My simple pleasures"
+  Response: "Cooking a new recipe every week"
+  Photo element: Woman sitting in wooden boat on mountain lake with turquoise water
+  Story explanation: "Do new recipes make cooking more exciting? I see you enjoying beautiful scenery in your lake photo, Morgan."
+  Simulated conversation:
+  * Her: "My simple pleasures: Cooking a new recipe every week"
+  * You: "Do new recipes make cooking more exciting? I see you enjoying beautiful scenery in your lake photo, Morgan."
+  * Her: "Yeah, I guess trying new recipes is fun... but I'm not sure what that has to do with the lake photo?"
+  * You: "I just meant you seem to enjoy discovering new experiences, whether through cooking or travel."
+  * Her: "Oh, I see what you mean. Yeah, I do like trying new things."
+  Analysis:
+  - Structure: ✓ Question first (7 words), context second (11 words)
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
+  - No cross-prompt info: ✓ Only uses information from this prompt
+  - Thematic consistency: ✗ MAJOR FLAW - The question is too obvious and doesn't connect to the photo
+    * "Do new recipes make cooking more exciting?" - Of course they do, this is obvious
+    * The connection to beautiful lake scenery is not explicit in the conversation starter
+    * The underlying logic (both involve discovering new experiences) is sound but not stated
+  - Natural flow: ✗ Creates confusion about the connection between cooking and lake scenery
+  - Enjoyable: ✗ Forces her to question why these topics are connected
+  - Invites sharing: ✗ Leads to confusion rather than elaboration
+  - Language: ✓ Natural conversational tone
+  - Name usage: ✓ Includes her name after photo reference
+  - Ease of response: ✗ Creates confusion about the underlying logic
+  - Genuine interest: ✗ The connection feels forced without explicit explanation
+  - Overall: 3/10 - Good explanation logic but conversation starter doesn't make the connection explicit
+
+- Prompt: "Together, we could"
+  Response: "Shoot the moon, stop the rain, even ride a hurricane -The Cheetah Girls"
+  Photo element: Woman celebrating birthday with sparkler and dessert
+  Story explanation: "Are movie quotes your go-to for inspiration? I see you enjoying birthday celebrations in your photo, Kylie."
+  Simulated conversation:
+  * Her: "Together, we could: Shoot the moon, stop the rain, even ride a hurricane -The Cheetah Girls"
+  * You: "Are movie quotes your go-to for inspiration? I see you enjoying birthday celebrations in your photo, Kylie."
+  * Her: "I mean, sometimes I like movie quotes... but what does that have to do with my birthday photo?"
+  * You: "I just thought you might use uplifting quotes to bring positive energy to celebrations."
+  * Her: "That's kind of a stretch, but I do like positive vibes at parties."
+  Analysis:
+  - Structure: ✓ Question first (7 words), context second (10 words)
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
+  - No cross-prompt info: ✓ Only uses information from this prompt
+  - Thematic consistency: ✗ MAJOR FLAW - The connection between movie quotes and birthday celebrations is not explicit
+    * The underlying logic (both involve bringing positive energy/inspiration) is sound
+    * But the conversation starter doesn't state this connection clearly
+    * She's left to guess why these two things are related
+  - Natural flow: ✗ Creates confusion about why these topics are connected
+  - Enjoyable: ✗ Forces her to question the logic of the connection
+  - Invites sharing: ✗ Leads to defensive responses rather than elaboration
+  - Language: ✓ Natural conversational tone
+  - Name usage: ✓ Includes her name after photo reference
+  - Ease of response: ✗ Creates confusion about the underlying reasoning
+  - Genuine interest: ✗ The connection feels random without explicit explanation
+  - Overall: 3/10 - Sound explanation but conversation starter fails to make connection clear
+
+- Prompt: "Dating me is like"
+  Response: "Watching your favorite team winning a natty - I'll be your biggest fan and I'm always ready to travel (especially for a sporting event)"
+  Photo element: Woman enjoying cocktails with friends in a bar setting
+  Story explanation: "Do sports and travel create your perfect adventure combination? I see you enjoying cocktails with friends in your bar photo, Caitlyn."
+  Simulated conversation:
+  * Her: "Dating me is like: Watching your favorite team winning a natty - I'll be your biggest fan and I'm always ready to travel (especially for a sporting event)"
+  * You: "Do sports and travel create your perfect adventure combination? I see you enjoying cocktails with friends in your bar photo, Caitlyn."
+  * Her: "I mean, I do like sports and travel... but I'm not sure what that has to do with having cocktails with friends?"
+  * You: "I just thought you might bring that same supportive energy to different social situations."
+  * Her: "I guess? I do try to be supportive, but those seem like pretty different things."
+  Analysis:
+  - Structure: ✓ Question first (9 words), context second (11 words)
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
+  - No cross-prompt info: ✓ Only uses information from this prompt
+  - Thematic consistency: ✗ MAJOR FLAW - The connection between sports/travel and cocktails with friends is not explicit
+    * The underlying logic (both involve showing up enthusiastically to support what matters) is sound
+    * But the conversation starter doesn't state this connection clearly
+    * She's left to guess why sports/travel relates to bar outings with friends
+  - Natural flow: ✗ Creates confusion about why these topics are connected
+  - Enjoyable: ✗ Forces her to question the logic of the connection
+  - Invites sharing: ✗ Leads to defensive responses rather than elaboration
+  - Language: ✓ Natural conversational tone
+  - Name usage: ✓ Includes her name after photo reference
+  - Ease of response: ✗ Creates confusion about the underlying reasoning
+  - Genuine interest: ✗ The connection feels random without explicit explanation
+  - Overall: 3/10 - Sound explanation but conversation starter fails to make connection clear"""
+
+SELECT_BEST_STORY_EXPLANATION = """STEP 10: SELECT BEST OVERALL STORY EXPLANATION
+1. Take the three best story explanations (one for each prompt/response pair) from Step 9
 2. Compare them based on these additional criteria:
    - Which has a question/statement that STANDS COMPLETELY ON ITS OWN without requiring context?
    - Which follows the correct structure (question/statement first, context second)?
-   - Which has the correct word count (8-10 words for question/statement, 10-15 words for context)?
+   - Which has the correct word count (8-12 words for question/statement, 10-15 words for context)?
    - Which avoids using information from other prompts?
    - Which creates the most natural conversation flow?
    - Which feels most like a genuine response to her prompt?
@@ -1402,7 +1679,7 @@ Example of good final selection analysis:
 FINAL SELECTION ANALYSIS:
 - Finalist 1: "Do you enjoy different drinks for different occasions? I see you enjoying a beer in your bar photo, Emma."
   - Structure: ✓ Question first (8 words), context second (10 words)
-  - Word count: ✓ Question within 8-10 word limit, context within 10-15 word limit
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
   - Question stands alone: ✓ Question is completely understandable without context
   - No cross-prompt info: ✓ Only uses information from this prompt
   - Strengths: Natural question, concrete observation, easy to respond to, includes name after photo reference
@@ -1411,7 +1688,7 @@ FINAL SELECTION ANALYSIS:
 
 - Finalist 2: "Is balance the key to a perfect weekend? Your photos show both exercise and relaxation time, Taylor."
   - Structure: ✓ Question first (8 words), context second (10 words)
-  - Word count: ✓ Question within 8-10 word limit, context within 10-15 word limit
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
   - No cross-prompt info: ✓ Only uses information from this prompt
   - Strengths: Thoughtful observation, shows understanding of her values, includes name after photo reference
   - Weaknesses: Slightly more generic than other options
@@ -1419,7 +1696,7 @@ FINAL SELECTION ANALYSIS:
 
 - Finalist 3: "Do hikers value kindness and new experiences? You're hiking on trails in your mountain photos, Madison."
   - Structure: ✓ Question first (7 words), context second (12 words)
-  - Word count: ✓ Question within 8-10 word limit, context within 10-15 word limit
+  - Word count: ✓ Question within 8-12 word limit, context within 10-15 word limit
   - No cross-prompt info: ✓ Only uses information from this prompt
   - Strengths: Direct observation, connects photo to stated values, authentic tone, includes name after photo reference
   - Weaknesses: None significant
@@ -1427,11 +1704,11 @@ FINAL SELECTION ANALYSIS:
 
 Selected finalist: #3 - This story explanation creates an authentic connection between her values and visible activities. It's straightforward but insightful, inviting her to share more about her hiking experiences and how they connect to her preference for kind and adventurous people. The natural inclusion of her name after mentioning her photo creates a personal touch that will increase her engagement. It also perfectly follows the required structure and word count."""
 
-IDENTIFY_SCREENSHOT = """STEP 10: IDENTIFY SCREENSHOT
+IDENTIFY_SCREENSHOT = """STEP 11: IDENTIFY SCREENSHOT
 1. Note which screenshot contains the prompt/response pair text of the woman's profile that matches the chosen story explanation
 2. If prompt/response pair is cut off or spans multiple screenshots, note which screenshot contains the majority of the prompt/response pair text"""
 
-FINAL_VALIDATION_CHECK = """STEP 11: FINAL VALIDATION CHECK
+FINAL_VALIDATION_CHECK = """STEP 12: FINAL VALIDATION CHECK
 Before returning your result, perform one last critical check:
 1. Review your story explanation one more time
 2. Ensure it:
@@ -1445,28 +1722,15 @@ Before returning your result, perform one last critical check:
    - Feels like a genuine response to her prompt
 3. This is your LAST chance to ensure your story explanation is authentic and engaging"""
 
-GENERATE_EXPLANATION = """STEP 12: GENERATE EXPLANATION FOR CONVERSATION STARTER
-Now generate a detailed explanation for how you created the conversation starter:
-
-1. First Part Explanation (How the question/statement was generated):
-   - Identify the specific photo element you focused on (e.g., "concert venue", "gaming setup", "hiking gear")
-   - Explain how this photo element connects to the prompt/response content
-   - Describe the logical reasoning behind the question/statement you formulated
-   - Example: "I noticed she was at a concert venue in one of her photos. Since her prompt response mentioned wanting to play Civ6 together, I connected her enjoyment of live music events with her interest in gaming. This led me to ask about how both concerts and gaming create excitement and hype, as they both offer immersive experiences that can be thrilling in different ways."
-
-2. Second Part Explanation (Why this specific photo context was selected):
-   - Explain why you chose this particular photo context over other possible options
-   - Describe what made this photo element the most relevant and FUN to mention
-   - Explain how referencing this specific photo shows attention to her FUN, personality-driven interests
-   - Example: "I selected the concert photo specifically because it represents her enjoyment of high-energy, immersive experiences, which creates a natural parallel with gaming. This photo context was ideal because it's concrete evidence of her seeking out exciting experiences, making the conversation starter feel grounded in her actual fun interests rather than assumptions about her personality."
-
-3. Expected Response Explanation (What response you expect and why):
-   - Describe what kind of response you anticipate from her
-   - Explain how the conversation starter is designed to make her feel understood as someone who enjoys fun activities
-   - Describe how it invites her to share more about her entertainment preferences and fun experiences
-   - Example: "I expect her to respond by either confirming that both concerts and gaming give her similar rushes of excitement, or by explaining what she loves about each type of experience. The conversation starter is designed to make her feel seen as someone who actively seeks out fun, engaging activities rather than someone who's defined by work or obligations. It invites her to elaborate on what makes these experiences exciting for her and share more about her entertainment preferences and how she likes to have fun."
-
-Format your explanation as a single paragraph that flows naturally and covers all three aspects. Start with "Photo element focus:" and explain the reasoning in a conversational, insightful tone that demonstrates deep understanding of human psychology and conversation dynamics."""
+FINAL_OUTPUT = """STEP 13: FINAL OUTPUT
+Return the chosen prompt, response, your conversation starter, the explanation for your conversation starter (from Step 8), and the screenshot index in this JSON format exactly. Do not return any other text or comments beyond the JSON.
+{
+    "prompt": "The exact prompt text the woman chose",
+    "response": "The woman's response to the prompt", 
+    "conversation_starter": "Your natural conversation starter",
+    "explanation_for_conversation_starter": "Your detailed explanation for how and why you created this conversation starter (from Step 8)",
+    "screenshot_index": index_of_screenshot_containing_prompt_response  # 0-based index (0-6)
+}"""
 
 # New shared prompt component for desirability-only path
 ENDING_DESIREABILITY_ONLY = """If the woman is desirable (doesn't meet any undesirable traits in Step 4), return the following JSON exactly, where prompt, response, conversation_starter, and explanation_for_conversation_starter are empty strings, and screenshot_index is 0:
@@ -1660,18 +1924,17 @@ def generate_hinge_reply_from_screenshots(screenshots, format_txt_path, prompts_
 
     {IDENTIFY_SCREENSHOT}
 
+    {GENERATE_EXPLANATIONS_FOR_STORY_EXPLANATIONS}
+
+    {EVALUATE_STORY_EXPLANATIONS}
+
+    {SELECT_BEST_STORY_EXPLANATION}
+
+    {IDENTIFY_SCREENSHOT}
+
     {FINAL_VALIDATION_CHECK}
     
-    {GENERATE_EXPLANATION}
-    
-    Return the chosen prompt, response, your conversation starter, the explanation for your conversation starter, and the screenshot index in this JSON format exactly. Do not return any other text or comments beyond the JSON.
-    {{
-        "prompt": "The exact prompt text the woman chose",
-        "response": "The woman's response to the prompt",
-        "conversation_starter": "Your natural conversation starter",
-        "explanation_for_conversation_starter": "Your detailed explanation for how and why you created this conversation starter",
-        "screenshot_index": index_of_screenshot_containing_prompt_response  # 0-based index (0-6)
-    }}"""
+    {FINAL_OUTPUT}"""
 
     # User message - just the specific task
     user_message = """Please analyze these profile screenshots and return the requested data as instructed."""
